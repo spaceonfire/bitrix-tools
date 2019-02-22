@@ -1,0 +1,26 @@
+{
+  "name": "spaceonfire/bitrix-tools",
+  "description": "Utility classes for Bitrix projects",
+  "keywords": ["tools", "bitrix"],
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Constantine Karnaukhov",
+      "email": "genteelknight@gmail.com"
+    }
+  ],
+  "require": {
+    "php": ">=7.0"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "5.2.*"
+  },
+  "autoload": {
+    "psr-4": {
+      "spaceonfire\\BitrixTools\\": "src/"
+    }
+  },
+  "bin": [
+    "bin/run-in-background.php"
+  ]
+}
