@@ -39,6 +39,7 @@ abstract class HighLoadBlock
 	{
 		if (!array_key_exists(static::getHLId(), static::$entities)) {
 			static::$entities[static::getHLId()] = HL\HighloadBlockTable::compileEntity(static::getHLId());
+			static::registerEvents();
 		}
 		return static::$entities[static::getHLId()];
 	}
@@ -46,7 +47,6 @@ abstract class HighLoadBlock
 	protected static function compile()
 	{
 		self::getEntity();
-		static::registerEvents();
 	}
 
 	protected static function registerEvents()
