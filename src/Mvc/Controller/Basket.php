@@ -25,7 +25,7 @@ class Basket extends Prototype
 	{
 		$this->view = new Mvc\View\Json();
 		$this->returnAsIs = true;
-		$id = $this->getParam("ID");
+		$id = $this->getParam('ID');
 		\CSaleBasket::Delete($id);
 	}
 

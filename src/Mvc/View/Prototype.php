@@ -62,7 +62,7 @@ class Prototype
 	 */
 	public function render(): string
 	{
-		throw new \Exception("Abstract view can't be rendered.");
+		throw new \Exception('Abstract view can\'t be rendered.');
 	}
 
 	/**
