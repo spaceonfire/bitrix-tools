@@ -2,6 +2,7 @@
 
 namespace spaceonfire\BitrixTools;
 
+use Bitrix\Main\ArgumentNullException;
 use Bitrix\Main\Data\Cache as BxCache;
 
 class Cache
@@ -12,7 +13,7 @@ class Cache
 	 * @param callable $callback function to cache results
 	 * @param array $args array of arguments for $callback function
 	 * @return mixed
-	 * @throws \Exception
+	 * @throws ArgumentNullException
 	 */
 	public static function cacheResult($options, callable $callback, $args = [])
 	{
@@ -25,7 +26,7 @@ class Cache
 
 		foreach (['CACHE_ID', 'CACHE_PATH'] as $sParam) {
 			if (empty($options[$sParam])) {
-				throw new \Exception('Empty param ' . $sParam);
+				throw new ArgumentNullException($sParam);
 			}
 		}
 

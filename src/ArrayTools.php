@@ -11,14 +11,17 @@ class ArrayTools
 	 * @param string $prefix Key prefix, mostly needed for recursive call
 	 * @return array single-dimensional array
 	 */
-	public static function flatten(array $array, $separator = '.', $prefix = '')
+	public static function flatten(array $array, $separator = '.', $prefix = ''): array
 	{
 		$result = [];
 		foreach ($array as $key => $item) {
 			$prefixedKey = ($prefix ? $prefix . $separator : '') . $key;
 
 			if (is_array_assoc($item)) {
-				$result = array_merge($result, self::flatten($item, $separator, $prefixedKey));
+				$childFlaten = self::flatten($item, $separator, $prefixedKey);
+				foreach ($childFlaten as $childKey => $childValue) {
+					$result[$childKey] = $childValue;
+				}
 			} else {
 				$result[$prefixedKey] = $item;
 			}
@@ -32,7 +35,7 @@ class ArrayTools
 	 * @param string $separator Glue string for exploding keys
 	 * @return array multi-dimensional array
 	 */
-	public static function unflatten(array $array, $separator = '.')
+	public static function unflatten(array $array, $separator = '.'): array
 	{
 		$nestedKeys = array_filter(array_keys($array), function ($key) use ($separator) {
 			return strpos($key, $separator) !== false;
@@ -55,11 +58,14 @@ class ArrayTools
 	 * @param array $data
 	 * @return array
 	 */
-	public static function removeTildaKeys(array $data) {
-		$deleteKeys = array_filter(array_keys($data), function($key) {
+	public static function removeTildaKeys(array $data): array
+	{
+		$deleteKeys = array_filter(array_keys($data), function ($key) {
 			return strpos($key, '~') === 0;
 		});
-		foreach ($deleteKeys as $key) unset($data[$key]);
+		foreach ($deleteKeys as $key) {
+			unset($data[$key]);
+		}
 		return $data;
 	}
 }

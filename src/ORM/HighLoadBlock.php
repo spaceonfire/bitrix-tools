@@ -33,23 +33,23 @@ abstract class HighLoadBlock
 	/**
 	 * @return array|int|string
 	 */
-	abstract static function getHLId();
+	abstract public static function getHLId();
 
-	public static function getEntity()
+	public static function getEntity(): ORM\Entity
 	{
-		if (!array_key_exists(static::getHLId(), static::$entities)) {
+		if (!static::$entities[static::getHLId()]) {
 			static::$entities[static::getHLId()] = HL\HighloadBlockTable::compileEntity(static::getHLId());
 			static::registerEvents();
 		}
 		return static::$entities[static::getHLId()];
 	}
 
-	protected static function compile()
+	protected static function compile(): void
 	{
 		self::getEntity();
 	}
 
-	protected static function registerEvents()
+	protected static function registerEvents(): void
 	{
 		$entity = self::getEntity();
 		$dataClass = $entity->getDataClass();
@@ -71,8 +71,8 @@ abstract class HighLoadBlock
 
 		foreach ($events as $event) {
 			$method = lcfirst($event);
-			if (is_callable([get_called_class(), $method])) {
-				$eventManager->addEventHandler('', $eventNamespace . '::' . $event, [get_called_class(), $method]);
+			if (is_callable([static::class, $method])) {
+				$eventManager->addEventHandler('', $eventNamespace . '::' . $event, [static::class, $method]);
 			}
 		}
 
@@ -83,16 +83,17 @@ abstract class HighLoadBlock
 			$dataClass::EVENT_ON_AFTER_DELETE,
 		];
 		foreach ($events as $event) {
-			$eventManager->addEventHandler('', $eventNamespace . '::' . $event, [get_called_class(), 'cleanEntityCache']);
+			$eventManager->addEventHandler('', $eventNamespace . '::' . $event, [static::class, 'cleanEntityCache']);
 		}
 	}
 
-	public static function cleanEntityCache()
+	public static function cleanEntityCache(): void
 	{
 		try {
-			$GLOBALS['CACHE_MANAGER']->ClearByTag(get_called_class());
+			$GLOBALS['CACHE_MANAGER']->ClearByTag(static::class);
 			self::getEntity()->cleanCache();
-		} catch (\Throwable $err) {}
+		} catch (\Throwable $err) {
+		}
 	}
 
 	public static function __callStatic($name, $arguments)
@@ -103,7 +104,7 @@ abstract class HighLoadBlock
 		// Tag cache for querying requests
 		if ($result instanceof ORM\Query\Result || $name === 'getCount') {
 			if (defined('BX_COMP_MANAGED_CACHE') && is_object($GLOBALS['CACHE_MANAGER'])) {
-				$GLOBALS['CACHE_MANAGER']->RegisterTag(get_called_class());
+				$GLOBALS['CACHE_MANAGER']->RegisterTag(static::class);
 			}
 		}
 

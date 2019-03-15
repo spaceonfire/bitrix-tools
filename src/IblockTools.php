@@ -2,6 +2,7 @@
 
 namespace spaceonfire\BitrixTools;
 
+use Bitrix\Main;
 use Bitrix\Iblock;
 
 class IblockTools
@@ -10,37 +11,45 @@ class IblockTools
 
 	/**
 	 * Find iblock id by its code.
+	 *
+	 * @noinspection PhpDocMissingThrowsInspection
 	 * @param string $code
-	 * @return bool|mixed
-	 * @throws \Bitrix\Main\LoaderException
+	 * @return bool|int
+	 * @throws Main\LoaderException
 	 */
-	public static function getIblockIdByCode($code) {
+	public static function getIblockIdByCode($code)
+	{
 		Common::loadModules(['iblock']);
 
-		if (!self::$iblocks[$code]) {
-			$iblock = Iblock\IblockTable::getRow([
+		if (empty(self::$iblocks)) {
+			/** @noinspection PhpUnhandledExceptionInspection */
+			$iblocks = Iblock\IblockTable::getList([
 				'filter' => [
 					'ACTIVE' => 'Y',
-					'CODE' => $code,
 				],
 				'select' => [
 					'ID',
+					'CODE',
 				],
 				'cache' => 86400,
-			]);
-			if (!$iblock) return false;
-			self::$iblocks[$code] = $iblock['ID'];
+			])->fetchAll();
+			foreach ($iblocks as $iblock) {
+				self::$iblocks[$iblock['CODE']] = (int)$iblock['ID'];
+			}
 		}
-		return self::$iblocks[$code];
+
+		return self::$iblocks[$code] ?? false;
 	}
 
 	/**
 	 * Build iblock schema
+	 *
+	 * @noinspection PhpDocMissingThrowsInspection
 	 * @param array $options
 	 * @return array
-	 * @throws \Bitrix\Main\LoaderException
+	 * @throws Main\LoaderException
 	 */
-	public static function buildSchema($options = [])
+	public static function buildSchema($options = []): array
 	{
 		Common::loadModules(['iblock']);
 
@@ -49,13 +58,13 @@ class IblockTools
 		foreach ($arMap as $id => $field) {
 			// Skip for expression field cause getDataType() throws error
 			if (
-				$field instanceof \Bitrix\Main\Entity\ExpressionField ||
-				$field instanceof \Bitrix\Main\Entity\ReferenceField
+				$field instanceof Main\Entity\ExpressionField ||
+				$field instanceof Main\Entity\ReferenceField
 			) {
 				continue;
 			}
 
-			if ($field instanceof \Bitrix\Main\ORM\Fields\Field) {
+			if ($field instanceof Main\ORM\Fields\Field) {
 				if ('' . $id !== $field->getName()) $id = $field->getName();
 
 				$arField = [
@@ -63,7 +72,7 @@ class IblockTools
 					'sort' => $field->getName(),
 					'name' => $field->getTitle(),
 					'type' => $field->getDataType(),
-					'default' => in_array($field->getName(), $options['DEFAULT_FIELDS']),
+					'default' => in_array($field->getName(), $options['DEFAULT_FIELDS'], true),
 					'items' => is_callable([$field, 'getValues']) ? $field->getValues() : null,
 					'isFilter' => true,
 				];
@@ -120,7 +129,7 @@ class IblockTools
 						'sort' => 'PROPERTY_' . $arProp['CODE'],
 						'name' => $arProp['NAME'],
 						'type' => strtolower($arProp['USER_TYPE'] ?: $arProp['PROPERTY_TYPE']),
-						'default' => in_array('PROPERTY_' . $arProp['CODE'], $arDefaultFields),
+						'default' => in_array('PROPERTY_' . $arProp['CODE'], $arDefaultFields, true),
 						'isFilter' => $arProp['FILTRABLE'] === 'Y',
 					];
 
@@ -207,7 +216,7 @@ class IblockTools
 
 		$arExcluded = $options['EXCLUDE_FIELDS'];
 		$arSchema = array_filter($arSchema, function ($arField) use ($arExcluded) {
-			return !in_array($arField['id'], $arExcluded);
+			return !in_array($arField['id'], $arExcluded, true);
 		});
 
 		return [
@@ -220,7 +229,8 @@ class IblockTools
 	 * Prevent clearing of Iblock cached data
 	 * @return bool
 	 */
-	public static function disableIblockCacheClear() {
+	public static function disableIblockCacheClear(): bool
+	{
 		while (\CIblock::isEnabledClearTagCache()) {
 			\CIblock::disableClearTagCache();
 		}
@@ -231,7 +241,8 @@ class IblockTools
 	 * Allow clearing of Iblock cached data
 	 * @return bool
 	 */
-	public static function enableIblockCacheClear() {
+	public static function enableIblockCacheClear(): bool
+	{
 		while (!\CIblock::isEnabledClearTagCache()) {
 			\CIblock::enableClearTagCache();
 		}

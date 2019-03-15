@@ -2,20 +2,20 @@
 
 namespace spaceonfire\BitrixTools;
 
-use Bitrix\Main\Loader;
+use Bitrix\Main;
 
 class Common
 {
 	/**
 	 * Load modules
 	 * @param array $modules an array of modules to load
-	 * @throws \Bitrix\Main\LoaderException
+	 * @throws Main\LoaderException
 	 */
-	public static function loadModules(array $modules)
+	public static function loadModules(array $modules): void
 	{
 		foreach ($modules as $module) {
-			if (!Loader::includeModule($module)) {
-				throw new \Exception('Could not load ' . $module . ' module');
+			if (!Main\Loader::includeModule($module)) {
+				throw new Main\LoaderException('Could not load ' . $module . ' module');
 			}
 		}
 	}

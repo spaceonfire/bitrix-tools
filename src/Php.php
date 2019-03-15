@@ -32,16 +32,16 @@ class Php
 		], $options);
 
 		if (
-			!is_callable($options['func']) || (
+			(
 				!is_array($options['func']) &&
 				!is_string($options['func'])
-			)
+			) || !is_callable($options['func'])
 		) {
 			throw new Main\ArgumentTypeException('$options[func]', 'callable');
 		}
 
-		$binPath = realpath(__DIR__ . '/../bin/run-in-background.php');
-		$logPath = __DIR__ . '/../bin/run-in-background.log';
+		$binPath = dirname(__DIR__) . '/bin/run-in-background.php';
+		$logPath = dirname(__DIR__) . '/bin/run-in-background.log';
 
 		$command = implode(' ', [
 			'php',
