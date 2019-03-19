@@ -14,10 +14,10 @@ class IblockTools
 	 *
 	 * @noinspection PhpDocMissingThrowsInspection
 	 * @param string $code
-	 * @return bool|int
+	 * @return null|int
 	 * @throws Main\LoaderException
 	 */
-	public static function getIblockIdByCode($code)
+	public static function getIblockIdByCode(string $code): ?int
 	{
 		Common::loadModules(['iblock']);
 
@@ -34,11 +34,13 @@ class IblockTools
 				'cache' => 86400,
 			])->fetchAll();
 			foreach ($iblocks as $iblock) {
-				self::$iblocks[$iblock['CODE']] = (int)$iblock['ID'];
+				if ($iblock['CODE']) {
+					self::$iblocks[strtolower($iblock['CODE'])] = (int)$iblock['ID'];
+				}
 			}
 		}
 
-		return self::$iblocks[$code] ?? false;
+		return self::$iblocks[strtolower($code)] ?? null;
 	}
 
 	/**
