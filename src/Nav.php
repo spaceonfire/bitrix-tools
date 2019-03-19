@@ -41,4 +41,15 @@ class Nav
 		$nav = array_filter($nav);
 		return array_values($nav);
 	}
+
+	/**
+	 * Check that user has access to $path
+	 * @param string $path file path
+	 * @return bool
+	 */
+	public static function isUserHasAccessToFile(string $path): bool
+	{
+		global $APPLICATION;
+		return $APPLICATION->GetFileAccessPermission($path) !== 'D';
+	}
 }
