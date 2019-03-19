@@ -61,7 +61,7 @@ abstract class HighLoadBlock
 	 */
 	protected static function registerEvents(): void
 	{
-		$entity = self::getEntity();
+		$entity = static::getEntity();
 		$dataClass = $entity->getDataClass();
 		$eventManager = EventManager::getInstance();
 
@@ -104,9 +104,23 @@ abstract class HighLoadBlock
 	{
 		try {
 			$GLOBALS['CACHE_MANAGER']->ClearByTag(static::class);
-			self::getEntity()->cleanCache();
+			static::getEntity()->cleanCache();
 		} catch (\Throwable $err) {
 		}
+	}
+
+	/**
+	 * Extend query parameters
+	 *
+	 * While HighLoadBlock is just a proxy we can't extend getMap()
+	 * So we can do extend runtime and other query parameters in this method
+	 *
+	 * @param array $parameters
+	 * @return array
+	 */
+	public static function mergeOrmParameters(array $parameters = [])
+	{
+		return $parameters;
 	}
 
 	/**
@@ -119,7 +133,51 @@ abstract class HighLoadBlock
 	 */
 	public static function __callStatic($name, $arguments)
 	{
-		$result = call_user_func_array([self::getEntity()->getDataClass(), $name], $arguments);
+		// Merge orm params before read methods call
+		if (in_array($name, ['getList', 'getById', 'getByPrimary'], true)) {
+			$i = $name === 'getList' ? 0 : 1;
+			if (!isset($arguments[$i]) || !is_array($arguments[$i])) {
+				$arguments[$i] = [];
+			}
+
+			if (is_callable([static::class, 'mergeOrmParameters'])) {
+				$arguments[$i] = static::mergeOrmParameters($arguments[$i]);
+			}
+		}
+
+		$result = call_user_func_array([static::getEntity()->getDataClass(), $name], $arguments);
+
+		// Merge orm params for query method call
+		if ($name === 'query' && $result instanceof ORM\Query\Query) {
+			foreach (static::mergeOrmParameters() as $key => $parameter) {
+				switch ($key) {
+					case 'filter':
+						foreach ($parameter as $field => $value) {
+							$result->where($field, $value);
+						}
+						break;
+
+					case 'runtime':
+						foreach ($parameter as $runtimeName => $field) {
+							$result->registerRuntimeField(
+								is_string($runtimeName) ? $runtimeName : $field->getName(),
+								$field
+							);
+						}
+						break;
+				}
+			}
+		}
+
+		// Add runtime fields from mergeOrmParameters to getMap result
+		if ($name === 'getMap') {
+			$parameters = static::mergeOrmParameters();
+			if (is_array($parameters['runtime'])) {
+				foreach ($parameters['runtime'] as $runtimeName => $field) {
+					$result[$runtimeName] = $field;
+				}
+			}
+		}
 
 		// Tag cache for querying requests
 		if ($result instanceof ORM\Query\Result || $name === 'getCount') {
