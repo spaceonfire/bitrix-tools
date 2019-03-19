@@ -6,6 +6,7 @@ use Bitrix\Highloadblock as HL;
 use Bitrix\Main\EventManager;
 use Bitrix\Main\Localization\Loc;
 use Bitrix\Main\ORM;
+use spaceonfire\BitrixTools;
 
 Loc::loadMessages(__FILE__);
 
@@ -35,20 +36,29 @@ abstract class HighLoadBlock
 	 */
 	abstract public static function getHLId();
 
+	/**
+	 * Returns compiled entity for highload block
+	 * @return ORM\Entity
+	 * @throws \Bitrix\Main\LoaderException
+	 * @throws \Bitrix\Main\SystemException
+	 */
 	public static function getEntity(): ORM\Entity
 	{
+		BitrixTools\Common::loadModules(['highloadblock']);
+
 		if (!static::$entities[static::getHLId()]) {
 			static::$entities[static::getHLId()] = HL\HighloadBlockTable::compileEntity(static::getHLId());
 			static::registerEvents();
 		}
+
 		return static::$entities[static::getHLId()];
 	}
 
-	protected static function compile(): void
-	{
-		self::getEntity();
-	}
-
+	/**
+	 * Register entity event handlers
+	 * @throws \Bitrix\Main\LoaderException
+	 * @throws \Bitrix\Main\SystemException
+	 */
 	protected static function registerEvents(): void
 	{
 		$entity = self::getEntity();
@@ -87,6 +97,9 @@ abstract class HighLoadBlock
 		}
 	}
 
+	/**
+	 * Clean cache
+	 */
 	public static function cleanEntityCache(): void
 	{
 		try {
@@ -96,9 +109,16 @@ abstract class HighLoadBlock
 		}
 	}
 
+	/**
+	 * Proxy method calls to compiled entity data class
+	 * @param string $name method name
+	 * @param array $arguments arguments
+	 * @return mixed
+	 * @throws \Bitrix\Main\LoaderException
+	 * @throws \Bitrix\Main\SystemException
+	 */
 	public static function __callStatic($name, $arguments)
 	{
-		static::compile();
 		$result = call_user_func_array([self::getEntity()->getDataClass(), $name], $arguments);
 
 		// Tag cache for querying requests
