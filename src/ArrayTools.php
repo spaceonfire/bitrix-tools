@@ -2,6 +2,8 @@
 
 namespace spaceonfire\BitrixTools;
 
+use Bitrix\Main\ArgumentTypeException;
+
 class ArrayTools
 {
 	/**
@@ -17,7 +19,7 @@ class ArrayTools
 		foreach ($array as $key => $item) {
 			$prefixedKey = ($prefix ? $prefix . $separator : '') . $key;
 
-			if (is_array_assoc($item)) {
+			if (static::isArrayAssoc($item)) {
 				$childFlaten = self::flatten($item, $separator, $prefixedKey);
 				foreach ($childFlaten as $childKey => $childValue) {
 					$result[$childKey] = $childValue;
@@ -67,5 +69,48 @@ class ArrayTools
 			unset($data[$key]);
 		}
 		return $data;
+	}
+
+	/**
+	 * Check that array is associative (have at least one string key)
+	 * @param mixed $var variable to check
+	 * @return bool
+	 */
+	public static function isArrayAssoc($var): bool
+	{
+		if (!is_array($var)) {
+			return false;
+		}
+
+		$i = 0;
+		foreach ($var as $k => $v) {
+			if ('' . $k !== '' . $i) {
+				return true;
+			}
+			$i++;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Recursive merge multiple arrays
+	 * @param array ...$arrays
+	 * @return array
+	 * @throws ArgumentTypeException
+	 */
+	public static function merge(...$arrays): array
+	{
+		foreach ($arrays as &$array) {
+			if (!is_array($array)) {
+				throw new ArgumentTypeException('arrayN', 'array');
+			}
+
+			$array = static::flatten($array);
+		}
+		unset($array);
+		$ret = array_merge_recursive(...$arrays);
+		$ret = static::unflatten($ret);
+		return $ret;
 	}
 }
