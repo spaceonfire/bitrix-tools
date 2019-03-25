@@ -2,6 +2,8 @@
 
 namespace spaceonfire\BitrixTools\Mvc\View;
 
+use Bitrix\Main;
+
 /**
  * PHP MVC view
  */
@@ -25,13 +27,16 @@ class Php extends Prototype
 	 */
 	public function render(): string
 	{
-		if (!is_file($this->baseDir . $this->name)) {
-			throw new \Exception(sprintf('View "%s" isn\'t found.', $this->name));
+		$path = $this->getPath();
+		if (!is_file($path)) {
+			throw new Main\IO\FileNotFoundException($path);
 		}
+
+		Main\Localization\Loc::loadMessages($path);
 
 		ob_start();
 		$result = &$this->data;
-		require $this->baseDir . $this->name;
+		require $path;
 		$result = ob_get_contents();
 		ob_end_clean();
 

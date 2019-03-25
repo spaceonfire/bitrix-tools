@@ -86,4 +86,13 @@ class Prototype
 	{
 		$this->baseDir = $dir;
 	}
+
+	/**
+	 * Возвращает путь до файла шаблона
+	 * @return string
+	 */
+	public function getPath(): string
+	{
+		return $this->baseDir . $this->name;
+	}
 }
