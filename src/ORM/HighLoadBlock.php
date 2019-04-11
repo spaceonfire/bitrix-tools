@@ -32,7 +32,7 @@ abstract class HighLoadBlock
 	protected static $entities = [];
 
 	/**
-	 * @return array|int|string
+	 * @return int|string
 	 */
 	abstract public static function getHLId();
 

@@ -2,12 +2,11 @@
 
 namespace spaceonfire\BitrixTools\ORM;
 
+use Bitrix\Main;
 use Bitrix\Iblock\IblockSiteTable;
 use Bitrix\Iblock\IblockTable;
 use Bitrix\Main\DB\SqlExpression;
 use Bitrix\Main\Entity\DataManager;
-use Bitrix\Main\NotImplementedException;
-use Bitrix\Main\SystemException;
 
 abstract class IblockElement extends DataManager
 {
@@ -16,15 +15,15 @@ abstract class IblockElement extends DataManager
 	/**
 	 * @abstract
 	 * @return int
-	 * @throws NotImplementedException
-	 * @throws SystemException
-	 * @throws \Bitrix\Main\ArgumentException
+	 * @throws Main\NotImplementedException
+	 * @throws Main\SystemException
+	 * @throws Main\ArgumentException
 	 */
 	public static function getIblockId(): int
 	{
 		global $CACHE_MANAGER;
 		if (strlen(static::getIblockCode()) <= 0) {
-			throw new SystemException('Method getIblockCode() returned an null or empty');
+			throw new Main\SystemException('Method getIblockCode() returned an null or empty');
 		}
 
 		$arIblock = [];
@@ -56,11 +55,11 @@ abstract class IblockElement extends DataManager
 	/**
 	 * @abstract
 	 * @return string
-	 * @throws \Bitrix\Main\NotImplementedException
+	 * @throws Main\NotImplementedException
 	 */
 	public static function getIblockCode(): string
 	{
-		throw new NotImplementedException('Method getIblockCode() must be implemented by successor.');
+		throw new Main\NotImplementedException('Method getIblockCode() must be implemented by successor.');
 	}
 
 	/**
@@ -76,6 +75,8 @@ abstract class IblockElement extends DataManager
 	/**
 	 * Returns field model
 	 * @return array
+	 * @throws Main\ArgumentException
+	 * @throws Main\SystemException
 	 */
 	public static function getMap(): array
 	{
@@ -304,19 +305,22 @@ abstract class IblockElement extends DataManager
 	/**
 	 * Returns value from multiple properties
 	 *
-	 * @param int $id - id value property
+	 * @param int|null $id - id value property
 	 * @param string $propertyCode - Character property code
 	 *
-	 * @return null|string
-	 * @throws NotImplementedException
-	 * @throws SystemException
-	 * @throws \Bitrix\Main\ArgumentException
+	 * @return string|null
+	 * @throws Main\NotImplementedException
+	 * @throws Main\SystemException
+	 * @throws Main\ArgumentException
 	 */
-	public static function getEnumValueById(int $id, string $propertyCode): ?string
+	public static function getEnumValueById(?int $id, string $propertyCode): ?string
 	{
 		$arProperty = self::getEnums();
 		foreach ($arProperty[static::getIblockId()][$propertyCode] as $xmlId => $arEnumValue) {
-			if ($id === (int)$arEnumValue['ID']) {
+			if (
+				$id === (int)$arEnumValue['ID'] ||
+				($id === null && $arEnumValue['IS_DEFAULT'])
+			) {
 				return $arEnumValue['VALUE'];
 			}
 		}
@@ -327,37 +331,50 @@ abstract class IblockElement extends DataManager
 	/**
 	 * Returns id value from multiple properties by XML_ID value
 	 *
-	 * @param string|int $xml - xml_id property value
+	 * @param string $xml - xml_id property value
 	 * @param string $propertyCode - Character property code
 	 *
-	 * @return null|int
-	 * @throws NotImplementedException
-	 * @throws SystemException
-	 * @throws \Bitrix\Main\ArgumentException
+	 * @return int|null
+	 * @throws Main\NotImplementedException
+	 * @throws Main\SystemException
+	 * @throws Main\ArgumentException
 	 */
 	public static function getEnumIdByXmlId($xml, $propertyCode): ?int
 	{
 		$arProperty = self::getEnums();
 
-		return $arProperty[static::getIblockId()][$propertyCode][$xml]['ID'];
+		if ($xml && !empty($arProperty[static::getIblockId()][$propertyCode][$xml])) {
+			return $arProperty[static::getIblockId()][$propertyCode][$xml]['ID'];
+		}
+
+		foreach ($arProperty[static::getIblockId()][$propertyCode] as $xmlId => $arEnumValue) {
+			if ($arEnumValue['IS_DEFAULT']) {
+				return $xmlId;
+			}
+		}
+
+		return null;
 	}
 
 	/**
 	 * Returns xml_id value from multiple properties by id value
 	 *
-	 * @param int $id
+	 * @param int|null $id
 	 * @param string $propertyCode
 	 *
-	 * @return int|null|string
-	 * @throws NotImplementedException
-	 * @throws SystemException
-	 * @throws \Bitrix\Main\ArgumentException
+	 * @return string|int|null
+	 * @throws Main\SystemException
+	 * @throws Main\ArgumentException
 	 */
-	public static function getXmlIdById(int $id, string $propertyCode)
+	public static function getXmlIdById(?int $id, string $propertyCode)
 	{
 		$arProperty = self::getEnums();
+
 		foreach ($arProperty[static::getIblockId()][$propertyCode] as $xmlId => $arEnumValue) {
-			if ($id === (int)$arEnumValue['ID']) {
+			if (
+				$id === (int)$arEnumValue['ID'] ||
+				($id === null && $arEnumValue['IS_DEFAULT'])
+			) {
 				return $xmlId;
 			}
 		}
@@ -390,7 +407,9 @@ abstract class IblockElement extends DataManager
 				while ($arEnumProperty = $oEnumProperties->Fetch()) {
 					self::$arEnums[$arProperty2IblockID[$arEnumProperty['PROPERTY_ID']]][$arEnumProperty['PROPERTY_CODE']][$arEnumProperty['XML_ID']] = [
 						'ID' => (int)$arEnumProperty['ID'],
+						'XML_ID' => $arEnumProperty['XML_ID'],
 						'VALUE' => $arEnumProperty['VALUE'],
+						'IS_DEFAULT' => $arEnumProperty['DEF'] === 'Y',
 					];
 				}
 				if ($oCache->StartDataCache()) {
@@ -471,8 +490,8 @@ abstract class IblockElement extends DataManager
 	 * @param array $modelMap - current map
 	 *
 	 * @return array
-	 * @throws SystemException
-	 * @throws \Bitrix\Main\ArgumentException
+	 * @throws Main\SystemException
+	 * @throws Main\ArgumentException
 	 */
 	private static function getUrlTemplateMap(array $modelMap = []): array
 	{
