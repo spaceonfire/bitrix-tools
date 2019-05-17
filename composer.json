@@ -16,8 +16,13 @@
   },
   "require-dev": {
     "roave/security-advisories": "dev-master",
-    "phpunit/phpunit": "5.2.*",
-    "matiaspub/bx-api-docs": "^16.5"
+    "phpunit/phpunit": "^8.1.5",
+    "phpdocumentor/phpdocumentor": "^2.9.0",
+    "jms/serializer": "^1.13",
+    "phpdocumentor/reflection-docblock": "^2.0.5",
+    "evert/phpdoc-md" : "~0.2.0",
+    "matiaspub/bx-api-docs": "^16.5",
+    "cvuorinen/phpdoc-markdown-public": "^0.2.0"
   },
   "autoload": {
     "psr-4": {
@@ -26,5 +31,10 @@
   },
   "bin": [
     "bin/run-in-background.php"
-  ]
+  ],
+  "config": {
+    "preferred-install": "dist",
+    "optimize-autoloader": true,
+    "classmap-authoritative": true
+  }
 }
