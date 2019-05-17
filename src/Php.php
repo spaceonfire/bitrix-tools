@@ -7,20 +7,20 @@ use Bitrix\Main;
 class Php
 {
 	/**
-	 * Execute PHP code function
+	 * Запускает фоновый процесс PHP для выполнения некоторой функции
 	 * @param array $options
 	 *      $options = [
-	 *          'func' => (callable) PHP function. Must be callable defined as string or array
-	 *          'args' => (array) An array of arguments to pass to func
-	 *          'modules' => (array) An array of modules to load
-	 *          'components' => (array) An array of components to load their classes
-	 *          'server' => (array) rewrite $_SERVER global var fields
-	 *          'userId' => (int) authorize as userId
+	 *          'func' => (callable) PHP функция для выполнения в фоне. Необходимо передавать callable в виде строки или массива
+	 *          'args' => (array) Массив аргументов для передачи в функцию
+	 *          'modules' => (array) Массив модулей 1С-Битрикс, которые необходимо загрузить для корректного выполнения функции
+	 *          'components' => (array) Массив компонентов 1С-Битрикс, для подключения их классов
+	 *          'server' => (array) Ассоциативный массив, который переназначит поля глобальной переменной $_SERVER
+	 *          'userId' => (int) ID пользователя, под которым необходимо авторизоваться
 	 *      ]
 	 * @return string|null shell_exec result
 	 * @throws Main\ArgumentTypeException
 	 */
-	public static function runInBackground(array $options)
+	public static function runInBackground(array $options): ?string
 	{
 		// Prepare options
 		$options = array_merge([
@@ -29,6 +29,7 @@ class Php
 			'modules' => [],
 			'components' => [],
 			'server' => [],
+			'userId' => null,
 		], $options);
 
 		if (

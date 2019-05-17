@@ -7,9 +7,9 @@ use Bitrix\Main;
 class Common
 {
 	/**
-	 * Load modules
-	 * @param array $modules an array of modules to load
-	 * @throws Main\LoaderException
+	 * Загружает модули 1С-Битрикс
+	 * @param array $modules Массив модулей, которые необходимо загрузить
+	 * @throws Main\LoaderException Если какой-нибудь модуль не установлен в системе
 	 */
 	public static function loadModules(array $modules): void
 	{
@@ -21,9 +21,9 @@ class Common
 	}
 
 	/**
-	 * Add body class to property
-	 * @param array $classes an array of class names
-	 * @param string $propertyId custom property id, 'BodyClass' by default
+	 * Добавляет классы к body
+	 * @param array $classes Массив классов
+	 * @param string $propertyId ID своего свойства для хранения классов body, по-умолчанию, 'BodyClass' для Bitrix24
 	 */
 	public static function addBodyClass(array $classes, string $propertyId = 'BodyClass'): void
 	{

@@ -13,11 +13,15 @@ abstract class IblockElement extends DataManager
 	private static $arEnums = [];
 
 	/**
+	 * Возвращает ID инфоблока
+	 *
+	 * Если Вам заранее известен ID инфоблока, лучше самостоятельно возвращать его в переопределении
+	 * метода. Иначе следует переопределить метод `getIblockCode()`.
+	 *
 	 * @abstract
 	 * @return int
 	 * @throws Main\NotImplementedException
 	 * @throws Main\SystemException
-	 * @throws Main\ArgumentException
 	 */
 	public static function getIblockId(): int
 	{
@@ -53,6 +57,7 @@ abstract class IblockElement extends DataManager
 	}
 
 	/**
+	 * Возвращает символьный код инфоблока.
 	 * @abstract
 	 * @return string
 	 * @throws Main\NotImplementedException
@@ -63,7 +68,7 @@ abstract class IblockElement extends DataManager
 	}
 
 	/**
-	 * Returns DB table name for entity.
+	 * Возвращает название таблицы для сущности в БД
 	 *
 	 * @return string
 	 */
@@ -73,7 +78,7 @@ abstract class IblockElement extends DataManager
 	}
 
 	/**
-	 * Returns field model
+	 * Возврщает схему полей сущности
 	 * @return array
 	 * @throws Main\ArgumentException
 	 * @throws Main\SystemException
@@ -295,6 +300,9 @@ abstract class IblockElement extends DataManager
 		return $arProperties;
 	}
 
+	/**
+	 * @inheritDoc
+	 */
 	public static function getList(array $parameters = [])
 	{
 		$parameters['filter']['IBLOCK_ID'] = static::getIblockId();
@@ -303,10 +311,10 @@ abstract class IblockElement extends DataManager
 	}
 
 	/**
-	 * Returns value from multiple properties
+	 * Возвращает значение enum свойства по id
 	 *
-	 * @param int|null $id - id value property
-	 * @param string $propertyCode - Character property code
+	 * @param int|null $id ID значения, если null будет возвращено значение по-умолчанию
+	 * @param string $propertyCode Символьный код свойства
 	 *
 	 * @return string|null
 	 * @throws Main\NotImplementedException
@@ -329,7 +337,7 @@ abstract class IblockElement extends DataManager
 	}
 
 	/**
-	 * Returns id value from multiple properties by XML_ID value
+	 * Возвращает id значения enum свойства по XML_ID
 	 *
 	 * @param string $xml - xml_id property value
 	 * @param string $propertyCode - Character property code
@@ -338,6 +346,7 @@ abstract class IblockElement extends DataManager
 	 * @throws Main\NotImplementedException
 	 * @throws Main\SystemException
 	 * @throws Main\ArgumentException
+	 * @throws Main\LoaderException
 	 */
 	public static function getEnumIdByXmlId($xml, $propertyCode): ?int
 	{
@@ -357,10 +366,10 @@ abstract class IblockElement extends DataManager
 	}
 
 	/**
-	 * Returns xml_id value from multiple properties by id value
+	 * Возвращает xml_id значения enum свойства по id
 	 *
-	 * @param int|null $id
-	 * @param string $propertyCode
+	 * @param int|null $id ID значения, если null будет возвращено значение по-умолчанию
+	 * @param string $propertyCode Символьный код свойства
 	 *
 	 * @return string|int|null
 	 * @throws Main\SystemException
@@ -453,9 +462,9 @@ abstract class IblockElement extends DataManager
 	}
 
 	/**
-	 * Returns property code by id
+	 * Возвращает символьный код свойства по его ID
 	 *
-	 * @param int $id - property id
+	 * @param int $id ID свойства
 	 *
 	 * @return null|string
 	 */
@@ -471,9 +480,9 @@ abstract class IblockElement extends DataManager
 	}
 
 	/**
-	 * Returns property id by code
+	 * Возвращает ID свойства по его коду
 	 *
-	 * @param string $code - property code
+	 * @param string $code Символьный код свойства
 	 *
 	 * @return null|int
 	 */
@@ -485,9 +494,9 @@ abstract class IblockElement extends DataManager
 	}
 
 	/**
-	 * Returns expression to refer to the detailed page
+	 * Возвращает Expression поле для получения URL детальной страницы
 	 *
-	 * @param array $modelMap - current map
+	 * @param array $modelMap - текущая схема полей сущности
 	 *
 	 * @return array
 	 * @throws Main\SystemException

@@ -9,20 +9,32 @@ use Bitrix\Main\NotImplementedException;
 abstract class IblockPropSimple extends DataManager
 {
 	/**
+	 * Возвращает ID инфоблока. Необходимо переопределять метод.
+	 *
+	 * @noinspection PhpDocMissingThrowsInspection
 	 * @abstract
 	 * @return int
-	 * @throws \Bitrix\Main\NotImplementedException
 	 */
 	public static function getIblockId(): int
 	{
 		throw new NotImplementedException('Method getIblockId() must be implemented by successor.');
 	}
 
+	/**
+	 * Возвращает название таблицы для сущности в БД
+	 *
+	 * @noinspection PhpDocMissingThrowsInspection
+	 * @return string
+	 */
 	public static function getTableName(): string
 	{
 		return 'b_iblock_element_prop_s' . static::getIblockId();
 	}
 
+	/**
+	 * Возврщает схему полей сущности
+	 * @return array
+	 */
 	public static function getMap(): array
 	{
 		$arMap = [

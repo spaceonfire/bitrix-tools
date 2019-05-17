@@ -5,9 +5,10 @@ namespace spaceonfire\BitrixTools;
 class Nav
 {
 	/**
-	 * Normalize Bitrix menu nav to multidimensional array
-	 * @param array $nav Bitrix menu nav array
-	 * @return array normalized menu
+	 * Преобразует стандартный плоский массив навигационного меню, сгенерированный компонентом bitrix:menu,
+	 * в многоуровневый вложенный массив
+	 * @param array $nav Массив навигационного меню из компонента bitrix:menu
+	 * @return array Преобразованный многоуровневый массив
 	 */
 	public static function normalizeMenuNav(array $nav): array
 	{
@@ -43,8 +44,8 @@ class Nav
 	}
 
 	/**
-	 * Check that user has access to $path
-	 * @param string $path file path
+	 * Проверяет есть ли у пользователя доступ к $path
+	 * @param string $path Путь к файлу или папке относительно корня
 	 * @return bool
 	 */
 	public static function isUserHasAccessToFile(string $path): bool

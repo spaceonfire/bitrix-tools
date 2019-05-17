@@ -4,6 +4,9 @@ namespace spaceonfire\BitrixTools\ORM;
 
 class EventHandler
 {
+	/**
+	 * Регистрирует сброс кэша инфоблока при действиях над свойствами инфоблока
+	 */
 	public static function boot(): void
 	{
 		$eventManager = \Bitrix\Main\EventManager::getInstance();

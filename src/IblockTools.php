@@ -10,7 +10,9 @@ class IblockTools
 	private static $iblocks = [];
 
 	/**
-	 * Find iblock id by its code.
+	 * Возвращает ID инфоблока по символьному коду
+	 *
+	 * При первом вызове загружает список всех инфоблоков в статическое поле класса. Запрос кэшируется.
 	 *
 	 * @noinspection PhpDocMissingThrowsInspection
 	 * @param string $code
@@ -44,11 +46,16 @@ class IblockTools
 	}
 
 	/**
-	 * Build iblock schema
+	 * Собирает схему инфоблока, состаящую из полей элемента инфоблока и его свойств.
 	 *
 	 * @noinspection PhpDocMissingThrowsInspection
 	 * @param array $options
-	 * @return array
+	 *      $options = [
+	 *          'IBLOCK_ID' => (int) ID инфоблока
+	 *          'DEFAULT_FIELDS' => (array) Массив полей по-умолчанию, известных заранее
+	 *          'EXCLUDE_FIELDS' => (array) Массив полей, которые необходимо исключить из итоговой схемы
+	 *      ]
+	 * @return array Схема инфоблока - массив ассоциативных массивов, описывающих поля инфоблока (тип, название, id поля и пр.)
 	 * @throws Main\LoaderException
 	 */
 	public static function buildSchema($options = []): array
@@ -228,7 +235,7 @@ class IblockTools
 	}
 
 	/**
-	 * Prevent clearing of Iblock cached data
+	 * Отключает сброс тэгированного кэша инфоблока
 	 * @return bool
 	 */
 	public static function disableIblockCacheClear(): bool
@@ -240,7 +247,7 @@ class IblockTools
 	}
 
 	/**
-	 * Allow clearing of Iblock cached data
+	 * Включает сброс тэгированного кэша инфоблока
 	 * @return bool
 	 */
 	public static function enableIblockCacheClear(): bool

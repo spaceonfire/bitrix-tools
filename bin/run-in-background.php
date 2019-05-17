@@ -16,12 +16,12 @@ $arScriptArgs = getopt('', ['options:']);
 /**
  * @var array $options
  *      $options = [
- *          'func' => (callable) PHP function. Must be callable defined as string or array
- *          'args' => (array) An array of arguments to pass to func
- *          'modules' => (array) An array of modules to load
- *          'components' => (array) An array of components to load their classes
- *          'server' => (array) rewrite $_SERVER global var fields
- *          'userId' => (int) authorize as userId
+ *          'func' => (callable) PHP функция для выполнения в фоне. Необходимо передавать callable в виде строки или массива
+ *          'args' => (array) Массив аргументов для передачи в функцию
+ *          'modules' => (array) Массив модулей 1С-Битрикс, которые необходимо загрузить для корректного выполнения функции
+ *          'components' => (array) Массив компонентов 1С-Битрикс, для подключения их классов
+ *          'server' => (array) Ассоциативный массив, который переназначит поля глобальной переменной $_SERVER
+ *          'userId' => (int) ID пользователя, под которым необходимо авторизоваться
  *      ]
  */
 $options = json_decode($arScriptArgs['options'], true);

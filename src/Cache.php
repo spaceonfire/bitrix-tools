@@ -8,11 +8,18 @@ use Bitrix\Main\Data\Cache as BxCache;
 class Cache
 {
 	/**
-	 * Cache $callback results using bitrix Cache
-	 * @param array $options cache params. An array with keys CACHE_ID, CACHE_TAG, CACHE_PATH, CACHE_TIME
-	 * @param callable $callback function to cache results
-	 * @param array $args array of arguments for $callback function
-	 * @return mixed
+	 * Кэширует результаты выполнения функции $callback
+	 *
+	 * @param array $options Массив с параметрами для кэширования
+	 *      $options = [
+	 *          'CACHE_ID' => (string) ID кэша (обязательный параметр)
+	 *          'CACHE_PATH' => (string) Относительный путь для сохранения кэша (обязательный параметр). Будет автоматически добавлен ID сайта и CACHE_TAG, если указан
+	 *          'CACHE_TAG' => (string) Включает использование тегированного кэша с переданным тэгом
+	 *          'CACHE_TIME' => (int) Время жизни кэша (TTL) в секундах, по-умолчанию 36000000
+	 *      ]
+	 * @param callable $callback Функция, выполнение которой необходимо кэшировать
+	 * @param array $args Массив аргументов для функции $callback
+	 * @return mixed Данные возвращаемые функцией $callback из кэша
 	 * @throws ArgumentNullException
 	 */
 	public static function cacheResult($options, callable $callback, $args = [])

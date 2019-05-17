@@ -7,11 +7,11 @@ use Bitrix\Main\ArgumentTypeException;
 class ArrayTools
 {
 	/**
-	 * Convert a multi-dimensional array into a single-dimensional array
-	 * @param array $array Source multi-dimensional array
-	 * @param string $separator Glue string for imploding keys
-	 * @param string $prefix Key prefix, mostly needed for recursive call
-	 * @return array single-dimensional array
+	 * Конвертирует вложенный ассоциативный массив в одноуровневый
+	 * @param array $array Исходный вложенный массив
+	 * @param string $separator Строка для склеивания ключей, по-умолчанию '.'
+	 * @param string $prefix Префикс для ключей, в основном нужен для рекурсивных вызовов, по-умолчанию пустая строка
+	 * @return array Одноуровневый массив
 	 */
 	public static function flatten(array $array, $separator = '.', $prefix = ''): array
 	{
@@ -32,10 +32,10 @@ class ArrayTools
 	}
 
 	/**
-	 * Convert single-dimensional associative array to multi-dimensional by splitting keys with separator
-	 * @param array $array Source single-dimensional array
-	 * @param string $separator Glue string for exploding keys
-	 * @return array multi-dimensional array
+	 * Конвертирует одноуровневый ассоциативный массив во вложенный, разбивая ключи по $separator
+	 * @param array $array Исходный одноуровневый ассоциативный массив
+	 * @param string $separator Подстрока для разбивки ключей, по-умолчанию '.'
+	 * @return array Многоуровневый массив
 	 */
 	public static function unflatten(array $array, $separator = '.'): array
 	{
@@ -56,9 +56,9 @@ class ArrayTools
 	}
 
 	/**
-	 * Remove keys started with tilda (~)
-	 * @param array $data
-	 * @return array
+	 * Удаляет из ассоциативного массива ключи, начинающиеся с тильды (~)
+	 * @param array $data Исходный ассоциативный массив с данными
+	 * @return array Массив с удаленными ключами
 	 */
 	public static function removeTildaKeys(array $data): array
 	{
@@ -72,8 +72,8 @@ class ArrayTools
 	}
 
 	/**
-	 * Check that array is associative (have at least one string key)
-	 * @param mixed $var variable to check
+	 * Проверяет, является ли массив ассоциативный (есть хотябы один строковый ключ)
+	 * @param mixed $var Переменная для проверки
 	 * @return bool
 	 */
 	public static function isArrayAssoc($var): bool
@@ -94,7 +94,7 @@ class ArrayTools
 	}
 
 	/**
-	 * Recursive merge multiple arrays
+	 * Рекурсивный мерж нескольких массивов
 	 * @param array ...$arrays
 	 * @return array
 	 * @throws ArgumentTypeException

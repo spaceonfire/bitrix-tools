@@ -37,7 +37,7 @@ abstract class HighLoadBlock
 	abstract public static function getHLId();
 
 	/**
-	 * Returns compiled entity for highload block
+	 * Возвращает скомпилированную сущность HighLoad блока
 	 * @return ORM\Entity
 	 * @throws \Bitrix\Main\LoaderException
 	 * @throws \Bitrix\Main\SystemException
@@ -55,7 +55,7 @@ abstract class HighLoadBlock
 	}
 
 	/**
-	 * Register entity event handlers
+	 * Регистрирует обработчики событий сущности
 	 * @throws \Bitrix\Main\LoaderException
 	 * @throws \Bitrix\Main\SystemException
 	 */
@@ -98,7 +98,7 @@ abstract class HighLoadBlock
 	}
 
 	/**
-	 * Clean cache
+	 * Очистка кэша по сущности
 	 */
 	public static function cleanEntityCache(): void
 	{
@@ -110,10 +110,11 @@ abstract class HighLoadBlock
 	}
 
 	/**
-	 * Extend query parameters
+	 * Расширяет параметры запроса
 	 *
-	 * While HighLoadBlock is just a proxy we can't extend getMap()
-	 * So we can do extend runtime and other query parameters in this method
+	 * В то время, как наследники данного класса являются просто прокси к скомпилированной сущности
+	 * HighLoad блока, мы не можем просто переопределить метод `getMap()`. Но мы можем расширять поля
+	 * `runtime` и другие параметры запроса переопределив данный метод.
 	 *
 	 * @param array $parameters
 	 * @return array
@@ -124,7 +125,7 @@ abstract class HighLoadBlock
 	}
 
 	/**
-	 * Proxy method calls to compiled entity data class
+	 * Проксируем вызовы методов в data class скомпилированной сущности
 	 * @param string $name method name
 	 * @param array $arguments arguments
 	 * @return mixed

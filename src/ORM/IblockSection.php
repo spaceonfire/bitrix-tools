@@ -9,21 +9,30 @@ use Bitrix\Main\NotImplementedException;
 class IblockSection extends SectionTable
 {
 	/**
+	 * Возвращает ID инфоблока. Необходимо переопределять метод.
+	 *
+	 * @noinspection PhpDocMissingThrowsInspection
 	 * @abstract
 	 * @return int
-	 * @throws \Bitrix\Main\NotImplementedException
 	 */
 	public static function getIblockId(): int
 	{
 		throw new NotImplementedException('Method getIblockId() must be implemented by successor.');
 	}
 
+	/**
+	 * @inheritDoc
+	 */
 	public static function getList(array $parameters = [])
 	{
 		$parameters['filter']['IBLOCK_ID'] = static::getIblockId();
 		return parent::getList($parameters);
 	}
 
+	/**
+	 * Возврщает схему полей сущности
+	 * @return array
+	 */
 	public static function getMap(): array
 	{
 		$arMap = parent::getMap();
@@ -39,11 +48,13 @@ class IblockSection extends SectionTable
 
 
 	/**
-	 * Returns expression to refer to the detailed page
+	 * Возвращает Expression поле для получения URL детальной страницы
 	 *
-	 * @param array $modelMap - current map
+	 * @param array $modelMap - текущая схема полей сущности
 	 *
 	 * @return array
+	 * @throws NotImplementedException
+	 * @throws \Bitrix\Main\ArgumentException
 	 */
 	private static function getUrlTemplateMap(array $modelMap = []): array
 	{
