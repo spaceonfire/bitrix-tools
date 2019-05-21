@@ -10,7 +10,7 @@
     }
   ],
   "require": {
-    "php": ">=7.1",
+    "php": ">=7.2",
     "ext-json": "*",
     "ext-dom": "*"
   },
@@ -20,9 +20,8 @@
     "phpdocumentor/phpdocumentor": "^2.9.0",
     "jms/serializer": "^1.13",
     "phpdocumentor/reflection-docblock": "^2.0.5",
-    "evert/phpdoc-md" : "~0.2.0",
-    "matiaspub/bx-api-docs": "^16.5",
-    "cvuorinen/phpdoc-markdown-public": "^0.2.0"
+    "spaceonfire/phpdoc-markdown-public": "dev-master",
+    "matiaspub/bx-api-docs": "^16.5"
   },
   "autoload": {
     "psr-4": {
@@ -36,5 +35,11 @@
     "preferred-install": "dist",
     "optimize-autoloader": true,
     "classmap-authoritative": true
+  },
+  "scripts": {
+    "doc": [
+      "phpdoc",
+      "npx prettier --write docs/**"
+    ]
   }
 }
