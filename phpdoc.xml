@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<phpdoc>
+	<title>spaceonfire\BitrixTools</title>
+	<parser>
+		<target>._build</target>
+	</parser>
+	<transformer>
+		<target>docs</target>
+	</transformer>
+	<transformations>
+		<template name="vendor/spaceonfire/phpdoc-markdown-public/data/templates/markdown-public" />
+	</transformations>
+	<files>
+		<directory>src</directory>
+		<ignore>test/*</ignore>
+	</files>
+</phpdoc>

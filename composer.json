@@ -10,13 +10,17 @@
     }
   ],
   "require": {
-    "php": ">=7.1",
+    "php": ">=7.2",
     "ext-json": "*",
     "ext-dom": "*"
   },
   "require-dev": {
     "roave/security-advisories": "dev-master",
-    "phpunit/phpunit": "5.2.*",
+    "phpunit/phpunit": "^8.1.5",
+    "phpdocumentor/phpdocumentor": "^2.9.0",
+    "jms/serializer": "^1.13",
+    "phpdocumentor/reflection-docblock": "^2.0.5",
+    "spaceonfire/phpdoc-markdown-public": "dev-master",
     "matiaspub/bx-api-docs": "^16.5"
   },
   "autoload": {
@@ -26,5 +30,16 @@
   },
   "bin": [
     "bin/run-in-background.php"
-  ]
+  ],
+  "config": {
+    "preferred-install": "dist",
+    "optimize-autoloader": true,
+    "classmap-authoritative": true
+  },
+  "scripts": {
+    "doc": [
+      "phpdoc",
+      "npx prettier --write docs/**"
+    ]
+  }
 }
