@@ -2,32 +2,27 @@
 
 namespace spaceonfire\BitrixTools\CacheMap;
 
-use Bitrix\Iblock\IblockTable;
 use Bitrix\Main;
 use Bitrix\Main\ORM\Query\Query;
-use spaceonfire\BitrixTools\Common;
 
-final class IblockCacheMap implements CacheMapStaticInterface
+final class UserGroupCacheMap implements CacheMapStaticInterface
 {
 	use CacheMapTrait, CacheMapSingleton;
 
 	/**
-	 * IblockCacheMap constructor.
-	 * @throws Main\LoaderException
+	 * UserGroupCacheMap constructor.
 	 * @throws Main\SystemException
 	 */
 	private function __construct()
 	{
-		Common::loadModules(['iblock']);
-
 		/** @var Query $q */
-		$q = IblockTable::query()
+		$q = Main\GroupTable::query()
 			->setSelect(['*'])
 			->setFilter([
 				'ACTIVE' => 'Y',
-				'!CODE' => false,
+				'!STRING_ID' => false,
 			]);
 
-		$this->traitConstruct($q);
+		$this->traitConstruct($q, 'ID', 'STRING_ID');
 	}
 }

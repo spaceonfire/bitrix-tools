@@ -2,32 +2,29 @@
 
 namespace spaceonfire\BitrixTools\CacheMap;
 
-use Bitrix\Iblock\IblockTable;
+use Bitrix\Highloadblock\HighloadBlockTable;
 use Bitrix\Main;
 use Bitrix\Main\ORM\Query\Query;
 use spaceonfire\BitrixTools\Common;
 
-final class IblockCacheMap implements CacheMapStaticInterface
+final class HighloadBlockCacheMap implements CacheMapStaticInterface
 {
 	use CacheMapTrait, CacheMapSingleton;
 
 	/**
-	 * IblockCacheMap constructor.
+	 * HighloadBlockCacheMap constructor.
 	 * @throws Main\LoaderException
 	 * @throws Main\SystemException
 	 */
 	private function __construct()
 	{
-		Common::loadModules(['iblock']);
+		Common::loadModules(['highloadblock']);
 
 		/** @var Query $q */
-		$q = IblockTable::query()
+		$q = HighloadBlockTable::query()
 			->setSelect(['*'])
-			->setFilter([
-				'ACTIVE' => 'Y',
-				'!CODE' => false,
-			]);
+			->setFilter(['!NAME' => false]);
 
-		$this->traitConstruct($q);
+		$this->traitConstruct($q, 'ID', 'NAME');
 	}
 }

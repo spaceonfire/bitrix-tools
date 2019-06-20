@@ -4,45 +4,19 @@ namespace spaceonfire\BitrixTools;
 
 use Bitrix\Main;
 use Bitrix\Iblock;
+use spaceonfire\BitrixTools\CacheMap\IblockCacheMap;
 
 class IblockTools
 {
-	private static $iblocks = [];
-
 	/**
 	 * Возвращает ID инфоблока по символьному коду
 	 *
-	 * При первом вызове загружает список всех инфоблоков в статическое поле класса. Запрос кэшируется.
-	 *
-	 * @noinspection PhpDocMissingThrowsInspection
 	 * @param string $code
 	 * @return null|int
-	 * @throws Main\LoaderException
 	 */
 	public static function getIblockIdByCode(string $code): ?int
 	{
-		Common::loadModules(['iblock']);
-
-		if (empty(self::$iblocks)) {
-			/** @noinspection PhpUnhandledExceptionInspection */
-			$iblocks = Iblock\IblockTable::getList([
-				'filter' => [
-					'ACTIVE' => 'Y',
-				],
-				'select' => [
-					'ID',
-					'CODE',
-				],
-				'cache' => 86400,
-			])->fetchAll();
-			foreach ($iblocks as $iblock) {
-				if ($iblock['CODE']) {
-					self::$iblocks[strtolower($iblock['CODE'])] = (int)$iblock['ID'];
-				}
-			}
-		}
-
-		return self::$iblocks[strtolower($code)] ?? null;
+		return (int)IblockCacheMap::getId($code);
 	}
 
 	/**

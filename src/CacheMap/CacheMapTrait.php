@@ -5,8 +5,11 @@ namespace spaceonfire\BitrixTools\CacheMap;
 use Bitrix\Main;
 use Bitrix\Main\ORM\Query\Query;
 use spaceonfire\BitrixTools\Cache;
+use SuperClosure\Analyzer\TokenAnalyzer;
+use SuperClosure\SerializableClosure;
+use SuperClosure\Serializer;
 
-class CacheMap
+trait CacheMapTrait
 {
 	private $map = [];
 	private $idKey;
@@ -14,18 +17,18 @@ class CacheMap
 	private $fillCallback;
 	private $query;
 
-	public function __construct($dataSource, $idKey = 'ID', $codeKey = 'CODE')
+	private function traitConstruct($dataSource, $idKey = 'ID', $codeKey = 'CODE')
 	{
 		if ($dataSource instanceof Query) {
 			$this->query = $dataSource;
-			$this->fillCallback = [$this, 'fillWithQuery'];
+			$this->setFillCallback($this->fillWithQuery());
 		} else if (is_callable($dataSource)) {
-			$this->fillCallback = $dataSource;
+			$this->setFillCallback($dataSource);
 		} else if (is_array($dataSource)) {
 			$this->map = $dataSource;
 		} else {
 			throw new Main\ArgumentTypeException('dataSource', [
-				'Bitrix\Main\ORM\Query\Query',
+				Query::class,
 				'callable',
 				'array',
 			]);
@@ -35,6 +38,14 @@ class CacheMap
 		$this->codeKey = $codeKey;
 
 		$this->fill();
+	}
+
+	private function setFillCallback(callable $callback)
+	{
+		$this->fillCallback = new SerializableClosure(
+			$callback instanceof \Closure ? $callback : \Closure::fromCallable($callback),
+			new Serializer(new TokenAnalyzer())
+		);
 	}
 
 	private function fill(): void
@@ -66,18 +77,14 @@ class CacheMap
 		}
 	}
 
-	protected function getCacheOptions(): array
+	private function getCacheOptions(): array
 	{
 		$cachePath = explode('\\', static::class);
 		array_unshift($cachePath, '');
 
-		if (static::class === __CLASS__) {
-			$cacheId = substr(md5(serialize($this->query ?? $this->fillCallback)), 0, 10);
-		} else {
-			$cacheId = array_pop($cachePath);
-		}
+		$cacheId = array_pop($cachePath);
 
-		array_push($cachePath, $cacheId);
+		$cachePath[] = $cacheId;
 		$cachePath = implode(DIRECTORY_SEPARATOR, $cachePath);
 
 		return [
@@ -87,24 +94,39 @@ class CacheMap
 		];
 	}
 
-	public function fillWithQuery(): array
+	private function fillWithQuery()
 	{
-		// Disable pagination and additional count query
-		$this->query
-			->setLimit(null)
-			->setOffset(null)
-			->countTotal(false);
+		return function () {
+			// Disable pagination and additional count query
+			$this->query
+				->setLimit(null)
+				->setOffset(null)
+				->countTotal(false);
 
-		return $this->query->fetchAll();
+			return $this->query->fetchAll();
+		};
 	}
 
-	public function getDataByCode($code): array
+	public function getDataByCode($code): ?array
 	{
 		return $this->map[$code];
 	}
 
 	public function getIdByCode($code)
 	{
+		if (!isset($this->map[$code][$this->idKey])) {
+			return null;
+		}
+
+		if ((int)$this->map[$code][$this->idKey] . '' === $this->map[$code][$this->idKey] . '') {
+			return (int)$this->map[$code][$this->idKey];
+		}
+
 		return $this->map[$code][$this->idKey];
+	}
+
+	public function traitClearCache()
+	{
+		Cache::clearCache($this->getCacheOptions());
 	}
 }
