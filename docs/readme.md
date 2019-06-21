@@ -17,29 +17,44 @@
     -   [updateCountAction](#updatecountaction)
 -   [Cache](#cache)
     -   [cacheResult](#cacheresult)
+    -   [clearCache](#clearcache)
 -   [Common](#common)
     -   [loadModules](#loadmodules)
     -   [addBodyClass](#addbodyclass)
+-   [CustomCacheMap](#customcachemap)
+    -   [get](#get)
+    -   [getId](#getid)
+    -   [clearCache](#clearcache-1)
+    -   [\_\_construct](#__construct-1)
 -   [EventHandler](#eventhandler)
     -   [boot](#boot)
-    -   [OnAfterIBlockPropertyAdd](#onafteriblockpropertyadd)
-    -   [OnAfterIBlockPropertyUpdate](#onafteriblockpropertyupdate)
-    -   [OnBeforeIBlockPropertyDelete](#onbeforeiblockpropertydelete)
 -   [Form](#form)
-    -   [\_\_construct](#__construct-1)
+    -   [\_\_construct](#__construct-2)
     -   [factory](#factory-1)
     -   [doAction](#doaction-1)
     -   [setParamsPairs](#setparamspairs-1)
     -   [feedbackAction](#feedbackaction)
     -   [callbackAction](#callbackaction)
     -   [resultAction](#resultaction)
+-   [HighloadBlockCacheMap](#highloadblockcachemap)
+    -   [getInstance](#getinstance)
+    -   [get](#get-1)
+    -   [getId](#getid-1)
+    -   [clearCache](#clearcache-2)
+    -   [register](#register)
 -   [Html](#html)
-    -   [\_\_construct](#__construct-2)
+    -   [\_\_construct](#__construct-3)
     -   [sendHeaders](#sendheaders)
     -   [render](#render)
     -   [setData](#setdata)
     -   [setBaseDir](#setbasedir)
     -   [getPath](#getpath)
+-   [IblockCacheMap](#iblockcachemap)
+    -   [getInstance](#getinstance-1)
+    -   [get](#get-2)
+    -   [getId](#getid-2)
+    -   [clearCache](#clearcache-3)
+    -   [register](#register-1)
 -   [IblockPropMultiple](#iblockpropmultiple)
     -   [getIblockId](#getiblockid)
     -   [getTableName](#gettablename)
@@ -54,7 +69,7 @@
     -   [getFilePath](#getfilepath)
     -   [getMap](#getmap-2)
 -   [Json](#json)
-    -   [\_\_construct](#__construct-3)
+    -   [\_\_construct](#__construct-4)
     -   [sendHeaders](#sendheaders-1)
     -   [render](#render-1)
     -   [setData](#setdata-1)
@@ -64,7 +79,7 @@
     -   [normalizeMenuNav](#normalizemenunav)
     -   [isUserHasAccessToFile](#isuserhasaccesstofile)
 -   [Php](#php)
-    -   [\_\_construct](#__construct-4)
+    -   [\_\_construct](#__construct-5)
     -   [sendHeaders](#sendheaders-2)
     -   [render](#render-2)
     -   [setData](#setdata-2)
@@ -72,20 +87,26 @@
     -   [getPath](#getpath-2)
     -   [escape](#escape)
 -   [Prototype](#prototype)
-    -   [\_\_construct](#__construct-5)
+    -   [\_\_construct](#__construct-6)
     -   [sendHeaders](#sendheaders-3)
     -   [render](#render-3)
     -   [setData](#setdata-3)
     -   [setBaseDir](#setbasedir-3)
     -   [getPath](#getpath-3)
 -   [Prototype](#prototype-1)
-    -   [\_\_construct](#__construct-6)
+    -   [\_\_construct](#__construct-7)
     -   [factory](#factory-2)
     -   [doAction](#doaction-2)
     -   [setParamsPairs](#setparamspairs-2)
 -   [SectionElementTable](#sectionelementtable)
+-   [UserGroupCacheMap](#usergroupcachemap)
+    -   [getInstance](#getinstance-2)
+    -   [get](#get-3)
+    -   [getId](#getid-3)
+    -   [clearCache](#clearcache-4)
+    -   [register](#register-2)
 -   [Xml](#xml)
-    -   [\_\_construct](#__construct-7)
+    -   [\_\_construct](#__construct-8)
     -   [sendHeaders](#sendheaders-4)
     -   [render](#render-4)
     -   [setData](#setdata-4)
@@ -312,7 +333,7 @@ Cache::cacheResult( array $options, callable $callback, array $args = array() ):
      $options = [
          'CACHE_ID' => (string) ID кэша (обязательный параметр)
          'CACHE_PATH' => (string) Относительный путь для сохранения кэша (обязательный параметр). Будет автоматически добавлен ID сайта и CACHE_TAG, если указан
-         'CACHE_TAG' => (string) Включает использование тегированного кэша с переданным тэгом
+         'CACHE_TAG' => (string &#124; array) Включает использование тегированного кэша с переданным тэгом/тэгами
          'CACHE_TIME' => (int) Время жизни кэша (TTL) в секундах, по-умолчанию 36000000
      ] |
 
@@ -322,6 +343,28 @@ Cache::cacheResult( array $options, callable $callback, array $args = array() ):
 **Return Value:**
 
 Данные возвращаемые функцией \$callback из кэша
+
+---
+
+### clearCache
+
+Удаляет кэш
+
+```php
+Cache::clearCache( array $options )
+```
+
+-   This method is **static**.
+
+**Parameters:**
+
+| Parameter  | Type      | Description                                                |
+| ---------- | --------- | ---------------------------------------------------------- |
+| `$options` | **array** | Массив с параметрами кэширования, как в Cache::cacheResult |
+
+**See Also:**
+
+-   \spaceonfire\BitrixTools\Cache::cacheResult
 
 ---
 
@@ -366,6 +409,75 @@ Common::addBodyClass( array $classes, string $propertyId = &#039;BodyClass&#039;
 
 ---
 
+## CustomCacheMap
+
+Класс CustomCacheMap позволяет создать собственный кэшированный справочник
+
+-   Full name: \spaceonfire\BitrixTools\CacheMap\CustomCacheMap
+-   This class implements: \spaceonfire\BitrixTools\CacheMap\CacheMapInterface
+
+### get
+
+```php
+CustomCacheMap::get( string $code ): array|null
+```
+
+Возвращает данные элемента по символьному коду
+
+**Parameters:**
+
+| Parameter | Type       | Description |
+| --------- | ---------- | ----------- |
+| `$code`   | **string** |             |
+
+---
+
+### getId
+
+```php
+CustomCacheMap::getId( string $code ): integer|mixed
+```
+
+Возвращает ID элемента по символьному коду
+
+**Parameters:**
+
+| Parameter | Type       | Description |
+| --------- | ---------- | ----------- |
+| `$code`   | **string** |             |
+
+---
+
+### clearCache
+
+```php
+CustomCacheMap::clearCache(  ): integer|mixed
+```
+
+Очищает кэш
+
+---
+
+### \_\_construct
+
+Создает собственный кэшированный справочник на основе предоставленного источника данных.
+
+```php
+CustomCacheMap::__construct( \Bitrix\Main\ORM\Query\Query|callable $dataSource, string $idKey = &#039;ID&#039;, string $codeKey = &#039;CODE&#039; )
+```
+
+**ВАЖНО**: Позаботьтесь самостоятельно об очистке кэша, при изменении данных!
+
+**Parameters:**
+
+| Parameter     | Type                                           | Description                                                                                                  |
+| ------------- | ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| `$dataSource` | **\Bitrix\Main\ORM\Query\Query&#124;callable** | Источник данных для справочника, можно передать объект запроса ORM или функцию возвращающую массив значений. |
+| `$idKey`      | **string**                                     | Поле, принимаемое как идентификатор в справочнике. По-умолчанию, `ID`.                                       |
+| `$codeKey`    | **string**                                     | Поле, принимаемое как символьный код в справочнике. По-умолчанию, `CODE`.                                    |
+
+---
+
 ## EventHandler
 
 -   Full name: \spaceonfire\BitrixTools\ORM\EventHandler
@@ -373,60 +485,13 @@ Common::addBodyClass( array $classes, string $propertyId = &#039;BodyClass&#039;
 ### boot
 
 Регистрирует сброс кэша инфоблока при действиях над свойствами инфоблока
+Вызывается автоматически при подключении autoloader.
 
 ```php
 EventHandler::boot(  )
 ```
 
 -   This method is **static**.
-
----
-
-### OnAfterIBlockPropertyAdd
-
-```php
-EventHandler::OnAfterIBlockPropertyAdd(  $arFields )
-```
-
--   This method is **static**.
-
-**Parameters:**
-
-| Parameter   | Type     | Description |
-| ----------- | -------- | ----------- |
-| `$arFields` | \*\*\*\* |             |
-
----
-
-### OnAfterIBlockPropertyUpdate
-
-```php
-EventHandler::OnAfterIBlockPropertyUpdate(  $arFields )
-```
-
--   This method is **static**.
-
-**Parameters:**
-
-| Parameter   | Type     | Description |
-| ----------- | -------- | ----------- |
-| `$arFields` | \*\*\*\* |             |
-
----
-
-### OnBeforeIBlockPropertyDelete
-
-```php
-EventHandler::OnBeforeIBlockPropertyDelete(  $ID )
-```
-
--   This method is **static**.
-
-**Parameters:**
-
-| Parameter | Type     | Description |
-| --------- | -------- | ----------- |
-| `$ID`     | \*\*\*\* |             |
 
 ---
 
@@ -760,6 +825,90 @@ HighLoadBlock::__callStatic( string $name, array $arguments ): mixed
 
 ---
 
+## HighloadBlockCacheMap
+
+Класс HighloadBlockCacheMap позволяет получить информацию об HighLoad блоке по его названию из кэша
+
+-   Full name: \spaceonfire\BitrixTools\CacheMap\HighloadBlockCacheMap
+-   This class implements: \spaceonfire\BitrixTools\CacheMap\CacheMapStaticInterface
+
+### getInstance
+
+Возвращает экземпляр класса
+
+```php
+HighloadBlockCacheMap::getInstance(  ): static
+```
+
+-   This method is **static**.
+
+---
+
+### get
+
+Возвращает данные элемента по символьному коду
+
+```php
+HighloadBlockCacheMap::get( string $code ): array|null
+```
+
+-   This method is **static**.
+
+**Parameters:**
+
+| Parameter | Type       | Description    |
+| --------- | ---------- | -------------- |
+| `$code`   | **string** | символьный код |
+
+---
+
+### getId
+
+Возвращает ID элемента по символьному коду
+
+```php
+HighloadBlockCacheMap::getId( string $code ): integer|mixed
+```
+
+-   This method is **static**.
+
+**Parameters:**
+
+| Parameter | Type       | Description    |
+| --------- | ---------- | -------------- |
+| `$code`   | **string** | символьный код |
+
+**Return Value:**
+
+ID элемента, по возможности будет приведен к целочисленному типу
+
+---
+
+### clearCache
+
+Очищает кэш
+
+```php
+HighloadBlockCacheMap::clearCache(  )
+```
+
+-   This method is **static**.
+
+---
+
+### register
+
+Регистрация обработчиков событий для очистки кэша при изменении сущности
+Вызывается автоматически при подключении autoloader.
+
+```php
+HighloadBlockCacheMap::register(  )
+```
+
+-   This method is **static**.
+
+---
+
 ## Html
 
 HTML MVC view
@@ -842,6 +991,90 @@ Html::setBaseDir( string $dir ): void
 ```php
 Html::getPath(  ): string
 ```
+
+---
+
+## IblockCacheMap
+
+Класс IblockCacheMap позволяет получить информацию об инфоблоке по его символьному коду из кэша
+
+-   Full name: \spaceonfire\BitrixTools\CacheMap\IblockCacheMap
+-   This class implements: \spaceonfire\BitrixTools\CacheMap\CacheMapStaticInterface
+
+### getInstance
+
+Возвращает экземпляр класса
+
+```php
+IblockCacheMap::getInstance(  ): static
+```
+
+-   This method is **static**.
+
+---
+
+### get
+
+Возвращает данные элемента по символьному коду
+
+```php
+IblockCacheMap::get( string $code ): array|null
+```
+
+-   This method is **static**.
+
+**Parameters:**
+
+| Parameter | Type       | Description    |
+| --------- | ---------- | -------------- |
+| `$code`   | **string** | символьный код |
+
+---
+
+### getId
+
+Возвращает ID элемента по символьному коду
+
+```php
+IblockCacheMap::getId( string $code ): integer|mixed
+```
+
+-   This method is **static**.
+
+**Parameters:**
+
+| Parameter | Type       | Description    |
+| --------- | ---------- | -------------- |
+| `$code`   | **string** | символьный код |
+
+**Return Value:**
+
+ID элемента, по возможности будет приведен к целочисленному типу
+
+---
+
+### clearCache
+
+Очищает кэш
+
+```php
+IblockCacheMap::clearCache(  )
+```
+
+-   This method is **static**.
+
+---
+
+### register
+
+Регистрация обработчиков событий для очистки кэша при изменении сущности
+Вызывается автоматически при подключении autoloader.
+
+```php
+IblockCacheMap::register(  )
+```
+
+-   This method is **static**.
 
 ---
 
@@ -1415,6 +1648,91 @@ Prototype::setParamsPairs( array $pairs ): void
 -   Full name: \spaceonfire\BitrixTools\ORM\SectionElementTable
 -   Parent class:
 
+## UserGroupCacheMap
+
+Класс UserGroupCacheMap позволяет получить информацию об группе по ее строковому идентификатора из кэша
+
+-   Full name: \spaceonfire\BitrixTools\CacheMap\UserGroupCacheMap
+-   This class implements: \spaceonfire\BitrixTools\CacheMap\CacheMapStaticInterface
+
+### getInstance
+
+Возвращает экземпляр класса
+
+```php
+UserGroupCacheMap::getInstance(  ): static
+```
+
+-   This method is **static**.
+
+---
+
+### get
+
+Возвращает данные элемента по символьному коду
+
+```php
+UserGroupCacheMap::get( string $code ): array|null
+```
+
+-   This method is **static**.
+
+**Parameters:**
+
+| Parameter | Type       | Description    |
+| --------- | ---------- | -------------- |
+| `$code`   | **string** | символьный код |
+
+---
+
+### getId
+
+Возвращает ID элемента по символьному коду
+
+```php
+UserGroupCacheMap::getId( string $code ): integer|mixed
+```
+
+-   This method is **static**.
+
+**Parameters:**
+
+| Parameter | Type       | Description    |
+| --------- | ---------- | -------------- |
+| `$code`   | **string** | символьный код |
+
+**Return Value:**
+
+ID элемента, по возможности будет приведен к целочисленному типу
+
+---
+
+### clearCache
+
+Очищает кэш
+
+```php
+UserGroupCacheMap::clearCache(  )
+```
+
+-   This method is **static**.
+
+---
+
+### register
+
+Регистрация обработчиков событий для очистки кэша при изменении сущности.
+
+```php
+UserGroupCacheMap::register(  )
+```
+
+Вызывается автоматически при подключении autoloader.
+
+-   This method is **static**.
+
+---
+
 ## Xml
 
 XML MVC view
@@ -1502,4 +1820,4 @@ Xml::getPath(  ): string
 
 ---
 
-> This document was automatically generated from source code comments on 2019-05-21 using [phpDocumentor](http://www.phpdoc.org/) and [spaceonfire/phpdoc-markdown-public](https://github.com/spaceonfire/phpdoc-markdown-public)
+> This document was automatically generated from source code comments on 2019-06-21 using [phpDocumentor](http://www.phpdoc.org/) and [spaceonfire/phpdoc-markdown-public](https://github.com/spaceonfire/phpdoc-markdown-public)
