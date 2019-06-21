@@ -6,6 +6,7 @@ class EventHandler
 {
 	/**
 	 * Регистрирует сброс кэша инфоблока при действиях над свойствами инфоблока
+	 * Вызывается автоматически при подключении autoloader.
 	 */
 	public static function boot(): void
 	{
@@ -15,21 +16,37 @@ class EventHandler
 		$eventManager->addEventHandler('iblock', 'OnBeforeIBlockPropertyDelete', [static::class, 'OnBeforeIBlockPropertyDelete']);
 	}
 
+	/**
+	 * @param $arFields
+	 * @internal
+	 */
 	public static function OnAfterIBlockPropertyAdd($arFields): void
 	{
 		static::clearTagCacheByPropertyId($arFields['ID']);
 	}
 
+	/**
+	 * @param $arFields
+	 * @internal
+	 */
 	public static function OnAfterIBlockPropertyUpdate($arFields): void
 	{
 		static::clearTagCacheByPropertyId($arFields['ID']);
 	}
 
+	/**
+	 * @param $ID
+	 * @internal
+	 */
 	public static function OnBeforeIBlockPropertyDelete($ID): void
 	{
 		static::clearTagCacheByPropertyId($ID);
 	}
 
+	/**
+	 * @param $ID
+	 * @internal
+	 */
 	private static function clearTagCacheByPropertyId($ID): void
 	{
 		global $CACHE_MANAGER;
