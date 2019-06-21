@@ -2,6 +2,16 @@
 
 namespace spaceonfire\BitrixTools\CacheMap;
 
+use Bitrix\Main\ORM\Query\Query;
+
+/**
+ * Класс CustomCacheMap позволяет создать собственный кэшированный справочник
+ * @package spaceonfire\BitrixTools\CacheMap
+ *
+ * @method array|null get(string $code) Возвращает данные элемента по символьному коду
+ * @method int|mixed getId(string $code) Возвращает ID элемента по символьному коду
+ * @method int|mixed clearCache() Очищает кэш
+ */
 final class CustomCacheMap implements CacheMapInterface
 {
 	use CacheMapTrait {
@@ -11,6 +21,16 @@ final class CustomCacheMap implements CacheMapInterface
 		CacheMapTrait::traitClearCache as clearCache;
 	}
 
+	/**
+	 * Создает собственный кэшированный справочник на основе предоставленного источника данных.
+	 *
+	 * **ВАЖНО**: Позаботьтесь самостоятельно об очистке кэша, при изменении данных!
+	 *
+	 * @param Query|callable $dataSource Источник данных для справочника, можно передать объект запроса ORM или функцию возвращающую массив значений.
+	 * @param string $idKey Поле, принимаемое как идентификатор в справочнике. По-умолчанию, `ID`.
+	 * @param string $codeKey Поле, принимаемое как символьный код в справочнике. По-умолчанию, `CODE`.
+	 * @throws \Bitrix\Main\ArgumentTypeException
+	 */
 	public function __construct($dataSource, $idKey = 'ID', $codeKey = 'CODE')
 	{
 		$this->traitConstruct($dataSource, $idKey, $codeKey);

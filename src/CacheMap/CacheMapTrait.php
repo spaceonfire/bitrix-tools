@@ -107,11 +107,21 @@ trait CacheMapTrait
 		};
 	}
 
+	/**
+	 * Возвращает данные элемента по символьному коду
+	 * @param string $code символьный код
+	 * @return array|null
+	 */
 	public function getDataByCode($code): ?array
 	{
 		return $this->map[$code];
 	}
 
+	/**
+	 * Возвращает ID элемента по символьному коду
+	 * @param string $code символьный код
+	 * @return int|mixed ID элемента. По возможности будет приведен к целочисленному типу
+	 */
 	public function getIdByCode($code)
 	{
 		if (!isset($this->map[$code][$this->idKey])) {
@@ -125,6 +135,10 @@ trait CacheMapTrait
 		return $this->map[$code][$this->idKey];
 	}
 
+	/**
+	 * Очищает кэш
+	 * @throws Main\ArgumentNullException
+	 */
 	public function traitClearCache()
 	{
 		Cache::clearCache($this->getCacheOptions());

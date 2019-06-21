@@ -35,6 +35,7 @@ final class HighloadBlockCacheMap implements CacheMapStaticInterface
 
 	/**
 	 * Регистрация обработчиков событий для очистки кэша при изменении сущности
+	 * Вызывается автоматически при подключении autoloader.
 	 * @throws Main\SystemException
 	 */
 	public static function register(): void

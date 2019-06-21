@@ -6,6 +6,10 @@ use Bitrix\Main;
 use Bitrix\Main\ORM\Data\DataManager;
 use Bitrix\Main\ORM\Query\Query;
 
+/**
+ * Класс UserGroupCacheMap позволяет получить информацию об группе по ее строковому идентификатора из кэша
+ * @package spaceonfire\BitrixTools\CacheMap
+ */
 final class UserGroupCacheMap implements CacheMapStaticInterface
 {
 	use CacheMapTrait, CacheMapSingleton;
@@ -28,7 +32,8 @@ final class UserGroupCacheMap implements CacheMapStaticInterface
 	}
 
 	/**
-	 * Регистрация обработчиков событий для очистки кэша при изменении сущности
+	 * Регистрация обработчиков событий для очистки кэша при изменении сущности.
+	 * Вызывается автоматически при подключении autoloader.
 	 * @throws Main\SystemException
 	 */
 	public static function register(): void
