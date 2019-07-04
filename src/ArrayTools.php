@@ -101,16 +101,30 @@ class ArrayTools
 	 */
 	public static function merge(...$arrays): array
 	{
-		foreach ($arrays as &$array) {
+		foreach ($arrays as $array) {
 			if (!is_array($array)) {
 				throw new ArgumentTypeException('arrayN', 'array');
 			}
-
-			$array = static::flatten($array);
 		}
-		unset($array);
-		$ret = array_merge_recursive(...$arrays);
-		$ret = static::unflatten($ret);
+
+		$ret = array_shift($arrays);
+
+		while (!empty($arrays)) {
+			foreach (array_shift($arrays) as $k => $v) {
+				if (is_int($k)) {
+					if (array_key_exists($k, $ret)) {
+						$ret[] = $v;
+					} else {
+						$ret[$k] = $v;
+					}
+				} elseif (is_array($v) && isset($ret[$k]) && is_array($ret[$k])) {
+					$ret[$k] = static::merge($ret[$k], $v);
+				} else {
+					$ret[$k] = $v;
+				}
+			}
+		}
+
 		return $ret;
 	}
 }
