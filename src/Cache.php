@@ -7,22 +7,7 @@ use Bitrix\Main\Data\Cache as BxCache;
 
 class Cache
 {
-	/**
-	 * Кэширует результаты выполнения функции $callback
-	 *
-	 * @param array $options Массив с параметрами для кэширования
-	 *      $options = [
-	 *          'CACHE_ID' => (string) ID кэша (обязательный параметр)
-	 *          'CACHE_PATH' => (string) Относительный путь для сохранения кэша (обязательный параметр). Будет автоматически добавлен ID сайта и CACHE_TAG, если указан
-	 *          'CACHE_TAG' => (string) Включает использование тегированного кэша с переданным тэгом
-	 *          'CACHE_TIME' => (int) Время жизни кэша (TTL) в секундах, по-умолчанию 36000000
-	 *      ]
-	 * @param callable $callback Функция, выполнение которой необходимо кэшировать
-	 * @param array $args Массив аргументов для функции $callback
-	 * @return mixed Данные возвращаемые функцией $callback из кэша
-	 * @throws ArgumentNullException
-	 */
-	public static function cacheResult($options, callable $callback, $args = [])
+	private static function prepareOptions(array $options): array
 	{
 		$options = array_merge([
 			'CACHE_ID' => null,
@@ -43,7 +28,28 @@ class Cache
 		}
 		$siteId = defined('ADMIN_SECTION') && ADMIN_SECTION ? 's1' : SITE_ID;
 		$options['CACHE_PATH'] = str_replace($ds . $ds, $ds, $ds . $siteId . $ds . $options['CACHE_PATH']);
-		unset($ds);
+
+		return $options;
+	}
+
+	/**
+	 * Кэширует результаты выполнения функции $callback
+	 *
+	 * @param array $options Массив с параметрами для кэширования
+	 *      $options = [
+	 *          'CACHE_ID' => (string) ID кэша (обязательный параметр)
+	 *          'CACHE_PATH' => (string) Относительный путь для сохранения кэша (обязательный параметр). Будет автоматически добавлен ID сайта и CACHE_TAG, если указан
+	 *          'CACHE_TAG' => (string | array) Включает использование тегированного кэша с переданным тэгом/тэгами
+	 *          'CACHE_TIME' => (int) Время жизни кэша (TTL) в секундах, по-умолчанию 36000000
+	 *      ]
+	 * @param callable $callback Функция, выполнение которой необходимо кэшировать
+	 * @param array $args Массив аргументов для функции $callback
+	 * @return mixed Данные возвращаемые функцией $callback из кэша
+	 * @throws ArgumentNullException
+	 */
+	public static function cacheResult(array $options, callable $callback, $args = [])
+	{
+		$options = static::prepareOptions($options);
 
 		if (!empty($args)) {
 			$options['CACHE_ID'] = $options['CACHE_ID'] . ':' . substr(md5(serialize($args)), 0, 10);
@@ -58,10 +64,17 @@ class Cache
 			$result = call_user_func_array($callback, $args);
 
 			if (!empty($result)) {
+				if (!is_array($options['CACHE_TAG'])) {
+					$options['CACHE_TAG'] = [$options['CACHE_TAG']];
+				}
+				$options['CACHE_TAG'] = array_filter($options['CACHE_TAG']);
+
 				if (defined('BX_COMP_MANAGED_CACHE') && !empty($options['CACHE_TAG'])) {
 					global $CACHE_MANAGER;
 					$CACHE_MANAGER->StartTagCache($options['CACHE_PATH']);
-					$CACHE_MANAGER->RegisterTag($options['CACHE_TAG']);
+					foreach ($options['CACHE_TAG'] as $tag) {
+						$CACHE_MANAGER->RegisterTag($tag);
+					}
 					$CACHE_MANAGER->EndTagCache();
 				}
 
@@ -72,5 +85,18 @@ class Cache
 		}
 
 		return $result;
+	}
+
+	/**
+	 * Удаляет кэш
+	 *
+	 * @param array $options Массив с параметрами кэширования, как в Cache::cacheResult
+	 * @see Cache::cacheResult
+	 * @throws ArgumentNullException
+	 */
+	public static function clearCache(array $options): void
+	{
+		$options = static::prepareOptions($options);
+		BxCache::createInstance()->cleanDir($options['CACHE_PATH']);
 	}
 }

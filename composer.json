@@ -12,7 +12,8 @@
   "require": {
     "php": ">=7.2",
     "ext-json": "*",
-    "ext-dom": "*"
+    "ext-dom": "*",
+    "jeremeamia/superclosure": "^2.0"
   },
   "require-dev": {
     "roave/security-advisories": "dev-master",
@@ -26,7 +27,10 @@
   "autoload": {
     "psr-4": {
       "spaceonfire\\BitrixTools\\": "src/"
-    }
+    },
+    "files": [
+      "autoload.php"
+    ]
   },
   "bin": [
     "bin/run-in-background.php"
