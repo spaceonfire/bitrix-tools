@@ -9,6 +9,12 @@
       "email": "genteelknight@gmail.com"
     }
   ],
+  "repositories": [
+    {
+      "type": "git",
+      "url": "https://github.com/alexprowars/bxApiDocs"
+    }
+  ],
   "require": {
     "php": ">=7.2",
     "ext-json": "*",
@@ -22,7 +28,7 @@
     "jms/serializer": "^1.13",
     "phpdocumentor/reflection-docblock": "^2.0.5",
     "spaceonfire/phpdoc-markdown-public": "dev-master",
-    "matiaspub/bx-api-docs": "^16.5"
+    "matiaspub/bx-api-docs": "dev-master"
   },
   "autoload": {
     "psr-4": {
