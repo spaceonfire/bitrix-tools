@@ -7,7 +7,6 @@ namespace spaceonfire\BitrixTools\ORM;
 use Bitrix\Highloadblock\DataManager;
 use Bitrix\Highloadblock\HighloadBlockTable;
 use Bitrix\Main\Localization\Loc;
-use Bitrix\Main\ORM\Fields\IntegerField;
 use spaceonfire\BitrixTools\Common;
 
 Common::loadModules(['highloadblock']);
@@ -19,14 +18,18 @@ Loc::loadMessages(__FILE__);
  */
 abstract class BaseHighLoadBlockDataManager extends DataManager
 {
-	protected static $_highloadBlock;
+	protected static $_highloadBlocks = [];
 
 	/**
+	 * Возвращает ID или NAME HighLoad блока
 	 * @return int|string
 	 */
 	abstract public static function getHLId();
 
-	/** {@inheritdoc} */
+	/**
+	 * Возвращает имя таблицы для HighLoad блока
+	 * @return string|null
+	 */
 	public static function getTableName(): ?string
 	{
 		$data = static::getHighloadBlock();
@@ -34,31 +37,41 @@ abstract class BaseHighLoadBlockDataManager extends DataManager
 	}
 
 	/**
-	 * Returns entity map definition.
-	 * @return array
-	 * @throws \Bitrix\Main\SystemException
-	 * @see \Bitrix\Main\ORM\Entity::getFields() to get initialized fields
-	 * @see \Bitrix\Main\ORM\Base::getField() to get initialized fields
+	 * Возвращает ID пользовательских полей для HighLoad блока
+	 * @return string|null
 	 */
-	public static function getMap(): array
+	public static function getUfId()
 	{
-		return [
-			(new IntegerField('ID'))
-				->configurePrimary(true)
-				->configureAutocomplete(true),
-		];
+		$data = static::getHighloadBlock();
+		return 'HLBLOCK_' . $data['ID'];
 	}
 
 	/**
-	 * Returns data of highload block
+	 * Определяет список полей для сущности
+	 * @return array
+	 * @throws \Bitrix\Main\SystemException
+	 * @see Используйте \Bitrix\Main\ORM\Entity::getFields() чтобы получить список инициализированных полей
+	 */
+	public static function getMap(): array
+	{
+		$fields = HighloadBlockTable::compileEntity(static::getHighloadBlock())->getFields();
+		foreach ($fields as $field) {
+			$field->resetEntity();
+		}
+		return $fields;
+	}
+
+	/**
+	 * Возвращает данные о HighLoad блоке
 	 * @return array|null
 	 */
 	public static function getHighloadBlock(): ?array
 	{
-		if (static::$_highloadBlock === null) {
-			static::$_highloadBlock = HighloadBlockTable::resolveHighloadblock(static::getHLId());
+		$id = static::getHLId();
+		if (static::$_highloadBlocks[$id] === null) {
+			static::$_highloadBlocks[$id] = HighloadBlockTable::resolveHighloadblock(static::getHLId());
 		}
 
-		return static::$_highloadBlock;
+		return static::$_highloadBlocks[$id];
 	}
 }
