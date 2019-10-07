@@ -37,7 +37,8 @@
       "spaceonfire\\BitrixTools\\": "src/"
     },
     "files": [
-      "autoload.php"
+      "autoload.php",
+      "compatibility.php"
     ]
   },
   "bin": [

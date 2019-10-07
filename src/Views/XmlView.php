@@ -1,54 +1,48 @@
 <?php
 
-namespace spaceonfire\BitrixTools\Mvc\View;
+namespace spaceonfire\BitrixTools\Views;
+
+use DOMDocument;
+use DOMElement;
+use RuntimeException;
 
 /**
  * XML MVC view
  */
-class Xml extends Prototype
+class XmlView extends BaseView
 {
 	/**
-	 * Название для элемента индексированного массива
-	 *
-	 * @var string
+	 * @var string Название для элемента индексированного массива
 	 */
 	protected $indexedArrayElement = 'item';
 
 	/**
 	 * Создает новый MVC XML view
-	 *
-	 * @noinspection PhpMissingParentConstructorInspection MagicMethodsValidityInspection
 	 * @param mixed $data Данные view
 	 * @return void
 	 */
 	public function __construct($data = [])
 	{
-		$this->data = $data;
+		parent::__construct('', $data);
 	}
 
-	/**
-	 * Отсылает http-заголовки для view
-	 *
-	 * @return void
-	 */
+	/** {@inheritDoc} */
 	public function sendHeaders(): void
 	{
 		header('Content-type: application/xml; charset=' . SITE_CHARSET);
 	}
 
 	/**
-	 * Формирует view
-	 *
-	 * @return string
-	 * @throws \Exception
+	 * {@inheritDoc}
+	 * @throws RuntimeException
 	 */
 	public function render(): string
 	{
-		if (!class_exists(\DOMDocument::class)) {
-			throw new \Exception('libxml extension is not installed.');
+		if (!class_exists(DOMDocument::class)) {
+			throw new RuntimeException('libxml extension is not installed.');
 		}
 
-		$doc = new \DOMDocument('1.0', SITE_CHARSET);
+		$doc = new DOMDocument('1.0', SITE_CHARSET);
 		$root = $doc->createElement('response');
 		$doc->appendChild($root);
 
@@ -60,8 +54,8 @@ class Xml extends Prototype
 	/**
 	 * Формирует узел дерева
 	 *
-	 * @param \DOMDocument $doc Документ
-	 * @param \DOMElement $parent Родительский узел
+	 * @param DOMDocument $doc Документ
+	 * @param DOMElement $parent Родительский узел
 	 * @param mixed $data Данные
 	 * @return void
 	 */
