@@ -302,7 +302,7 @@ trait CommonComponentTrait
 	 */
 	protected function showExceptionUser(Throwable $throwable)
 	{
-		ShowError(Loc::getMessage('BBC_COMPONENT_CATCH_EXCEPTION'));
+		ShowError(Loc::getMessage('COMPONENT_CATCH_EXCEPTION'));
 	}
 
 	/**
