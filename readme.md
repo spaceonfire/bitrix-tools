@@ -12,5 +12,5 @@ composer require spaceonfire/bitrix-tools
 
 ## Прочее
 
-- [Документация](./docs/readme.md)
+- [Документация](./docs/README.md)
 - [Помощь в разработке](./contributing.md)
