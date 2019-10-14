@@ -140,7 +140,7 @@ class BaseController implements ControllerInterface
 
 	/**
 	 * Устанавливает параметры из пар в массиве
-	 * @param string[] $pairs Пары [ключ][значение]
+	 * @param string[] $pairs Пары \[ключ]\[значение]
 	 */
 	public function setParamsPairs($pairs): void
 	{
