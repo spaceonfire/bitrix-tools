@@ -146,7 +146,7 @@ class Prototype
 	/**
 	 * Устанавливает параметры из пар в массиве
 	 *
-	 * @param array $pairs Пары [ключ][значение]
+	 * @param array $pairs Пары \[ключ]\[значение]
 	 * @return void
 	 */
 	public function setParamsPairs($pairs): void
