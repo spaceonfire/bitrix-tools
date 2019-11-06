@@ -24,12 +24,12 @@
     "ext-dom": "*",
     "jeremeamia/superclosure": "^2.0",
     "narrowspark/http-status": "~4.1.0",
-    "spaceonfire/collection": "~1.0.0"
+    "spaceonfire/collection": "~1.2.1"
   },
   "require-dev": {
     "roave/security-advisories": "dev-master",
     "phpunit/phpunit": "^8.1.5",
-    "spaceonfire/simple-php-apidoc": "~1.0.1",
+    "spaceonfire/simple-php-apidoc": "~1.1.1",
     "matiaspub/bx-api-docs": "dev-master"
   },
   "autoload": {
