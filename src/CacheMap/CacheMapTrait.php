@@ -16,6 +16,7 @@ trait CacheMapTrait
 	private $codeKey;
 	private $fillCallback;
 	private $query;
+	private $isCaseSensitive = false;
 
 	private function traitConstruct($dataSource, $idKey = 'ID', $codeKey = 'CODE')
 	{
@@ -73,7 +74,8 @@ trait CacheMapTrait
 				continue;
 			}
 
-			$this->map[$item[$this->codeKey]] = $item;
+			$code = $this->prepareCode($item[$this->codeKey]);
+			$this->map[$code] = $item;
 		}
 	}
 
@@ -114,6 +116,7 @@ trait CacheMapTrait
 	 */
 	public function getDataByCode($code): ?array
 	{
+		$code = $this->prepareCode($code);
 		return $this->map[$code];
 	}
 
@@ -124,6 +127,8 @@ trait CacheMapTrait
 	 */
 	public function getIdByCode($code)
 	{
+		$code = $this->prepareCode($code);
+
 		if (!isset($this->map[$code][$this->idKey])) {
 			return null;
 		}
@@ -142,5 +147,26 @@ trait CacheMapTrait
 	public function traitClearCache()
 	{
 		Cache::clearCache($this->getCacheOptions());
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function isCaseSensitive(): bool
+	{
+		return $this->isCaseSensitive;
+	}
+
+	/**
+	 * @param bool $isCaseSensitive
+	 */
+	public function setIsCaseSensitive(bool $isCaseSensitive): void
+	{
+		$this->isCaseSensitive = $isCaseSensitive;
+	}
+
+	private function prepareCode(string $code): string
+	{
+		return $this->isCaseSensitive() ? $code : strtolower($code);
 	}
 }

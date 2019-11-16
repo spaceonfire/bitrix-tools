@@ -3,26 +3,34 @@
   "description": "Utility classes for Bitrix projects",
   "keywords": ["tools", "bitrix"],
   "license": "MIT",
+  "minimum-stability": "dev",
+  "prefer-stable": true,
   "authors": [
     {
       "name": "Constantine Karnaukhov",
-      "email": "genteelknight@gmail.com"
+      "email": "genteelknight@gmail.com",
+      "role": "Maintainer"
+    }
+  ],
+  "repositories": [
+    {
+      "type": "git",
+      "url": "https://github.com/alexprowars/bxApiDocs"
     }
   ],
   "require": {
     "php": ">=7.2",
     "ext-json": "*",
     "ext-dom": "*",
-    "jeremeamia/superclosure": "^2.0"
+    "jeremeamia/superclosure": "^2.0",
+    "narrowspark/http-status": "~4.1.0",
+    "spaceonfire/collection": "~1.0.0"
   },
   "require-dev": {
     "roave/security-advisories": "dev-master",
     "phpunit/phpunit": "^8.1.5",
-    "phpdocumentor/phpdocumentor": "^2.9.0",
-    "jms/serializer": "^1.13",
-    "phpdocumentor/reflection-docblock": "^2.0.5",
-    "spaceonfire/phpdoc-markdown-public": "dev-master",
-    "matiaspub/bx-api-docs": "^16.5"
+    "spaceonfire/simple-php-apidoc": "~1.0.1",
+    "matiaspub/bx-api-docs": "dev-master"
   },
   "autoload": {
     "psr-4": {
@@ -42,8 +50,8 @@
   },
   "scripts": {
     "doc": [
-      "phpdoc",
-      "npx prettier --write docs/**"
+      "apidoc",
+      "npx prettier --write docs/**/*.md"
     ]
   }
 }

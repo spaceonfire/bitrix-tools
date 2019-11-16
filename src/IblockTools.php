@@ -2,8 +2,8 @@
 
 namespace spaceonfire\BitrixTools;
 
-use Bitrix\Main;
 use Bitrix\Iblock;
+use Bitrix\Main;
 use spaceonfire\BitrixTools\CacheMap\IblockCacheMap;
 
 class IblockTools
@@ -22,13 +22,18 @@ class IblockTools
 	/**
 	 * Собирает схему инфоблока, состаящую из полей элемента инфоблока и его свойств.
 	 *
+	 * Принимает в качетсве аргумента `$options` массив со следующими ключами:
+	 *
+	 * ```php
+	 * $options = [
+	 *     'IBLOCK_ID' => (int) ID инфоблока
+	 *     'DEFAULT_FIELDS' => (array) Массив полей по-умолчанию, известных заранее
+	 *     'EXCLUDE_FIELDS' => (array) Массив полей, которые необходимо исключить из итоговой схемы
+	 * ]
+	 * ```
+	 *
 	 * @noinspection PhpDocMissingThrowsInspection
 	 * @param array $options
-	 *      $options = [
-	 *          'IBLOCK_ID' => (int) ID инфоблока
-	 *          'DEFAULT_FIELDS' => (array) Массив полей по-умолчанию, известных заранее
-	 *          'EXCLUDE_FIELDS' => (array) Массив полей, которые необходимо исключить из итоговой схемы
-	 *      ]
 	 * @return array Схема инфоблока - массив ассоциативных массивов, описывающих поля инфоблока (тип, название, id поля и пр.)
 	 * @throws Main\LoaderException
 	 */
