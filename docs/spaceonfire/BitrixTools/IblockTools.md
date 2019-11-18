@@ -27,7 +27,7 @@ $options = [
 public static function IblockTools::buildSchema(mixed $options = []): array
 ```
 
-File location: `src/IblockTools.php:40`
+File location: `src/IblockTools.php:42`
 
 ### disableIblockCacheClear()
 
@@ -41,7 +41,7 @@ File location: `src/IblockTools.php:40`
 public static function IblockTools::disableIblockCacheClear(): bool
 ```
 
-File location: `src/IblockTools.php:220`
+File location: `src/IblockTools.php:222`
 
 ### enableIblockCacheClear()
 
@@ -55,7 +55,7 @@ File location: `src/IblockTools.php:220`
 public static function IblockTools::enableIblockCacheClear(): bool
 ```
 
-File location: `src/IblockTools.php:232`
+File location: `src/IblockTools.php:234`
 
 ### getIblockIdByCode()
 
@@ -70,7 +70,23 @@ File location: `src/IblockTools.php:232`
 public static function IblockTools::getIblockIdByCode(string $code): ?int
 ```
 
-File location: `src/IblockTools.php:17`
+File location: `src/IblockTools.php:19`
+
+### getSectionsTree()
+
+Возвращает список разделов инфоблока, выравненные по вложенности точками
+
+| Param         | Type    | Description                                |
+| ------------- | ------- | ------------------------------------------ |
+| `$iblockId`   | _int_   | ID инфоблока                               |
+| `$parameters` | _array_ | дополнительные параметры запроса           |
+| **Return**    | _array_ | Массив вида `[SECTION_ID => SECTION_NAME]` |
+
+```php
+public static function IblockTools::getSectionsTree(int $iblockId, array $parameters = []): array
+```
+
+File location: `src/IblockTools.php:251`
 
 ---
 

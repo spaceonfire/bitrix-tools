@@ -6,6 +6,29 @@ BaseHighLoadBlockDataManager - базовый класс для создания
 
 ## Methods
 
+### add()
+
+Добавлят новую строку в таблицу HighLoad блока
+
+| Param      | Type                              | Description |
+| ---------- | --------------------------------- | ----------- |
+| `$data`    | _array_                           |             |
+| **Return** | _\Bitrix\Main\ORM\Data\AddResult_ |             |
+
+```php
+public static function BaseHighLoadBlockDataManager::add(array $data): mixed
+```
+
+File location: `src/ORM/BaseHighLoadBlockDataManager.php:137`
+
+### filterData()
+
+```php
+protected static function BaseHighLoadBlockDataManager::filterData(array $data): array
+```
+
+File location: `src/ORM/BaseHighLoadBlockDataManager.php:104`
+
 ### getHLId()
 
 Возвращает ID или NAME HighLoad блока
@@ -18,7 +41,7 @@ BaseHighLoadBlockDataManager - базовый класс для создания
 abstract public static function BaseHighLoadBlockDataManager::getHLId(): mixed
 ```
 
-File location: `src/ORM/BaseHighLoadBlockDataManager.php:27`
+File location: `src/ORM/BaseHighLoadBlockDataManager.php:31`
 
 ### getHighloadBlock()
 
@@ -32,7 +55,7 @@ File location: `src/ORM/BaseHighLoadBlockDataManager.php:27`
 public static function BaseHighLoadBlockDataManager::getHighloadBlock(): ?array
 ```
 
-File location: `src/ORM/BaseHighLoadBlockDataManager.php:68`
+File location: `src/ORM/BaseHighLoadBlockDataManager.php:94`
 
 ### getMap()
 
@@ -46,7 +69,21 @@ File location: `src/ORM/BaseHighLoadBlockDataManager.php:68`
 public static function BaseHighLoadBlockDataManager::getMap(): array
 ```
 
-File location: `src/ORM/BaseHighLoadBlockDataManager.php:55`
+File location: `src/ORM/BaseHighLoadBlockDataManager.php:72`
+
+### getRealId()
+
+Возвращает ID HighLoad блока
+
+| Param      | Type            | Description |
+| ---------- | --------------- | ----------- |
+| **Return** | _int&#124;null_ |             |
+
+```php
+public static function BaseHighLoadBlockDataManager::getRealId(): ?int
+```
+
+File location: `src/ORM/BaseHighLoadBlockDataManager.php:37`
 
 ### getTableName()
 
@@ -60,7 +97,7 @@ File location: `src/ORM/BaseHighLoadBlockDataManager.php:55`
 public static function BaseHighLoadBlockDataManager::getTableName(): ?string
 ```
 
-File location: `src/ORM/BaseHighLoadBlockDataManager.php:33`
+File location: `src/ORM/BaseHighLoadBlockDataManager.php:50`
 
 ### getUfId()
 
@@ -74,7 +111,23 @@ File location: `src/ORM/BaseHighLoadBlockDataManager.php:33`
 public static function BaseHighLoadBlockDataManager::getUfId(): mixed
 ```
 
-File location: `src/ORM/BaseHighLoadBlockDataManager.php:43`
+File location: `src/ORM/BaseHighLoadBlockDataManager.php:60`
+
+### update()
+
+Обновляет строку в таблице HighLoad блока по первичному ключу
+
+| Param      | Type                                 | Description |
+| ---------- | ------------------------------------ | ----------- |
+| `$primary` | _mixed_                              |             |
+| `$data`    | _array_                              |             |
+| **Return** | _\Bitrix\Main\ORM\Data\UpdateResult_ |             |
+
+```php
+public static function BaseHighLoadBlockDataManager::update(mixed $primary, array $data): mixed
+```
+
+File location: `src/ORM/BaseHighLoadBlockDataManager.php:148`
 
 ---
 

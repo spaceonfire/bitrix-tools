@@ -1,20 +1,29 @@
 <?php
 
-namespace spaceonfire\BitrixTools\Mvc\Controller;
+namespace spaceonfire\BitrixTools\Controllers;
 
-use Bitrix\Main;
-use spaceonfire\BitrixTools\Mvc;
+use CForm;
+use InvalidArgumentException;
+use Narrowspark\HttpStatus\Exception\NotFoundException;
+use spaceonfire\BitrixTools\Common;
+use spaceonfire\BitrixTools\Views\HtmlView;
+use spaceonfire\BitrixTools\Views\PhpView;
+use Throwable;
+
+try {
+	Common::loadModules(['form']);
+} catch (Throwable $throwable) {
+	return;
+}
 
 /**
  * Контроллер веб-форм
  */
-class Form extends Prototype
+class FormController extends BaseController
 {
 	/**
 	 * Выводит форму обратной связи
-	 *
 	 * @return string
-	 * @throws \Exception
 	 */
 	public function feedbackAction(): string
 	{
@@ -23,9 +32,7 @@ class Form extends Prototype
 
 	/**
 	 * Выводит форму обратного звонка
-	 *
 	 * @return string
-	 * @throws \Exception
 	 */
 	public function callbackAction(): string
 	{
@@ -34,36 +41,31 @@ class Form extends Prototype
 
 	/**
 	 * Выводит форму по параметру в запросе
-	 *
 	 * @return string
-	 * @throws \Exception
 	 */
-	private function addAction(): string
+	public function addAction(): string
 	{
 		return $this->getForm($this->getParam('sid'));
 	}
 
 	/**
 	 * Выводит компонент добавления результата формы
-	 *
-	 * @param int|string $sid Символьный код формы
+	 * @param string $sid Символьный код формы
 	 * @return string
-	 * @throws Main\LoaderException
 	 */
 	protected function getForm($sid): string
 	{
-		$this->view = new Mvc\View\Html();
+		$this->view = new HtmlView();
 		$this->returnAsIs = true;
 
 		$sid = trim($sid);
 		if (!$sid) {
-			throw new \Exception('Form SID is undefined.');
+			throw new InvalidArgumentException('Form SID is undefined.');
 		}
 
-		Main\Loader::includeModule('form');
-		$form = \CForm::GetBySID($sid)->Fetch();
+		$form = CForm::GetBySID($sid)->Fetch();
 		if (!$form) {
-			throw new \Exception('The form is not found.');
+			throw new NotFoundException('The form is not found.');
 		}
 
 		return $this->getComponent('bitrix:form.result.new', '.default', [
@@ -90,12 +92,11 @@ class Form extends Prototype
 
 	/**
 	 * Выводит результат заполнения формы
-	 *
 	 * @return array
 	 */
 	public function resultAction(): array
 	{
-		$this->view = new Mvc\View\Php('form/result.php');
+		$this->view = new PhpView('form/result.php');
 
 		return [
 			'result' => $this->getParam('formresult'),
@@ -106,14 +107,12 @@ class Form extends Prototype
 
 	/**
 	 * Выводит результаты действий в форме подписки
-	 *
 	 * @return string
 	 */
-	protected function subscribeAction(): string
+	public function subscribeAction(): string
 	{
-		$this->view = new Mvc\View\Html();
+		$this->view = new HtmlView();
 		$this->returnAsIs = true;
-
 		return $this->getComponent('site:subscribtion');
 	}
 }

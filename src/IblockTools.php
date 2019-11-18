@@ -3,7 +3,9 @@
 namespace spaceonfire\BitrixTools;
 
 use Bitrix\Iblock;
+use Bitrix\Iblock\SectionTable;
 use Bitrix\Main;
+use Bitrix\Main\ORM\Objectify\EntityObject;
 use spaceonfire\BitrixTools\CacheMap\IblockCacheMap;
 
 class IblockTools
@@ -235,5 +237,54 @@ class IblockTools
 			\CIblock::enableClearTagCache();
 		}
 		return true;
+	}
+
+	/**
+	 * Возвращает список разделов инфоблока, выравненные по вложенности точками
+	 * @param int $iblockId ID инфоблока
+	 * @param array $parameters дополнительные параметры запроса
+	 * @return array Массив вида `[SECTION_ID => SECTION_NAME]`
+	 * @throws Main\ArgumentException
+	 * @throws Main\SystemException
+	 * @throws Main\LoaderException
+	 */
+	public static function getSectionsTree(int $iblockId, array $parameters = []): array
+	{
+		Common::loadModules(['iblock']);
+
+		$parameters = ArrayTools::merge([
+			'filter' => [
+				'IBLOCK_ID' => $iblockId,
+				'ACTIVE' => 'Y',
+			],
+			'select' => [
+				'ID',
+				'NAME',
+				'DEPTH_LEVEL',
+			],
+			'order' => ['LEFT_MARGIN' => 'ASC'],
+		], $parameters);
+
+		$cacheParams = [
+			'CACHE_ID' => substr(md5(serialize([__METHOD__, $iblockId, $parameters])), 0, 10),
+			'CACHE_TAG' => 'iblock_id_' . $iblockId,
+			'CACHE_PATH' => implode(DIRECTORY_SEPARATOR, ['', __METHOD__]),
+		];
+
+		return Cache::cacheResult($cacheParams, static function ($parameters) {
+			$sections = SectionTable::getList($parameters)->fetchCollection();
+
+			$ret = [];
+			/** @var EntityObject $section */
+			foreach ($sections as $section) {
+				$name = $section->get('NAME');
+				if ($section->get('DEPTH_LEVEL') > 1) {
+					$name = str_repeat(' . ', $section->get('DEPTH_LEVEL')) . $name;
+				}
+				$ret[$section->getId()] = $name;
+			}
+
+			return $ret;
+		}, [$parameters]);
 	}
 }

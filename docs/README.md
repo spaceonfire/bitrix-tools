@@ -27,18 +27,13 @@
         -   [BaseRouterComponent](./spaceonfire/BitrixTools/Components/BaseRouterComponent.md)
     -   Traits
         -   [CommonComponentTrait](./spaceonfire/BitrixTools/Components/CommonComponentTrait.md)
--   [\spaceonfire\BitrixTools\Mvc\Controller](./spaceonfire/BitrixTools/Mvc/Controller)
+-   [\spaceonfire\BitrixTools\Controllers](./spaceonfire/BitrixTools/Controllers)
     -   Classes
-        -   [Basket](./spaceonfire/BitrixTools/Mvc/Controller/Basket.md)
-        -   [Form](./spaceonfire/BitrixTools/Mvc/Controller/Form.md)
-        -   [Prototype](./spaceonfire/BitrixTools/Mvc/Controller/Prototype.md)
--   [\spaceonfire\BitrixTools\Mvc\View](./spaceonfire/BitrixTools/Mvc/View)
-    -   Classes
-        -   [Html](./spaceonfire/BitrixTools/Mvc/View/Html.md)
-        -   [Json](./spaceonfire/BitrixTools/Mvc/View/Json.md)
-        -   [Php](./spaceonfire/BitrixTools/Mvc/View/Php.md)
-        -   [Prototype](./spaceonfire/BitrixTools/Mvc/View/Prototype.md)
-        -   [Xml](./spaceonfire/BitrixTools/Mvc/View/Xml.md)
+        -   [BaseController](./spaceonfire/BitrixTools/Controllers/BaseController.md)
+        -   [BasketController](./spaceonfire/BitrixTools/Controllers/BasketController.md)
+        -   [FormController](./spaceonfire/BitrixTools/Controllers/FormController.md)
+    -   Interfaces
+        -   [ControllerInterface](./spaceonfire/BitrixTools/Controllers/ControllerInterface.md)
 -   [\spaceonfire\BitrixTools\ORM](./spaceonfire/BitrixTools/ORM)
     -   Classes
         -   [BaseHighLoadBlockDataManager](./spaceonfire/BitrixTools/ORM/BaseHighLoadBlockDataManager.md)
@@ -50,6 +45,15 @@
         -   [IblockSection](./spaceonfire/BitrixTools/ORM/IblockSection.md)
         -   [IblockSectionPropSimple](./spaceonfire/BitrixTools/ORM/IblockSectionPropSimple.md)
         -   [SectionElementTable](./spaceonfire/BitrixTools/ORM/SectionElementTable.md)
+-   [\spaceonfire\BitrixTools\Views](./spaceonfire/BitrixTools/Views)
+    -   Classes
+        -   [BaseView](./spaceonfire/BitrixTools/Views/BaseView.md)
+        -   [HtmlView](./spaceonfire/BitrixTools/Views/HtmlView.md)
+        -   [JsonView](./spaceonfire/BitrixTools/Views/JsonView.md)
+        -   [PhpView](./spaceonfire/BitrixTools/Views/PhpView.md)
+        -   [XmlView](./spaceonfire/BitrixTools/Views/XmlView.md)
+    -   Interfaces
+        -   [ViewInterface](./spaceonfire/BitrixTools/Views/ViewInterface.md)
 
 ---
 

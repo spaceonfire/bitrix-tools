@@ -3,10 +3,11 @@
 namespace spaceonfire\BitrixTools\ORM;
 
 use Bitrix\Main;
+use Bitrix\Iblock;
 use Bitrix\Iblock\IblockSiteTable;
-use Bitrix\Iblock\IblockTable;
 use Bitrix\Main\DB\SqlExpression;
 use Bitrix\Main\Entity\DataManager;
+use spaceonfire\BitrixTools;
 
 abstract class IblockElement extends DataManager
 {
@@ -25,35 +26,17 @@ abstract class IblockElement extends DataManager
 	 */
 	public static function getIblockId(): int
 	{
-		global $CACHE_MANAGER;
-		if (strlen(static::getIblockCode()) <= 0) {
+		if (trim(static::getIblockCode()) === '') {
 			throw new Main\SystemException('Method getIblockCode() returned an null or empty');
 		}
 
-		$arIblock = [];
-		$obCache = new \CPHPCache;
-		$cacheId = md5(static::class . '::' . __FUNCTION__);
-		if ($obCache->InitCache(36000, $cacheId, '/')) {
-			$vars = $obCache->GetVars();
-			$arIblock = $vars['arIblock'];
-		} elseif ($obCache->StartDataCache()) {
-			$arIblock = IblockTable::getList([
-				'select' => ['ID'],
-				'filter' => ['=CODE' => static::getIblockCode()],
-				'limit' => 1,
-			])->fetch();
-			if ($arIblock) {
-				$CACHE_MANAGER->StartTagCache('/');
-				$CACHE_MANAGER->RegisterTag('iblock_id_' . $arIblock['ID']);
-				$CACHE_MANAGER->EndTagCache();
+		$iblockId = BitrixTools\IblockTools::getIblockIdByCode(static::getIblockCode());
 
-				$obCache->EndDataCache(['arIblock' => $arIblock]);
-			} else {
-				$obCache->AbortDataCache();
-			}
+		if (!$iblockId) {
+			throw new Main\SystemException('Iblock id cannot be found by code');
 		}
 
-		return $arIblock['ID'];
+		return $iblockId;
 	}
 
 	/**
@@ -85,127 +68,7 @@ abstract class IblockElement extends DataManager
 	 */
 	public static function getMap(): array
 	{
-		$arMap = [
-			'ID' => [
-				'data_type' => 'integer',
-				'primary' => true,
-				'autocomplete' => true,
-			],
-			'TIMESTAMP_X' => [
-				'data_type' => 'datetime',
-			],
-			'MODIFIED_BY' => [
-				'data_type' => 'integer',
-			],
-			'DATE_CREATE' => [
-				'data_type' => 'datetime',
-			],
-			'CREATED_BY' => [
-				'data_type' => 'integer',
-			],
-			'IBLOCK_ID' => [
-				'data_type' => 'integer',
-				'required' => true,
-			],
-			'IBLOCK_SECTION_ID' => [
-				'data_type' => 'integer',
-			],
-			'ACTIVE' => [
-				'data_type' => 'boolean',
-				'values' => ['N', 'Y'],
-			],
-			'ACTIVE_FROM' => [
-				'data_type' => 'datetime',
-			],
-			'ACTIVE_TO' => [
-				'data_type' => 'datetime',
-			],
-			'SORT' => [
-				'data_type' => 'integer',
-			],
-			'NAME' => [
-				'data_type' => 'string',
-				'required' => true,
-			],
-			'PREVIEW_PICTURE' => [
-				'data_type' => 'integer',
-			],
-			'PREVIEW_TEXT' => [
-				'data_type' => 'text',
-			],
-			'PREVIEW_TEXT_TYPE' => [
-				'data_type' => 'enum',
-				'values' => ['text', 'html'],
-			],
-			'DETAIL_PICTURE' => [
-				'data_type' => 'integer',
-			],
-			'DETAIL_TEXT' => [
-				'data_type' => 'text',
-			],
-			'DETAIL_TEXT_TYPE' => [
-				'data_type' => 'enum',
-				'values' => ['text', 'html'],
-			],
-			'SEARCHABLE_CONTENT' => [
-				'data_type' => 'text',
-			],
-			'WF_STATUS_ID' => [
-				'data_type' => 'integer',
-			],
-			'WF_PARENT_ELEMENT_ID' => [
-				'data_type' => 'integer',
-			],
-			'WF_NEW' => [
-				'data_type' => 'string',
-			],
-			'WF_LOCKED_BY' => [
-				'data_type' => 'integer',
-			],
-			'WF_DATE_LOCK' => [
-				'data_type' => 'datetime',
-			],
-			'WF_COMMENTS' => [
-				'data_type' => 'text',
-			],
-			'IN_SECTIONS' => [
-				'data_type' => 'boolean',
-				'values' => ['N', 'Y'],
-			],
-			'XML_ID' => [
-				'data_type' => 'string',
-			],
-			'CODE' => [
-				'data_type' => 'string',
-			],
-			'ELEMENT_CODE' => [
-				'data_type' => 'string',
-				'expression' => ['%s', 'CODE']
-			],
-			'TAGS' => [
-				'data_type' => 'string',
-			],
-			'TMP_ID' => [
-				'data_type' => 'string',
-			],
-			'WF_LAST_HISTORY_ID' => [
-				'data_type' => 'integer',
-			],
-			'SHOW_COUNTER' => [
-				'data_type' => 'integer',
-			],
-			'SHOW_COUNTER_START' => [
-				'data_type' => 'datetime',
-			],
-			'IBLOCK' => [
-				'data_type' => IblockTable::class,
-				'reference' => ['=this.IBLOCK_ID' => 'ref.ID'],
-			],
-			'WF_PARENT_ELEMENT' => [
-				'data_type' => static::class,
-				'reference' => ['=this.WF_PARENT_ELEMENT_ID' => 'ref.ID'],
-			],
-		];
+		$arMap = Iblock\ElementTable::getMap();
 
 		$propertySimpleClassName = str_replace('Table', '', static::class) . 'PropSimpleTable';
 		if (class_exists($propertySimpleClassName)) {

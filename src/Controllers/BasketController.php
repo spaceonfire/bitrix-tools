@@ -1,44 +1,43 @@
 <?php
 
-namespace spaceonfire\BitrixTools\Mvc\Controller;
+namespace spaceonfire\BitrixTools\Controllers;
 
+use CSaleBasket;
 use spaceonfire\BitrixTools\Common;
-use spaceonfire\BitrixTools\Mvc;
+use spaceonfire\BitrixTools\Views\JsonView;
+use Throwable;
 
 try {
 	Common::loadModules(['sale']);
-} catch (\Throwable $throwable) {
+} catch (Throwable $throwable) {
 	return;
 }
 
 /**
  * Контроллер корзины
  */
-class Basket extends Prototype
+class BasketController extends BaseController
 {
 	/**
 	 * Удаляет товар из корзины
-	 *
-	 * @return void
 	 */
 	public function removeAction(): void
 	{
-		$this->view = new Mvc\View\Json();
+		$this->view = new JsonView();
 		$this->returnAsIs = true;
 		$id = $this->getParam('ID');
-		\CSaleBasket::Delete($id);
+		CSaleBasket::Delete($id);
 	}
 
 	/**
 	 * Изменение количества покупаемого товара
-	 *
 	 */
 	public function updateCountAction(): void
 	{
-		$this->view = new Mvc\View\Json();
+		$this->view = new JsonView();
 		$this->returnAsIs = true;
 		$id = $this->getParam('ID');
 		$quantity = $this->getParam('QUANTITY');
-		\CSaleBasket::Update($id, ['QUANTITY' => $quantity]);
+		CSaleBasket::Update($id, ['QUANTITY' => $quantity]);
 	}
 }
