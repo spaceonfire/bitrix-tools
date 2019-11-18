@@ -44,17 +44,30 @@ class BaseController implements ControllerInterface
 	 * @return static
 	 * @throws Exception
 	 */
-	public static function factory($name, $namespace = __NAMESPACE__)
+	public static function factory($name, $namespace = __NAMESPACE__): ControllerInterface
 	{
-		$name = preg_replace('/[^A-z0-9_]/', '', $name);
 		$namespace = rtrim($namespace, '\\');
-		$className = $namespace . '\\' . ucfirst($name);
 
-		if (!class_exists($className)) {
-			throw new NotFoundException(sprintf('Controller "%s" doesn\'t exists.', $name));
+		if (strpos($name, '/') !== false) {
+			$nameParts = explode('/', $name);
+			$name = array_pop($nameParts);
+			$namespace .= '\\' . implode('\\', array_map('ucfirst', $nameParts));
 		}
 
-		return new $className();
+		$name = preg_replace('/[^A-z0-9_]/', '', $name);
+
+		$checkClasses = [
+			$namespace . '\\' . ucfirst($name),
+			$namespace . '\\' . ucfirst($name) . 'Controller',
+		];
+
+		foreach ($checkClasses as $className) {
+			if (class_exists($className)) {
+				return new $className();
+			}
+		}
+
+		throw new NotFoundException(sprintf('Controller "%s" doesn\'t exists.', $name));
 	}
 
 	/**
