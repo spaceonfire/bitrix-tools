@@ -1,51 +1,42 @@
 <?php
 
-namespace spaceonfire\BitrixTools\Mvc\View;
+namespace spaceonfire\BitrixTools\Views;
 
-use Bitrix\Main;
+use Bitrix\Main\IO\FileNotFoundException;
+use Bitrix\Main\Localization\Loc;
 
 /**
  * PHP MVC view
  */
-class Php extends Prototype
+class PhpView extends BaseView
 {
-	/**
-	 * Отсылает http-заголовки для view
-	 *
-	 * @return void
-	 */
+	/** {@inheritDoc} */
 	public function sendHeaders(): void
 	{
 		header('Content-type: text/html; charset=' . SITE_CHARSET);
 	}
 
 	/**
-	 * Формирует view
-	 *
-	 * @return string
-	 * @throws \Exception
+	 * {@inheritDoc}
+	 * @throws FileNotFoundException
 	 */
 	public function render(): string
 	{
 		$path = $this->getPath();
 		if (!is_file($path)) {
-			throw new Main\IO\FileNotFoundException($path);
+			throw new FileNotFoundException($path);
 		}
 
-		Main\Localization\Loc::loadMessages($path);
+		Loc::loadMessages($path);
 
 		ob_start();
 		$result = &$this->data;
 		require $path;
-		$result = ob_get_contents();
-		ob_end_clean();
-
-		return $result;
+		return ob_get_clean();
 	}
 
 	/**
 	 * Выводит HTML в безопасном виде
-	 *
 	 * @param string $data Выводимые данные
 	 * @return string
 	 */

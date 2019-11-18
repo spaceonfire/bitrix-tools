@@ -1,39 +1,28 @@
 <?php
 
-namespace spaceonfire\BitrixTools\Mvc\View;
+namespace spaceonfire\BitrixTools\Views;
 
 /**
  * HTML MVC view
  */
-class Html extends Prototype
+class HtmlView extends BaseView
 {
 	/**
 	 * Создает новый MVC HTML view
-	 *
-	 * @noinspection PhpMissingParentConstructorInspection MagicMethodsValidityInspection
 	 * @param string $data HTML текст
-	 * @return void
 	 */
 	public function __construct($data = '')
 	{
-		$this->data = $data;
+		parent::__construct('', $data);
 	}
 
-	/**
-	 * Отсылает http-заголовки для view
-	 *
-	 * @return void
-	 */
+	/** {@inheritDoc} */
 	public function sendHeaders(): void
 	{
 		header('Content-type: text/html; charset=' . SITE_CHARSET);
 	}
 
-	/**
-	 * Формирует view
-	 *
-	 * @return string
-	 */
+	/** {@inheritDoc} */
 	public function render(): string
 	{
 		return is_array($this->data) ? implode('', $this->data) : (string)$this->data;
