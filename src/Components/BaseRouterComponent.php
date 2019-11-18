@@ -171,6 +171,7 @@ abstract class BaseRouterComponent extends CBitrixComponent
 
 	/**
 	 * Выполнение компонента
+	 * @return static возвращает объект компонента
 	 */
 	public function executeComponent()
 	{
@@ -179,5 +180,46 @@ abstract class BaseRouterComponent extends CBitrixComponent
 		} catch (Throwable $e) {
 			$this->catchError($e);
 		}
+		return $this;
+	}
+
+	/**
+	 * Проверяет, объявлен ли шаблон Url компонентом в `defaultUrlTemplates404`
+	 * @param string $templateName
+	 * @return bool
+	 */
+	public function hasUrlTemplate(string $templateName): bool
+	{
+		return isset($this->defaultUrlTemplates404[$templateName]);
+	}
+
+	/**
+	 * Возвращает шаблон Url по названию
+	 * @param string $templateName
+	 * @return string|null
+	 */
+	public function getUrlTemplate(string $templateName): ?string
+	{
+		if (!$this->hasUrlTemplate($templateName)) {
+			return null;
+		}
+
+		return $this->arParams['SEF_URL_TEMPLATES'][$templateName] ??
+			$this->defaultUrlTemplates404[$templateName];
+	}
+
+	/**
+	 * Собирает Url из шаблона
+	 * @param string $templateName
+	 * @param array $params
+	 * @return string|null
+	 */
+	public function buildUrl(string $templateName, array $params = []): ?string
+	{
+		if (!($template = $this->getUrlTemplate($templateName))) {
+			return null;
+		}
+
+		return $this->arParams['SEF_FOLDER'] . CComponentEngine::makePathFromTemplate($template, $params);
 	}
 }

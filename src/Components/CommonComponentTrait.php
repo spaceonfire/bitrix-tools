@@ -5,6 +5,7 @@ namespace spaceonfire\BitrixTools\Components;
 use Bitrix\Main;
 use Bitrix\Main\Application;
 use Bitrix\Main\Diag\ExceptionHandlerLog;
+use Bitrix\Main\Event;
 use Bitrix\Main\Localization\Loc;
 use CAjax;
 use CMain;
@@ -51,6 +52,15 @@ trait CommonComponentTrait
 	 * @example $checkParams = array('IBLOCK_TYPE' => array('type' => 'string'), 'ELEMENT_ID' => array('type' => 'int', 'error' => '404'));
 	 */
 	protected $checkParams = [];
+
+	/**
+	 * Загружает файлы переводов компонента (component.php и class.php)
+	 */
+	public function onIncludeComponentLang(): void
+	{
+		parent::onIncludeComponentLang();
+		$this->includeComponentLang('class.php');
+	}
 
 	/**
 	 * Загружает модули 1С-Битрикс.
@@ -130,6 +140,24 @@ trait CommonComponentTrait
 				throw $exception;
 			}
 		}
+	}
+
+	/**
+	 * Возвращает значение параметра родительского компонента
+	 * @param string $paramName
+	 * @return mixed|null
+	 */
+	protected function getParentParam(string $paramName)
+	{
+		if (!($parent = $this->getParent())) {
+			return null;
+		}
+
+		if (!isset($parent->arParams[$paramName])) {
+			return null;
+		}
+
+		return $parent->arParams[$paramName];
 	}
 
 	/**
@@ -344,5 +372,28 @@ trait CommonComponentTrait
 	public function addCacheAdditionalId($id): void
 	{
 		$this->cacheAdditionalId[] = $id;
+	}
+
+	/**
+	 * Вызывает событие, специфичное для компонента
+	 * @param string $type Тип события. Имя класса компонента будет добавлено ввиде префикса.
+	 * @param array $params Параметры события. Параметр `component` будет добавлен автоматически
+	 * @param null|string|string[] $filter Фильтр события
+	 * @return Event
+	 */
+	public function triggerEvent(string $type, array $params = [], $filter = null): Event
+	{
+		$firstTwoNamespaces = array_slice(explode('\\', static::class), 0, 2);
+		$moduleId = strtolower(implode('.', $firstTwoNamespaces));
+
+		$params = array_merge($params, [
+			'component' => $this,
+		]);
+
+		$type = static::class . '::' . $type;
+
+		$event = new Event($moduleId, $type, $params, $filter);
+		$event->send();
+		return $event;
 	}
 }

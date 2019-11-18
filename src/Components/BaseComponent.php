@@ -50,6 +50,7 @@ abstract class BaseComponent extends CBitrixComponent
 
 	/**
 	 * Выполнение компонента
+	 * @return static возвращает объект компонента
 	 */
 	public function executeComponent()
 	{
@@ -58,5 +59,6 @@ abstract class BaseComponent extends CBitrixComponent
 		} catch (Throwable $e) {
 			$this->catchError($e);
 		}
+		return $this;
 	}
 }
