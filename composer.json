@@ -51,7 +51,7 @@
   },
   "scripts": {
     "doc": [
-      "apidoc",
+      "apidoc --propertiesVisibility=public --methodsVisibility=public --methodsVisibility=protected",
       "npx prettier --write docs/**/*.md"
     ]
   }
