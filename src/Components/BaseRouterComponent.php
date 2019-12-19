@@ -216,7 +216,7 @@ abstract class BaseRouterComponent extends CBitrixComponent
 	 */
 	public function buildUrl(string $templateName, array $params = []): ?string
 	{
-		if (!($template = $this->getUrlTemplate($templateName))) {
+		if (($template = $this->getUrlTemplate($templateName)) === null) {
 			return null;
 		}
 
