@@ -54,16 +54,6 @@ abstract class BaseHighLoadBlockDataManager extends DataManager
 	}
 
 	/**
-	 * Возвращает ID пользовательских полей для HighLoad блока
-	 * @return string|null
-	 */
-	public static function getUfId()
-	{
-		$data = static::getHighloadBlock();
-		return 'HLBLOCK_' . $data['ID'];
-	}
-
-	/**
 	 * Определяет список полей для сущности
 	 * @return array
 	 * @throws \Bitrix\Main\SystemException
