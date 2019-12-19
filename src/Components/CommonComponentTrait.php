@@ -4,6 +4,7 @@ namespace spaceonfire\BitrixTools\Components;
 
 use Bitrix\Main;
 use Bitrix\Main\Application;
+use Bitrix\Main\Config\Configuration;
 use Bitrix\Main\Diag\ExceptionHandlerLog;
 use Bitrix\Main\Event;
 use Bitrix\Main\Localization\Loc;
@@ -185,10 +186,6 @@ trait CommonComponentTrait
 			$APPLICATION->RestartBuffer();
 		}
 
-		if ($this->arParams['AJAX_TYPE'] === 'JSON') {
-			header('Content-Type: application/json');
-		}
-
 		if (strlen($this->arParams['AJAX_TEMPLATE_PAGE']) > 0) {
 			$this->templatePage = basename($this->arParams['AJAX_TEMPLATE_PAGE']);
 		}
@@ -301,46 +298,73 @@ trait CommonComponentTrait
 	 * Сбрасывает кэш, показывает сообщение об ошибке (в общем виде для пользователей и детально
 	 * для админов), пишет ошибку в лог Битрикса
 	 *
-	 * @param Throwable $throwable
+	 * @param Throwable $exception
 	 */
-	protected function catchError(Throwable $throwable)
+	protected function catchError(Throwable $exception)
 	{
-		global $USER;
-
 		$this->abortCache();
 
-		HttpStatusTools::catchError($throwable);
+		HttpStatusTools::catchError($exception);
 
-		if ($USER->IsAdmin()) {
-			$this->showExceptionAdmin($throwable);
-		} else {
-			$this->showExceptionUser($throwable);
+		$errorMessage = $this->canShowExceptionMessage($exception)
+			? $exception->getMessage()
+			: Loc::getMessage('COMPONENT_CATCH_EXCEPTION');
+
+		$this->renderExceptionMessage($errorMessage);
+
+		if ($this->canShowExceptionTrace($exception)) {
+			$this->renderExceptionTrace($exception);
 		}
 
 		try {
 			Application::getInstance()->getExceptionHandler()
-				->writeToLog($throwable, ExceptionHandlerLog::CAUGHT_EXCEPTION);
+				->writeToLog($exception, ExceptionHandlerLog::CAUGHT_EXCEPTION);
 		} catch (Throwable $e) {
 		}
 	}
 
 	/**
-	 * Отображат сообщение об ошибке для пользователей
-	 * @param Throwable $throwable
+	 * Определяет можно ли показать сообщение исключения
+	 * @param Throwable $exception
+	 * @return bool
 	 */
-	protected function showExceptionUser(Throwable $throwable)
+	protected function canShowExceptionMessage(Throwable $exception): bool
 	{
-		ShowError(Loc::getMessage('COMPONENT_CATCH_EXCEPTION'));
+		global $USER;
+		return $USER->IsAdmin();
 	}
 
 	/**
-	 * Отображат сообщение об ошибке для админов
+	 * Определяет можно ли показать трейс исключения
+	 * @param Throwable $exception
+	 * @return bool
+	 */
+	protected function canShowExceptionTrace(Throwable $exception): bool
+	{
+		global $USER;
+
+		$exceptionHandling = Configuration::getValue('exception_handling') ?? ['debug' => false];
+		$isDebugEnabled = (bool)$exceptionHandling['debug'];
+
+		return $USER->IsAdmin() && $isDebugEnabled;
+	}
+
+	/**
+	 * Отображат сообщение об ошибке
+	 * @param string $message
+	 */
+	protected function renderExceptionMessage(string $message): void
+	{
+		ShowError($message);
+	}
+
+	/**
+	 * Отображат трейс ошибки
 	 * @param Throwable $throwable
 	 */
-	protected function showExceptionAdmin(Throwable $throwable)
+	protected function renderExceptionTrace(Throwable $throwable): void
 	{
-		ShowError($throwable->getMessage());
-		echo nl2br($throwable);
+		echo nl2br($throwable->getTraceAsString());
 	}
 
 	/**
