@@ -12,8 +12,12 @@ use CIBlockPropertyEnum;
 use spaceonfire\BitrixTools\CacheMap\IblockCacheMap;
 use Webmozart\Assert\Assert;
 
-class IblockTools
+abstract class IblockTools
 {
+    final private function __construct()
+    {
+    }
+
     /**
      * Возвращает ID инфоблока по символьному коду
      *

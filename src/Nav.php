@@ -2,8 +2,12 @@
 
 namespace spaceonfire\BitrixTools;
 
-class Nav
+abstract class Nav
 {
+    final private function __construct()
+    {
+    }
+
     /**
      * Преобразует стандартный плоский массив навигационного меню, сгенерированный компонентом bitrix:menu,
      * в многоуровневый вложенный массив

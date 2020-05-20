@@ -4,8 +4,12 @@ namespace spaceonfire\BitrixTools;
 
 use spaceonfire\Collection\ArrayHelper;
 
-class ArrayTools extends ArrayHelper
+abstract class ArrayTools extends ArrayHelper
 {
+    final private function __construct()
+    {
+    }
+
     /**
      * Удаляет из ассоциативного массива ключи, начинающиеся с тильды (~)
      * @param array $data Исходный ассоциативный массив с данными

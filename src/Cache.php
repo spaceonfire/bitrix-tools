@@ -5,8 +5,12 @@ namespace spaceonfire\BitrixTools;
 use Bitrix\Main\ArgumentNullException;
 use Bitrix\Main\Data\Cache as BxCache;
 
-class Cache
+abstract class Cache
 {
+    final private function __construct()
+    {
+    }
+
     private static function prepareOptions(array $options): array
     {
         $options = array_merge([

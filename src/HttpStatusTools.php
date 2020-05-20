@@ -8,7 +8,7 @@ use Narrowspark\HttpStatus\Exception\InternalServerErrorException;
 use Narrowspark\HttpStatus\HttpStatus;
 use Throwable;
 
-class HttpStatusTools extends HttpStatus
+abstract class HttpStatusTools extends HttpStatus
 {
     /**
      * Устанавливает статус ответа и константу ошибки

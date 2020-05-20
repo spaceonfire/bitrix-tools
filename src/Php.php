@@ -4,8 +4,12 @@ namespace spaceonfire\BitrixTools;
 
 use Bitrix\Main;
 
-class Php
+abstract class Php
 {
+    final private function __construct()
+    {
+    }
+
     /**
      * Запускает фоновый процесс PHP для выполнения некоторой функции.
      *
