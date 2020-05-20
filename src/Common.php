@@ -3,9 +3,17 @@
 namespace spaceonfire\BitrixTools;
 
 use Bitrix\Main;
+use CApplicationException;
+use InvalidArgumentException;
+use RuntimeException;
+use Throwable;
 
-class Common
+abstract class Common
 {
+    final private function __construct()
+    {
+    }
+
     /**
      * Загружает модули 1С-Битрикс
      * @param array $modules Массив модулей, которые необходимо загрузить
@@ -33,4 +41,32 @@ class Common
         $arBodyClass = array_unique(array_filter($arBodyClass));
         $APPLICATION->SetPageProperty($propertyId, implode(' ', $arBodyClass));
     }
+
+    /**
+     * Converts bitrix $APPLICATION global exception message to throwable
+     * @param string $defaultErrorMessage
+     * @param string $className
+     * @return Throwable
+     */
+    public static function getAppException(string $defaultErrorMessage = 'Error', string $className = RuntimeException::class): Throwable
+    {
+        global $APPLICATION;
+
+        if (!is_subclass_of($className, Throwable::class)) {
+            throw new InvalidArgumentException('Exception class name must implement Throwable interface');
+        }
+
+        $appException = $APPLICATION->GetException();
+
+        if (is_string($appException)) {
+            $errorMessage = $appException;
+        }
+
+        if ($appException instanceof CApplicationException) {
+            $errorMessage = $appException->GetString();
+        }
+
+        return new $className($errorMessage ?? $defaultErrorMessage);
+    }
+
 }
