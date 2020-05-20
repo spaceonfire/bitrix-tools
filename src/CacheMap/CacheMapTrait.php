@@ -5,10 +5,8 @@ namespace spaceonfire\BitrixTools\CacheMap;
 use Bitrix\Main;
 use Bitrix\Main\ORM\Query\Query;
 use Closure;
+use Opis\Closure\SerializableClosure;
 use spaceonfire\BitrixTools\Cache;
-use SuperClosure\Analyzer\TokenAnalyzer;
-use SuperClosure\SerializableClosure;
-use SuperClosure\Serializer;
 
 trait CacheMapTrait
 {
@@ -29,7 +27,7 @@ trait CacheMapTrait
         } elseif (is_array($dataSource)) {
             $this->map = $dataSource;
         } else {
-            throw new Main\ArgumentTypeException('dataSource', [Query::class, 'callable', 'array', ]);
+            throw new Main\ArgumentTypeException('dataSource', [Query::class, 'callable', 'array',]);
         }
 
         $this->idKey = $idKey;
@@ -41,8 +39,7 @@ trait CacheMapTrait
     private function setFillCallback(callable $callback): void
     {
         $this->fillCallback = new SerializableClosure(
-            $callback instanceof Closure ? $callback : Closure::fromCallable($callback),
-            new Serializer(new TokenAnalyzer())
+            $callback instanceof Closure ? $callback : Closure::fromCallable($callback)
         );
     }
 
