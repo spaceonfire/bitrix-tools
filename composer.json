@@ -1,10 +1,8 @@
 {
   "name": "spaceonfire/bitrix-tools",
   "description": "Utility classes for Bitrix projects",
-  "keywords": ["tools", "bitrix"],
+  "keywords": ["bitrix", "tools", "helpers", "utilities"],
   "license": "MIT",
-  "minimum-stability": "dev",
-  "prefer-stable": true,
   "authors": [
     {
       "name": "Constantine Karnaukhov",
@@ -12,47 +10,40 @@
       "role": "Maintainer"
     }
   ],
-  "repositories": [
-    {
-      "type": "git",
-      "url": "https://github.com/alexprowars/bxApiDocs"
-    }
-  ],
   "require": {
-    "php": ">=7.2",
+    "php": "^7.2",
     "ext-json": "*",
     "ext-dom": "*",
     "jeremeamia/superclosure": "^2.0",
-    "narrowspark/http-status": "~4.1.0",
-    "spaceonfire/collection": "~1.2.1"
+    "narrowspark/http-status": "^4.1",
+    "spaceonfire/collection": "^1.3"
   },
   "require-dev": {
+    "phpstan/phpstan": "^0.12",
     "roave/security-advisories": "dev-master",
-    "phpunit/phpunit": "^8.1.5",
-    "spaceonfire/simple-php-apidoc": "~1.1.1",
-    "matiaspub/bx-api-docs": "dev-master"
+    "spaceonfire/simple-php-apidoc": "^1.1",
+    "symplify/easy-coding-standard-prefixed": "7.3.17"
   },
   "autoload": {
     "psr-4": {
       "spaceonfire\\BitrixTools\\": "src/"
     },
     "files": [
-      "autoload.php",
-      "compatibility.php"
+      "autoload.php"
     ]
   },
   "bin": [
     "bin/run-in-background.php"
   ],
-  "config": {
-    "preferred-install": "dist",
-    "optimize-autoloader": true,
-    "classmap-authoritative": true
-  },
   "scripts": {
     "doc": [
       "apidoc --propertiesVisibility=public --methodsVisibility=public --methodsVisibility=protected",
       "npx prettier --write docs/**/*.md"
-    ]
+    ],
+    "codestyle": "ecs check --ansi",
+    "lint": "phpstan analyze --memory-limit=512M --ansi"
+  },
+  "config": {
+    "sort-packages": true
   }
 }

@@ -11,54 +11,54 @@ use Throwable;
  */
 abstract class BaseComponent extends CBitrixComponent
 {
-	use CommonComponentTrait;
+    use CommonComponentTrait;
 
-	/**
-	 * @var bool Указывает необходимо ли кэшировать шаблон компонента (включено по-умолчанию)
-	 */
-	protected $cacheTemplate = true;
+    /**
+     * @var bool Указывает необходимо ли кэшировать шаблон компонента (включено по-умолчанию)
+     */
+    protected $cacheTemplate = true;
 
-	/**
-	 * Универсальный флоу выполнения компонента
-	 * @throws Throwable
-	 */
-	final protected function run(): void
-	{
-		$this->includeModules();
-		$this->init();
-		$this->checkAutomaticParams();
-		$this->startAjax();
-		$this->executeProlog();
+    /**
+     * Универсальный флоу выполнения компонента
+     * @throws Throwable
+     */
+    final protected function run(): void
+    {
+        $this->includeModules();
+        $this->init();
+        $this->checkAutomaticParams();
+        $this->startAjax();
+        $this->executeProlog();
 
-		if ($this->startCache()) {
-			$this->executeMain();
+        if ($this->startCache()) {
+            $this->executeMain();
 
-			if ($this->cacheTemplate) {
-				$this->render();
-			}
+            if ($this->cacheTemplate) {
+                $this->render();
+            }
 
-			$this->writeCache();
-		}
+            $this->writeCache();
+        }
 
-		if (!$this->cacheTemplate) {
-			$this->render();
-		}
+        if (!$this->cacheTemplate) {
+            $this->render();
+        }
 
-		$this->executeEpilog();
-		$this->stopAjax();
-	}
+        $this->executeEpilog();
+        $this->stopAjax();
+    }
 
-	/**
-	 * Выполнение компонента
-	 * @return static возвращает объект компонента
-	 */
-	public function executeComponent()
-	{
-		try {
-			$this->run();
-		} catch (Throwable $e) {
-			$this->catchError($e);
-		}
-		return $this;
-	}
+    /**
+     * Выполнение компонента
+     * @return static возвращает объект компонента
+     */
+    public function executeComponent()
+    {
+        try {
+            $this->run();
+        } catch (Throwable $e) {
+            $this->catchError($e);
+        }
+        return $this;
+    }
 }

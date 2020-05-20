@@ -1,0 +1,27 @@
+parameters:
+  sets:
+    - clean-code
+    - strict
+    - php70
+    - php71
+    - psr12
+  cache_directory: ._ecs_cache
+  paths:
+    - src/
+  skip:
+    Unused variable $_.: ~
+    PhpCsFixer\Fixer\Strict\DeclareStrictTypesFixer: ~
+
+services:
+  Symplify\CodingStandard\Fixer\LineLength\LineLengthFixer: ~
+
+  # Types
+  # SlevomatCodingStandard\Sniffs\TypeHints\ParameterTypeHintSniff: ~
+  # SlevomatCodingStandard\Sniffs\TypeHints\PropertyTypeHintSniff: ~
+  # SlevomatCodingStandard\Sniffs\TypeHints\ReturnTypeHintSniff: ~
+
+  # Dead code
+  SlevomatCodingStandard\Sniffs\Classes\UnusedPrivateElementsSniff: ~
+  SlevomatCodingStandard\Sniffs\Functions\UnusedInheritedVariablePassedToClosureSniff: ~
+  SlevomatCodingStandard\Sniffs\Functions\UnusedParameterSniff: ~
+  SlevomatCodingStandard\Sniffs\Variables\UnusedVariableSniff: ~

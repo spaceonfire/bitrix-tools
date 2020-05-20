@@ -2,435 +2,438 @@
 
 namespace spaceonfire\BitrixTools\ORM;
 
-use Bitrix\Main;
 use Bitrix\Iblock;
 use Bitrix\Iblock\IblockSiteTable;
+use Bitrix\Main;
 use Bitrix\Main\DB\SqlExpression;
 use Bitrix\Main\Entity\DataManager;
+use CIBlockProperty;
+use CIBlockPropertyEnum;
+use CPHPCache;
 use spaceonfire\BitrixTools;
 
 abstract class IblockElement extends DataManager
 {
-	private static $arEnums = [];
+    private static $arEnums = [];
 
-	/**
-	 * Возвращает ID инфоблока
-	 *
-	 * Если Вам заранее известен ID инфоблока, лучше самостоятельно возвращать его в переопределении
-	 * метода. Иначе следует переопределить метод `getIblockCode()`.
-	 *
-	 * @abstract
-	 * @return int
-	 * @throws Main\NotImplementedException
-	 * @throws Main\SystemException
-	 */
-	public static function getIblockId(): int
-	{
-		if (trim(static::getIblockCode()) === '') {
-			throw new Main\SystemException('Method getIblockCode() returned an null or empty');
-		}
+    /**
+     * Возвращает ID инфоблока
+     *
+     * Если Вам заранее известен ID инфоблока, лучше самостоятельно возвращать его в переопределении
+     * метода. Иначе следует переопределить метод `getIblockCode()`.
+     *
+     * @abstract
+     * @return int
+     * @throws Main\NotImplementedException
+     * @throws Main\SystemException
+     */
+    public static function getIblockId(): int
+    {
+        if (trim(static::getIblockCode()) === '') {
+            throw new Main\SystemException('Method getIblockCode() returned an null or empty');
+        }
 
-		$iblockId = BitrixTools\IblockTools::getIblockIdByCode(static::getIblockCode());
+        $iblockId = BitrixTools\IblockTools::getIblockIdByCode(static::getIblockCode());
 
-		if (!$iblockId) {
-			throw new Main\SystemException('Iblock id cannot be found by code');
-		}
+        if (!$iblockId) {
+            throw new Main\SystemException('Iblock id cannot be found by code');
+        }
 
-		return $iblockId;
-	}
+        return $iblockId;
+    }
 
-	/**
-	 * Возвращает символьный код инфоблока.
-	 * @abstract
-	 * @return string
-	 * @throws Main\NotImplementedException
-	 */
-	public static function getIblockCode(): string
-	{
-		throw new Main\NotImplementedException('Method getIblockCode() must be implemented by successor.');
-	}
+    /**
+     * Возвращает символьный код инфоблока.
+     * @abstract
+     * @return string
+     * @throws Main\NotImplementedException
+     */
+    public static function getIblockCode(): string
+    {
+        throw new Main\NotImplementedException('Method getIblockCode() must be implemented by successor.');
+    }
 
-	/**
-	 * Возвращает название таблицы для сущности в БД
-	 *
-	 * @return string
-	 */
-	public static function getTableName(): string
-	{
-		return 'b_iblock_element';
-	}
+    /**
+     * Возвращает название таблицы для сущности в БД
+     *
+     * @return string
+     */
+    public static function getTableName(): string
+    {
+        return 'b_iblock_element';
+    }
 
-	/**
-	 * Возврщает схему полей сущности
-	 * @return array
-	 * @throws Main\ArgumentException
-	 * @throws Main\SystemException
-	 */
-	public static function getMap(): array
-	{
-		$arMap = Iblock\ElementTable::getMap();
+    /**
+     * Возврщает схему полей сущности
+     * @return array
+     * @throws Main\ArgumentException
+     * @throws Main\SystemException
+     */
+    public static function getMap(): array
+    {
+        $arMap = Iblock\ElementTable::getMap();
 
-		$propertySimpleClassName = str_replace('Table', '', static::class) . 'PropSimpleTable';
-		if (class_exists($propertySimpleClassName)) {
-			$arMap['PROPERTY_SIMPLE'] = [
-				'data_type' => $propertySimpleClassName,
-				'reference' => [
-					'=this.ID' => 'ref.IBLOCK_ELEMENT_ID',
-				],
-			];
-		}
+        $propertySimpleClassName = str_replace('Table', '', static::class) . 'PropSimpleTable';
+        if (class_exists($propertySimpleClassName)) {
+            $arMap['PROPERTY_SIMPLE'] = [
+                'data_type' => $propertySimpleClassName,
+                'reference' => [
+                    '=this.ID' => 'ref.IBLOCK_ELEMENT_ID',
+                ],
+            ];
+        }
 
-		$sectionClassName = str_replace('Table', '', static::class) . 'SectionTable';
-		if (class_exists($sectionClassName)) {
-			$arMap['SECTION'] = [
-				'data_type' => $sectionClassName,
-				'reference' => [
-					'=this.IBLOCK_SECTION_ID' => 'ref.ID',
-				],
-			];
+        $sectionClassName = str_replace('Table', '', static::class) . 'SectionTable';
+        if (class_exists($sectionClassName)) {
+            $arMap['SECTION'] = [
+                'data_type' => $sectionClassName,
+                'reference' => [
+                    '=this.IBLOCK_SECTION_ID' => 'ref.ID',
+                ],
+            ];
 
-			$arMap['SECTION_CODE'] = [
-				'data_type' => 'string',
-				'expression' => ['%s', 'SECTION.CODE'],
-			];
+            $arMap['SECTION_CODE'] = [
+                'data_type' => 'string',
+                'expression' => ['%s', 'SECTION.CODE'],
+            ];
 
-			$arMap['SECTION_ID'] = [
-				'data_type' => 'string',
-				'expression' => ['%s', 'IBLOCK_SECTION_ID'],
-			];
+            $arMap['SECTION_ID'] = [
+                'data_type' => 'string',
+                'expression' => ['%s', 'IBLOCK_SECTION_ID'],
+            ];
 
-			$arMap['SECTION_ELEMENT'] = [
-				'data_type' => SectionElementTable::class,
-				'reference' => [
-					'=this.ID' => 'ref.IBLOCK_ELEMENT_ID',
-				],
-			];
+            $arMap['SECTION_ELEMENT'] = [
+                'data_type' => SectionElementTable::class,
+                'reference' => [
+                    '=this.ID' => 'ref.IBLOCK_ELEMENT_ID',
+                ],
+            ];
 
-			$arMap['SECTIONS'] = [
-				'data_type' => $sectionClassName,
-				'reference' => [
-					'=this.SECTION_ELEMENT.IBLOCK_SECTION_ID' => 'ref.ID',
-				],
-			];
-		}
+            $arMap['SECTIONS'] = [
+                'data_type' => $sectionClassName,
+                'reference' => [
+                    '=this.SECTION_ELEMENT.IBLOCK_SECTION_ID' => 'ref.ID',
+                ],
+            ];
+        }
 
-		$arMap = array_merge($arMap, static::getPropertyMultipleMap());
-		$arMap = array_merge($arMap, static::getUrlTemplateMap($arMap));
+        $arMap = array_merge($arMap, static::getPropertyMultipleMap());
+        $arMap = array_merge($arMap, static::getUrlTemplateMap($arMap));
 
-		return $arMap;
-	}
+        return $arMap;
+    }
 
-	protected static function getPropertyMultipleMap()
-	{
-		global $CACHE_MANAGER;
-		$arProperties = [];
-		$propertyMultipleClassName = str_replace('Table', '', static::class) . 'PropMultipleTable';
-		if (class_exists($propertyMultipleClassName)) {
-			$obCache = new \CPHPCache;
-			$cacheId = md5(static::class . '::' . __FUNCTION__);
-			if ($obCache->InitCache(36000, $cacheId, '/')) {
-				$vars = $obCache->GetVars();
-				$arProperties = $vars['arProperties'];
-			} elseif ($obCache->StartDataCache()) {
-				$rsProperty = \CIBlockProperty::GetList(
-					[],
-					[
-						'IBLOCK_ID' => static::getIblockId(),
-						'MULTIPLE' => 'Y',
-					]
-				);
-				while ($arProperty = $rsProperty->Fetch()) {
-					if (empty($arProperty['CODE'])) {
-						continue;
-					}
+    protected static function getPropertyMultipleMap()
+    {
+        global $CACHE_MANAGER;
+        $arProperties = [];
+        $propertyMultipleClassName = str_replace('Table', '', static::class) . 'PropMultipleTable';
+        if (class_exists($propertyMultipleClassName)) {
+            $obCache = new CPHPCache();
+            $cacheId = md5(static::class . '::' . __FUNCTION__);
+            if ($obCache->InitCache(36000, $cacheId, '/')) {
+                $vars = $obCache->GetVars();
+                $arProperties = $vars['arProperties'];
+            } elseif ($obCache->StartDataCache()) {
+                $rsProperty = CIBlockProperty::GetList(
+                    [],
+                    [
+                        'IBLOCK_ID' => static::getIblockId(),
+                        'MULTIPLE' => 'Y',
+                    ]
+                );
+                while ($arProperty = $rsProperty->Fetch()) {
+                    if (empty($arProperty['CODE'])) {
+                        continue;
+                    }
 
-					$arProperties['PROPERTY_MULTIPLE_' . $arProperty['CODE']] = [
-						'data_type' => $propertyMultipleClassName,
-						'reference' => [
-							'=this.ID' => 'ref.IBLOCK_ELEMENT_ID',
-							'ref.IBLOCK_PROPERTY_ID' => new SqlExpression('?i', $arProperty['ID']),
-						],
-					];
-				}
+                    $arProperties['PROPERTY_MULTIPLE_' . $arProperty['CODE']] = [
+                        'data_type' => $propertyMultipleClassName,
+                        'reference' => [
+                            '=this.ID' => 'ref.IBLOCK_ELEMENT_ID',
+                            'ref.IBLOCK_PROPERTY_ID' => new SqlExpression('?i', $arProperty['ID']),
+                        ],
+                    ];
+                }
 
-				$CACHE_MANAGER->StartTagCache('/');
-				$CACHE_MANAGER->RegisterTag('property_iblock_id_' . static::getIblockId());
-				$CACHE_MANAGER->EndTagCache();
-				$obCache->EndDataCache(['arProperties' => $arProperties]);
-			}
-		}
+                $CACHE_MANAGER->StartTagCache('/');
+                $CACHE_MANAGER->RegisterTag('property_iblock_id_' . static::getIblockId());
+                $CACHE_MANAGER->EndTagCache();
+                $obCache->EndDataCache(['arProperties' => $arProperties]);
+            }
+        }
 
-		return $arProperties;
-	}
+        return $arProperties;
+    }
 
-	/**
-	 * @inheritDoc
-	 */
-	public static function getList(array $parameters = [])
-	{
-		$parameters['filter']['IBLOCK_ID'] = static::getIblockId();
+    /**
+     * @inheritDoc
+     */
+    public static function getList(array $parameters = [])
+    {
+        $parameters['filter']['IBLOCK_ID'] = static::getIblockId();
 
-		return parent::getList($parameters);
-	}
+        return parent::getList($parameters);
+    }
 
-	/**
-	 * Возвращает значение enum свойства по id
-	 *
-	 * @param int|null $id ID значения, если null будет возвращено значение по-умолчанию
-	 * @param string $propertyCode Символьный код свойства
-	 *
-	 * @return string|null
-	 * @throws Main\NotImplementedException
-	 * @throws Main\SystemException
-	 * @throws Main\ArgumentException
-	 */
-	public static function getEnumValueById(?int $id, string $propertyCode): ?string
-	{
-		$arProperty = self::getEnums();
-		foreach ($arProperty[static::getIblockId()][$propertyCode] as $xmlId => $arEnumValue) {
-			if (
-				$id === (int)$arEnumValue['ID'] ||
-				($id === null && $arEnumValue['IS_DEFAULT'])
-			) {
-				return $arEnumValue['VALUE'];
-			}
-		}
+    /**
+     * Возвращает значение enum свойства по id
+     *
+     * @param int|null $id ID значения, если null будет возвращено значение по-умолчанию
+     * @param string $propertyCode Символьный код свойства
+     *
+     * @return string|null
+     * @throws Main\NotImplementedException
+     * @throws Main\SystemException
+     * @throws Main\ArgumentException
+     */
+    public static function getEnumValueById(?int $id, string $propertyCode): ?string
+    {
+        $arProperty = self::getEnums();
+        foreach ($arProperty[static::getIblockId()][$propertyCode] as $xmlId => $arEnumValue) {
+            if (
+                $id === (int)$arEnumValue['ID'] ||
+                ($id === null && $arEnumValue['IS_DEFAULT'])
+            ) {
+                return $arEnumValue['VALUE'];
+            }
+        }
 
-		return null;
-	}
+        return null;
+    }
 
-	/**
-	 * Возвращает id значения enum свойства по XML_ID
-	 *
-	 * @param string $xml - xml_id property value
-	 * @param string $propertyCode - Character property code
-	 *
-	 * @return int|null
-	 * @throws Main\NotImplementedException
-	 * @throws Main\SystemException
-	 * @throws Main\ArgumentException
-	 * @throws Main\LoaderException
-	 */
-	public static function getEnumIdByXmlId($xml, $propertyCode): ?int
-	{
-		$arProperty = self::getEnums();
+    /**
+     * Возвращает id значения enum свойства по XML_ID
+     *
+     * @param string $xml - xml_id property value
+     * @param string $propertyCode - Character property code
+     *
+     * @return int|null
+     * @throws Main\NotImplementedException
+     * @throws Main\SystemException
+     * @throws Main\ArgumentException
+     * @throws Main\LoaderException
+     */
+    public static function getEnumIdByXmlId($xml, $propertyCode): ?int
+    {
+        $arProperty = self::getEnums();
 
-		if ($xml && !empty($arProperty[static::getIblockId()][$propertyCode][$xml])) {
-			return $arProperty[static::getIblockId()][$propertyCode][$xml]['ID'];
-		}
+        if ($xml && !empty($arProperty[static::getIblockId()][$propertyCode][$xml])) {
+            return $arProperty[static::getIblockId()][$propertyCode][$xml]['ID'];
+        }
 
-		foreach ($arProperty[static::getIblockId()][$propertyCode] as $xmlId => $arEnumValue) {
-			if ($arEnumValue['IS_DEFAULT']) {
-				return $xmlId;
-			}
-		}
+        foreach ($arProperty[static::getIblockId()][$propertyCode] as $xmlId => $arEnumValue) {
+            if ($arEnumValue['IS_DEFAULT']) {
+                return $xmlId;
+            }
+        }
 
-		return null;
-	}
+        return null;
+    }
 
-	/**
-	 * Возвращает xml_id значения enum свойства по id
-	 *
-	 * @param int|null $id ID значения, если null будет возвращено значение по-умолчанию
-	 * @param string $propertyCode Символьный код свойства
-	 *
-	 * @return string|int|null
-	 * @throws Main\SystemException
-	 * @throws Main\ArgumentException
-	 */
-	public static function getXmlIdById(?int $id, string $propertyCode)
-	{
-		$arProperty = self::getEnums();
+    /**
+     * Возвращает xml_id значения enum свойства по id
+     *
+     * @param int|null $id ID значения, если null будет возвращено значение по-умолчанию
+     * @param string $propertyCode Символьный код свойства
+     *
+     * @return string|int|null
+     * @throws Main\SystemException
+     * @throws Main\ArgumentException
+     */
+    public static function getXmlIdById(?int $id, string $propertyCode)
+    {
+        $arProperty = self::getEnums();
 
-		foreach ($arProperty[static::getIblockId()][$propertyCode] as $xmlId => $arEnumValue) {
-			if (
-				$id === (int)$arEnumValue['ID'] ||
-				($id === null && $arEnumValue['IS_DEFAULT'])
-			) {
-				return $xmlId;
-			}
-		}
+        foreach ($arProperty[static::getIblockId()][$propertyCode] as $xmlId => $arEnumValue) {
+            if (
+                $id === (int)$arEnumValue['ID'] ||
+                ($id === null && $arEnumValue['IS_DEFAULT'])
+            ) {
+                return $xmlId;
+            }
+        }
 
-		return null;
-	}
+        return null;
+    }
 
-	private static function getEnums()
-	{
-		if (!self::$arEnums) {
-			self::$arEnums = [];
-			$sCacheId = md5(__CLASS__ . '::' . __FUNCTION__);
+    private static function getEnums()
+    {
+        if (!self::$arEnums) {
+            self::$arEnums = [];
+            $sCacheId = md5(__CLASS__ . '::' . __FUNCTION__);
 
-			$oCache = new \CPHPCache;
-			$oCache->InitCache(36000, $sCacheId, '/');
-			if (!$arData = $oCache->GetVars()) {
-				$oProperties = \CIBlockProperty::getList(
-					['ID' => 'ASC'],
-					[
-						'ACTIVE' => 'Y',
-						'PROPERTY_TYPE' => 'L',
-					]
-				);
-				$arProperty2IblockID = [];
-				while ($arProperty = $oProperties->Fetch()) {
-					self::$arEnums[$arProperty['IBLOCK_ID']][$arProperty['CODE']] = [];
-					$arProperty2IblockID[$arProperty['ID']] = $arProperty['IBLOCK_ID'];
-				}
-				$oEnumProperties = \CIBlockPropertyEnum::getList(['ID' => 'ASC']);
-				while ($arEnumProperty = $oEnumProperties->Fetch()) {
-					self::$arEnums[$arProperty2IblockID[$arEnumProperty['PROPERTY_ID']]][$arEnumProperty['PROPERTY_CODE']][$arEnumProperty['XML_ID']] = [
-						'ID' => (int)$arEnumProperty['ID'],
-						'XML_ID' => $arEnumProperty['XML_ID'],
-						'VALUE' => $arEnumProperty['VALUE'],
-						'IS_DEFAULT' => $arEnumProperty['DEF'] === 'Y',
-					];
-				}
-				if ($oCache->StartDataCache()) {
-					$oCache->EndDataCache(['arProperties' => self::$arEnums]);
-				}
-			} else {
-				self::$arEnums = $arData['arProperties'];
-			}
-		}
+            $oCache = new CPHPCache();
+            $oCache->InitCache(36000, $sCacheId, '/');
+            if (!$arData = $oCache->GetVars()) {
+                $oProperties = CIBlockProperty::getList(
+                    ['ID' => 'ASC'],
+                    [
+                        'ACTIVE' => 'Y',
+                        'PROPERTY_TYPE' => 'L',
+                    ]
+                );
+                $arProperty2IblockID = [];
+                while ($arProperty = $oProperties->Fetch()) {
+                    self::$arEnums[$arProperty['IBLOCK_ID']][$arProperty['CODE']] = [];
+                    $arProperty2IblockID[$arProperty['ID']] = $arProperty['IBLOCK_ID'];
+                }
+                $oEnumProperties = CIBlockPropertyEnum::getList(['ID' => 'ASC']);
+                while ($arEnumProperty = $oEnumProperties->Fetch()) {
+                    self::$arEnums[$arProperty2IblockID[$arEnumProperty['PROPERTY_ID']]][$arEnumProperty['PROPERTY_CODE']][$arEnumProperty['XML_ID']] = [
+                        'ID' => (int)$arEnumProperty['ID'],
+                        'XML_ID' => $arEnumProperty['XML_ID'],
+                        'VALUE' => $arEnumProperty['VALUE'],
+                        'IS_DEFAULT' => $arEnumProperty['DEF'] === 'Y',
+                    ];
+                }
+                if ($oCache->StartDataCache()) {
+                    $oCache->EndDataCache(['arProperties' => self::$arEnums]);
+                }
+            } else {
+                self::$arEnums = $arData['arProperties'];
+            }
+        }
 
-		return self::$arEnums;
-	}
+        return self::$arEnums;
+    }
 
-	protected static function getProperties()
-	{
-		global $CACHE_MANAGER;
-		$obCache = new \CPHPCache;
-		$cacheId = md5(static::class . '::' . __FUNCTION__);
-		$arProperties = [];
-		if ($obCache->InitCache(36000, $cacheId, '/')) {
-			$vars = $obCache->GetVars();
-			$arProperties = $vars['arProperties'];
-		} elseif ($obCache->StartDataCache()) {
-			$rsProperty = \CIBlockProperty::GetList([], [
-				'IBLOCK_ID' => static::getIblockId(),
-			]);
-			while ($arProperty = $rsProperty->Fetch()) {
-				if (empty($arProperty['CODE'])) {
-					continue;
-				}
-				$arProperties[$arProperty['CODE']] = $arProperty;
-			}
+    protected static function getProperties()
+    {
+        global $CACHE_MANAGER;
+        $obCache = new CPHPCache();
+        $cacheId = md5(static::class . '::' . __FUNCTION__);
+        $arProperties = [];
+        if ($obCache->InitCache(36000, $cacheId, '/')) {
+            $vars = $obCache->GetVars();
+            $arProperties = $vars['arProperties'];
+        } elseif ($obCache->StartDataCache()) {
+            $rsProperty = CIBlockProperty::GetList([], [
+                'IBLOCK_ID' => static::getIblockId(),
+            ]);
+            while ($arProperty = $rsProperty->Fetch()) {
+                if (empty($arProperty['CODE'])) {
+                    continue;
+                }
+                $arProperties[$arProperty['CODE']] = $arProperty;
+            }
 
-			$CACHE_MANAGER->StartTagCache('/');
-			$CACHE_MANAGER->RegisterTag('property_iblock_id_' . static::getIblockId());
-			$CACHE_MANAGER->EndTagCache();
-			$obCache->EndDataCache(['arProperties' => $arProperties]);
-		}
+            $CACHE_MANAGER->StartTagCache('/');
+            $CACHE_MANAGER->RegisterTag('property_iblock_id_' . static::getIblockId());
+            $CACHE_MANAGER->EndTagCache();
+            $obCache->EndDataCache(['arProperties' => $arProperties]);
+        }
 
-		return $arProperties;
-	}
+        return $arProperties;
+    }
 
-	/**
-	 * Возвращает символьный код свойства по его ID
-	 *
-	 * @param int $id ID свойства
-	 *
-	 * @return null|string
-	 */
-	public static function getPropertyCodeById(int $id): ?string
-	{
-		foreach (static::getProperties() as $code => $arProperty) {
-			if ((int)$arProperty['ID'] === $id) {
-				return $code;
-			}
-		}
+    /**
+     * Возвращает символьный код свойства по его ID
+     *
+     * @param int $id ID свойства
+     *
+     * @return null|string
+     */
+    public static function getPropertyCodeById(int $id): ?string
+    {
+        foreach (static::getProperties() as $code => $arProperty) {
+            if ((int)$arProperty['ID'] === $id) {
+                return $code;
+            }
+        }
 
-		return null;
-	}
+        return null;
+    }
 
-	/**
-	 * Возвращает ID свойства по его коду
-	 *
-	 * @param string $code Символьный код свойства
-	 *
-	 * @return null|int
-	 */
-	public static function getPropertyIdByCode(string $code): ?int
-	{
-		$arProperty = static::getProperties();
+    /**
+     * Возвращает ID свойства по его коду
+     *
+     * @param string $code Символьный код свойства
+     *
+     * @return null|int
+     */
+    public static function getPropertyIdByCode(string $code): ?int
+    {
+        $arProperty = static::getProperties();
 
-		return $arProperty[$code]['ID'];
-	}
+        return $arProperty[$code]['ID'];
+    }
 
-	/**
-	 * Возвращает Expression поле для получения URL детальной страницы
-	 *
-	 * @param array $modelMap - текущая схема полей сущности
-	 *
-	 * @return array
-	 * @throws Main\SystemException
-	 * @throws Main\ArgumentException
-	 */
-	private static function getUrlTemplateMap(array $modelMap = []): array
-	{
-		global $CACHE_MANAGER;
-		$arMap = [];
-		$obCache = new \CPHPCache;
-		$currentAdminPage = ((defined('ADMIN_SECTION') && ADMIN_SECTION === true) || !defined('BX_STARTED'));
-		$cacheId = md5(static::class . '::' . __FUNCTION__ . $currentAdminPage . SITE_ID);
+    /**
+     * Возвращает Expression поле для получения URL детальной страницы
+     *
+     * @param array $modelMap - текущая схема полей сущности
+     *
+     * @return array
+     * @throws Main\SystemException
+     * @throws Main\ArgumentException
+     */
+    private static function getUrlTemplateMap(array $modelMap = []): array
+    {
+        global $CACHE_MANAGER;
+        $arMap = [];
+        $obCache = new CPHPCache();
+        $currentAdminPage = ((defined('ADMIN_SECTION') && ADMIN_SECTION === true) || !defined('BX_STARTED'));
+        $cacheId = md5(static::class . '::' . __FUNCTION__ . $currentAdminPage . SITE_ID);
 
-		if ($obCache->InitCache(36000, $cacheId, '/')) {
-			$arMap = $obCache->GetVars();
-		} elseif ($obCache->StartDataCache()) {
-			$obIblock = IblockSiteTable::getList([
-				'select' => [
-					'DETAIL_PAGE_URL' => 'IBLOCK.DETAIL_PAGE_URL',
-					'SITE_ID',
-					'DIR' => 'SITE.DIR',
-					'SERVER_NAME' => 'SITE.DIR',
-				],
-				'filter' => [
-					'IBLOCK_ID' => static::getIblockId(),
-				],
-				'limit' => 1,
-			]);
+        if ($obCache->InitCache(36000, $cacheId, '/')) {
+            $arMap = $obCache->GetVars();
+        } elseif ($obCache->StartDataCache()) {
+            $obIblock = IblockSiteTable::getList([
+                'select' => [
+                    'DETAIL_PAGE_URL' => 'IBLOCK.DETAIL_PAGE_URL',
+                    'SITE_ID',
+                    'DIR' => 'SITE.DIR',
+                    'SERVER_NAME' => 'SITE.DIR',
+                ],
+                'filter' => [
+                    'IBLOCK_ID' => static::getIblockId(),
+                ],
+                'limit' => 1,
+            ]);
 
-			if ($arIblock = $obIblock->fetch()) {
-				$templateUrl = $arIblock['DETAIL_PAGE_URL'];
+            if ($arIblock = $obIblock->fetch()) {
+                $templateUrl = $arIblock['DETAIL_PAGE_URL'];
 
-				if ($currentAdminPage) {
-					$templateUrl = str_replace(
-						['#SITE_DIR#', '#SERVER_NAME#'],
-						[$arIblock['DIR'], $arIblock['SERVER_NAME']],
-						$templateUrl
-					);
-				} else {
-					$templateUrl = str_replace(
-						['#SITE_DIR#', '#SERVER_NAME#'],
-						[SITE_DIR, SITE_SERVER_NAME],
-						$templateUrl
-					);
-				}
+                if ($currentAdminPage) {
+                    $templateUrl = str_replace(
+                        ['#SITE_DIR#', '#SERVER_NAME#'],
+                        [$arIblock['DIR'], $arIblock['SERVER_NAME']],
+                        $templateUrl
+                    );
+                } else {
+                    $templateUrl = str_replace(
+                        ['#SITE_DIR#', '#SERVER_NAME#'],
+                        [SITE_DIR, SITE_SERVER_NAME],
+                        $templateUrl
+                    );
+                }
 
-				$expressionFields = [];
-				preg_match_all('/#([^#]+)#/u', $templateUrl, $match);
-				if (!empty($match[1])) {
-					foreach ($match[1] as $kid => $fieldName) {
-						if (array_key_exists($fieldName, $modelMap)) {
-							$templateUrl = str_replace($match[0][$kid], '\', %s,\'', $templateUrl);
-							$expressionFields[] = $fieldName;
-						}
-					}
-				}
+                $expressionFields = [];
+                preg_match_all('/#([^#]+)#/u', $templateUrl, $match);
+                if (!empty($match[1])) {
+                    foreach ($match[1] as $kid => $fieldName) {
+                        if (array_key_exists($fieldName, $modelMap)) {
+                            $templateUrl = str_replace($match[0][$kid], '\', %s,\'', $templateUrl);
+                            $expressionFields[] = $fieldName;
+                        }
+                    }
+                }
 
-				array_unshift($expressionFields, 'CONCAT(\'' . $templateUrl . '\')');
-				$arMap['DETAIL_PAGE_URL'] = [
-					'data_type' => 'string',
-					'expression' => $expressionFields
-				];
-			}
+                array_unshift($expressionFields, 'CONCAT(\'' . $templateUrl . '\')');
+                $arMap['DETAIL_PAGE_URL'] = [
+                    'data_type' => 'string',
+                    'expression' => $expressionFields
+                ];
+            }
 
-			$CACHE_MANAGER->StartTagCache('/');
-			$CACHE_MANAGER->RegisterTag('iblock_id_' . static::getIblockId());
-			$CACHE_MANAGER->EndTagCache();
+            $CACHE_MANAGER->StartTagCache('/');
+            $CACHE_MANAGER->RegisterTag('iblock_id_' . static::getIblockId());
+            $CACHE_MANAGER->EndTagCache();
 
-			$obCache->EndDataCache($arMap);
-		}
+            $obCache->EndDataCache($arMap);
+        }
 
-		return $arMap;
-	}
+        return $arMap;
+    }
 }
