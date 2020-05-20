@@ -2,105 +2,119 @@
 
 namespace spaceonfire\BitrixTools\ORM;
 
-use Bitrix\Iblock\IblockTable;
+use Bitrix\Iblock\IblockSiteTable;
 use Bitrix\Iblock\SectionTable;
-use Bitrix\Main\ArgumentException;
-use Bitrix\Main\NotImplementedException;
-use CPHPCache;
+use Bitrix\Main\ORM\Query\Filter\ConditionTree;
+use RuntimeException;
+use Throwable;
 
-class IblockSection extends SectionTable
+abstract class IblockSection extends SectionTable
 {
     /**
      * Возвращает ID инфоблока. Необходимо переопределять метод.
-     *
-     * @noinspection PhpDocMissingThrowsInspection
-     * @abstract
      * @return int
      */
-    public static function getIblockId(): int
-    {
-        throw new NotImplementedException('Method getIblockId() must be implemented by successor.');
-    }
+    abstract public static function getIblockId(): int;
 
     /**
      * @inheritDoc
      */
     public static function getList(array $parameters = [])
     {
-        $parameters['filter']['IBLOCK_ID'] = static::getIblockId();
+        if (!isset($parameters['filter'])) {
+            $parameters['filter'] = new ConditionTree();
+        }
+
+        if ($parameters['filter'] instanceof ConditionTree) {
+            $oldFilter = $parameters['filter'];
+            $parameters['filter'] = (new ConditionTree())->where('IBLOCK_ID', static::getIblockId());
+            if ($oldFilter->hasConditions()) {
+                $parameters['filter']->where($oldFilter);
+            }
+        } else {
+            // I should trigger notice that array filter may cause an unexpected behavior
+            $parameters['filter']['IBLOCK_ID'] = static::getIblockId();
+        }
+
         return parent::getList($parameters);
     }
 
     /**
-     * Возврщает схему полей сущности
+     * Возвращает схему полей сущности
      * @return array
      */
     public static function getMap(): array
     {
-        $arMap = parent::getMap();
-        $arMap['PARENT_SECTION'] = [
+        $map = parent::getMap();
+        $map['PARENT_SECTION'] = [
             'data_type' => static::class,
             'reference' => ['=this.IBLOCK_SECTION_ID' => 'ref.ID'],
         ];
 
-        $arMap = array_merge($arMap, static::getUrlTemplateMap($arMap));
+        $map = array_merge($map, static::getUrlTemplateMap($map));
 
-        return $arMap;
+        return $map;
     }
-
 
     /**
      * Возвращает Expression поле для получения URL детальной страницы
      *
      * @param array $modelMap - текущая схема полей сущности
-     *
      * @return array
-     * @throws NotImplementedException
-     * @throws ArgumentException
      */
     private static function getUrlTemplateMap(array $modelMap = []): array
     {
-        global $CACHE_MANAGER;
-        $arMap = [];
-        $obCache = new CPHPCache();
-        $cacheId = md5(static::class . '::' . __FUNCTION__);
+        $urlTemplateMap = [];
 
-        if ($obCache->InitCache(36000, $cacheId, '/')) {
-            $arMap = $obCache->GetVars();
-        } elseif ($obCache->StartDataCache()) {
-            $obIblock = IblockTable::getList([
-                'select' => ['LIST_PAGE_URL', 'SECTION_PAGE_URL'],
+        try {
+            $iblockInfo = IblockSiteTable::getRow([
+                'select' => [
+                    'DETAIL_PAGE_URL' => 'IBLOCK.SECTION_PAGE_URL',
+                    'SITE_ID',
+                    'DIR' => 'SITE.DIR',
+                    'SERVER_NAME' => 'SITE.DIR',
+                ],
                 'filter' => [
-                    'ID' => static::getIblockId()
-                ]
+                    'IBLOCK_ID' => static::getIblockId(),
+                ],
+                'cache' => [
+                    'ttl' => 36000,
+                    'cache_joins' => true,
+                ],
             ]);
-
-            if ($arIblock = $obIblock->fetch()) {
-                $templateUrl = $arIblock['SECTION_PAGE_URL'];
-                $expressionFields = [];
-                preg_match_all('/#([^#]+)#/u', $templateUrl, $match);
-                if (!empty($match[1])) {
-                    foreach ($match[1] as $kid => $fieldName) {
-                        if (array_key_exists($fieldName, $modelMap)) {
-                            $templateUrl = str_replace($match[0][$kid], '\', %s,\'', $templateUrl);
-                            $expressionFields[] = $fieldName;
-                        }
-                    }
-                }
-
-                array_unshift($expressionFields, 'CONCAT(\'' . $templateUrl . '\')');
-                $arMap['DETAIL_PAGE_URL'] = [
-                    'data_type' => 'string',
-                    'expression' => $expressionFields
-                ];
-            }
-
-            $CACHE_MANAGER->StartTagCache('/');
-            $CACHE_MANAGER->RegisterTag('iblock_id_' . static::getIblockId());
-            $CACHE_MANAGER->EndTagCache();
-            $obCache->EndDataCache($arMap);
+        } catch (Throwable $e) {
+            throw new RuntimeException($e->getMessage(), $e->getCode(), $e);
         }
 
-        return $arMap;
+        $isAdminPage = ((defined('ADMIN_SECTION') && ADMIN_SECTION === true) || !defined('BX_STARTED'));
+
+        if ($iblockInfo !== null) {
+            if (!$isAdminPage && defined('SITE_DIR') && defined('SITE_SERVER_NAME')) {
+                $replacements = [SITE_DIR, SITE_SERVER_NAME];
+            } else {
+                $replacements = [$iblockInfo['DIR'], $iblockInfo['SERVER_NAME']];
+            }
+
+            $templateUrl = str_replace(['#SITE_DIR#', '#SERVER_NAME#'], $replacements, $iblockInfo['DETAIL_PAGE_URL']);
+
+            $expressionFields = [];
+            preg_match_all('/#([^#]+)#/u', $templateUrl, $match);
+            if (!empty($match[1])) {
+                foreach ($match[1] as $kid => $fieldName) {
+                    if (array_key_exists($fieldName, $modelMap)) {
+                        $templateUrl = str_replace($match[0][$kid], '\', %s,\'', $templateUrl);
+                        $expressionFields[] = $fieldName;
+                    }
+                }
+            }
+
+            array_unshift($expressionFields, 'CONCAT(\'' . $templateUrl . '\')');
+            $urlTemplateMap['DETAIL_PAGE_URL'] = [
+                'data_type' => 'string',
+                'expression' => $expressionFields
+            ];
+        }
+
+        return $urlTemplateMap;
     }
 }

@@ -2,27 +2,18 @@
 
 namespace spaceonfire\BitrixTools\ORM;
 
-use Bitrix\Main\Entity\DataManager;
-use Bitrix\Main\NotImplementedException;
+use Bitrix\Main\ORM\Data\DataManager;
 
-class IblockPropMultiple extends DataManager
+abstract class IblockPropMultiple extends DataManager
 {
     /**
      * Возвращает ID инфоблока. Необходимо переопределять метод.
-     *
-     * @noinspection PhpDocMissingThrowsInspection
-     * @abstract
      * @return int
      */
-    public static function getIblockId(): int
-    {
-        throw new NotImplementedException('Method getIblockId() must be implemented by successor.');
-    }
+    abstract public static function getIblockId(): int;
 
     /**
      * Возвращает название таблицы для сущности в БД
-     *
-     * @noinspection PhpDocMissingThrowsInspection
      * @return string
      */
     public static function getTableName(): string

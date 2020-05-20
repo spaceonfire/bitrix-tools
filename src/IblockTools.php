@@ -8,7 +8,9 @@ use Bitrix\Main;
 use Bitrix\Main\ORM\Objectify\EntityObject;
 use CIblock;
 use CIBlockProperty;
+use CIBlockPropertyEnum;
 use spaceonfire\BitrixTools\CacheMap\IblockCacheMap;
+use Webmozart\Assert\Assert;
 
 class IblockTools
 {
@@ -113,7 +115,7 @@ class IblockTools
                 'CACHE_TAG' => 'iblock_id_' . $options['IBLOCK_ID'],
                 'CACHE_PATH' => implode(DIRECTORY_SEPARATOR, ['', __CLASS__, __FUNCTION__]),
             ],
-            function ($nIblockId, $arDefaultFields) {
+            static function ($nIblockId, $arDefaultFields) {
                 $arProps = [];
                 $arPropertySchema = [];
 
@@ -201,7 +203,7 @@ class IblockTools
         $arSchema = array_merge($arSchema, $arPropertySchema);
 
         $arExcluded = $options['EXCLUDE_FIELDS'];
-        $arSchema = array_filter($arSchema, function ($arField) use ($arExcluded) {
+        $arSchema = array_filter($arSchema, static function ($arField) use ($arExcluded) {
             return !in_array($arField['id'], $arExcluded, true);
         });
 
@@ -278,5 +280,199 @@ class IblockTools
 
             return $ret;
         }, [$parameters]);
+    }
+
+    /**
+     * Возвращает список свойств для инфоблока
+     * @param int $iblockId ID инфоблока
+     * @return array
+     * @noinspection PhpDocMissingThrowsInspection
+     */
+    public static function getProperties(int $iblockId): array
+    {
+        $cacheOptions = [
+            'CACHE_ID' => md5(static::class . '::' . __FUNCTION__),
+            'CACHE_PATH' => '/iblock_tools/',
+            'CACHE_TIME' => 36000,
+            'CACHE_TAG' => 'property_iblock_id_' . $iblockId,
+        ];
+
+        /** @noinspection PhpUnhandledExceptionInspection */
+        return Cache::cacheResult($cacheOptions, static function (int $iblockId) {
+            $propertiesQuery = CIBlockProperty::GetList([], [
+                'IBLOCK_ID' => $iblockId,
+            ]);
+            $properties = [];
+            while ($property = $propertiesQuery->Fetch()) {
+                if (empty($property['CODE'])) {
+                    continue;
+                }
+                $properties[$property['CODE']] = $property;
+            }
+            return $properties;
+        }, [$iblockId]);
+    }
+
+    /**
+     * Возвращает символьный код свойства по его ID
+     * @param int $iblockId ID инфоблока
+     * @param int $id ID свойства
+     * @return string|null
+     */
+    public static function getPropertyCodeById(int $iblockId, int $id): ?string
+    {
+        foreach (static::getProperties($iblockId) as $code => $property) {
+            if ((int)$property['ID'] === $id) {
+                return $code;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Возвращает ID свойства по его коду
+     * @param int $iblockId ID инфоблока
+     * @param string $code Символьный код свойства
+     * @return int|null
+     */
+    public static function getPropertyIdByCode(int $iblockId, string $code): ?int
+    {
+        $arProperty = static::getProperties($iblockId);
+        return $arProperty[$code]['ID'];
+    }
+
+
+    /**
+     * Возвращает значения всех свойств типа "список"
+     * @param int|null $iblockId ID инфоблока. Если передан `null`, будут возвращены все свойства,
+     * сгруппированные по инфоблокам
+     * @return array
+     * @noinspection PhpDocMissingThrowsInspection
+     */
+    public static function getEnums(?int $iblockId = null): array
+    {
+        $cacheOptions = [
+            'CACHE_ID' => md5(static::class . '::' . __FUNCTION__),
+            'CACHE_PATH' => '/iblock_tools/',
+            'CACHE_TIME' => 36000,
+        ];
+
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $enums = Cache::cacheResult($cacheOptions, static function () {
+            $propertiesQuery = CIBlockProperty::getList(['ID' => 'ASC'], [
+                'ACTIVE' => 'Y',
+                'PROPERTY_TYPE' => 'L',
+            ]);
+
+            $propertyToIblockMap = [];
+
+            $enums = [];
+
+            while ($arProperty = $propertiesQuery->Fetch()) {
+                $enums[$arProperty['IBLOCK_ID']][$arProperty['CODE']] = [];
+                $propertyToIblockMap[$arProperty['ID']] = $arProperty['IBLOCK_ID'];
+            }
+
+            $enumQuery = CIBlockPropertyEnum::getList(['ID' => 'ASC']);
+            while ($enumValue = $enumQuery->Fetch()) {
+                $iblockId = $propertyToIblockMap[$enumValue['PROPERTY_ID']];
+                $enums[$iblockId][$enumValue['PROPERTY_CODE']][$enumValue['XML_ID']] = [
+                    'ID' => (int)$enumValue['ID'],
+                    'XML_ID' => $enumValue['XML_ID'],
+                    'VALUE' => $enumValue['VALUE'],
+                    'IS_DEFAULT' => $enumValue['DEF'] === 'Y',
+                ];
+            }
+
+            return $enums;
+        });
+
+        if ($iblockId === null) {
+            return $enums;
+        }
+
+        return $enums[$iblockId] ?? [];
+    }
+
+    /**
+     * Возвращает значение enum свойства по id
+     * @param int $iblockId ID инфоблока
+     * @param int|null $id ID значения. Если передан `null`, будет возвращено значение по-умолчанию
+     * @param string $propertyCode Символьный код свойства
+     * @return string|null
+     */
+    public static function getEnumValueById(int $iblockId, ?int $id, string $propertyCode): ?string
+    {
+        $enums = static::getEnums($iblockId);
+
+        foreach ($enums[$propertyCode] as $xmlId => $enum) {
+            if ($id === (int)$enum['ID'] || ($id === null && $enum['IS_DEFAULT'])) {
+                return $enum['VALUE'];
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Возвращает значение enum свойства по его xml id
+     * @param int $iblockId ID инфоблока
+     * @param string|null $xml XML_ID значения. Если передан `null`, будет возвращено значение
+     *     по-умолчанию
+     * @param string $propertyCode Символьный код свойства
+     * @return string|null
+     */
+    public static function getEnumValueByXmlId(int $iblockId, ?string $xml, string $propertyCode): ?string
+    {
+        $id = static::getEnumIdByXmlId($iblockId, $xml, $propertyCode);
+        return static::getEnumValueById($iblockId, $id, $propertyCode);
+    }
+
+    /**
+     * Возвращает id значения enum свойства по XML_ID
+     * @param int $iblockId ID инфоблока
+     * @param string $xml - XML_ID значения. Если передан `null`, будет возвращено значение
+     *     по-умолчанию
+     * @param string $propertyCode - Символьный код свойства
+     * @return int|null
+     */
+    public static function getEnumIdByXmlId(int $iblockId, ?string $xml, string $propertyCode): ?int
+    {
+        $enums = static::getEnums($iblockId);
+
+        if ($xml === null) {
+            foreach ($enums[$propertyCode] as $xmlId => $enum) {
+                if ($enum['IS_DEFAULT']) {
+                    return $enum['ID'];
+                }
+            }
+
+            return null;
+        }
+
+        Assert::notEmpty($xml);
+
+        return !empty($enums[$propertyCode][$xml]) ? $enums[$propertyCode][$xml]['ID'] : null;
+    }
+
+    /**
+     * Возвращает xml_id значения enum свойства по id
+     * @param int $iblockId ID инфоблока
+     * @param int|null $id ID значения. Если передан `null`, будет возвращено значение по-умолчанию
+     * @param string $propertyCode Символьный код свойства
+     * @return string|null
+     */
+    public static function getEnumXmlIdById(int $iblockId, ?int $id, string $propertyCode): ?string
+    {
+        $enums = static::getEnums($iblockId);
+
+        foreach ($enums[$propertyCode] as $xmlId => $arEnumValue) {
+            if ($id === (int)$arEnumValue['ID'] || ($id === null && $arEnumValue['IS_DEFAULT'])) {
+                return (string)$xmlId;
+            }
+        }
+
+        return null;
     }
 }
