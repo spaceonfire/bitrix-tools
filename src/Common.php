@@ -43,7 +43,7 @@ abstract class Common
     }
 
     /**
-     * Converts bitrix $APPLICATION global exception message to throwable
+     * Конвертирует сообщение об ошибке из глобального $APPLICATION в исключение
      * @param string $defaultErrorMessage
      * @param string $className
      * @return Throwable
@@ -69,4 +69,35 @@ abstract class Common
         return new $className($errorMessage ?? $defaultErrorMessage);
     }
 
+    /**
+     * Возвращает ID модуля из полного имени класса
+     *
+     * @example
+     * ```php
+     * Common::getModuleIdByFqn('\Bitrix\Main\Loader') === 'main';
+     * Common::getModuleIdByFqn('\Bitrix\Iblock\Type') === 'iblock';
+     * Common::getModuleIdByFqn('\Vendor\Module\Class') === 'vendor.module';
+     * Common::getModuleIdByFqn('\SomeRootClass') === 'main';
+     * ```
+     *
+     * @param string $fqn
+     * @return string
+     */
+    public static function getModuleIdByFqn(string $fqn): string
+    {
+        [$vendor, $module] = explode('\\', ltrim($fqn, '\\')) + [null, null];
+
+        if (empty($vendor) || empty($module)) {
+            return 'main';
+        }
+
+        $vendor = strtolower($vendor);
+        $module = strtolower($module);
+
+        if ($vendor === 'bitrix') {
+            return $module;
+        }
+
+        return $vendor . '.' . $module;
+    }
 }

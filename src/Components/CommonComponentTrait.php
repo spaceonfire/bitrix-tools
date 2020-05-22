@@ -277,7 +277,7 @@ trait CommonComponentTrait
     }
 
     /**
-     * Ренедеринг шаблона компонента
+     * Рендеринг шаблона компонента
      */
     public function render(): void
     {
@@ -352,7 +352,7 @@ trait CommonComponentTrait
     }
 
     /**
-     * Отображат сообщение об ошибке
+     * Отображает сообщение об ошибке
      * @param string $message
      */
     protected function renderExceptionMessage(string $message): void
@@ -361,7 +361,7 @@ trait CommonComponentTrait
     }
 
     /**
-     * Отображат трейс ошибки
+     * Отображает трейс ошибки
      * @param Throwable $throwable
      */
     protected function renderExceptionTrace(Throwable $throwable): void
@@ -392,7 +392,7 @@ trait CommonComponentTrait
     }
 
     /**
-     * Добавиляет дополнительный ID для кэша
+     * Добавляет дополнительный ID для кэша
      * @param mixed $id
      */
     public function addCacheAdditionalId($id): void
@@ -409,16 +409,12 @@ trait CommonComponentTrait
      */
     public function triggerEvent(string $type, array $params = [], $filter = null): Event
     {
-        $firstTwoNamespaces = array_slice(explode('\\', static::class), 0, 2);
-        $moduleId = strtolower(implode('.', $firstTwoNamespaces));
-
-        $params = array_merge($params, [
-            'component' => $this,
-        ]);
-
-        $type = static::class . '::' . $type;
-
-        $event = new Event($moduleId, $type, $params, $filter);
+        $event = new Event(
+            CommonTools::getModuleIdByFqn(static::class),
+            static::class . '::' . $type,
+            ['component' => $this] + $params,
+            $filter
+        );
         $event->send();
         return $event;
     }
