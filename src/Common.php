@@ -3,6 +3,8 @@
 namespace spaceonfire\BitrixTools;
 
 use Bitrix\Main;
+use Bitrix\Main\Context;
+use Bitrix\Main\EventManager;
 use CApplicationException;
 use InvalidArgumentException;
 use RuntimeException;
@@ -72,6 +74,8 @@ abstract class Common
     /**
      * Возвращает ID модуля из полного имени класса
      *
+     * @param string $fqn
+     * @return string
      * @example
      * ```php
      * Common::getModuleIdByFqn('\Bitrix\Main\Loader') === 'main';
@@ -80,8 +84,6 @@ abstract class Common
      * Common::getModuleIdByFqn('\SomeRootClass') === 'main';
      * ```
      *
-     * @param string $fqn
-     * @return string
      */
     public static function getModuleIdByFqn(string $fqn): string
     {
@@ -99,5 +101,47 @@ abstract class Common
         }
 
         return $vendor . '.' . $module;
+    }
+
+    /**
+     * Фикс функции LocalRedirect при запуске проекта за прокси-сервером на нестандартных портах.
+     * @see LocalRedirect()
+     */
+    public static function trustProxy(): void
+    {
+        EventManager::getInstance()->addEventHandlerCompatible(
+            'main',
+            'OnBeforeLocalRedirect',
+            static function (&$url, $skipSecurityCheck, &$isExternal) {
+                if ((bool)$isExternal) {
+                    return;
+                }
+
+                $req = Context::getCurrent()->getRequest();
+                $host = $req->getHttpHost();
+                $proto = 'http' . ($req->isHttps() ? 's' : '');
+                $url = $proto . '://' . $host . $url;
+
+                global $APPLICATION;
+                $APPLICATION->StoreCookies();
+
+                $isExternal = true;
+            }
+        );
+    }
+
+    /**
+     * Отключает вход в Битрикс по HTTP авторизации
+     * @see CUser::LoginByHttpAuth()
+     */
+    public static function disableHttpAuth(): void
+    {
+        EventManager::getInstance()->addEventHandlerCompatible(
+            'main',
+            'onBeforeUserLoginByHttpAuth',
+            static function (&$auth) {
+                return false;
+            }
+        );
     }
 }
