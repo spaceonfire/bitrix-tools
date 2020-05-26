@@ -140,27 +140,41 @@ abstract class IblockElement extends DataManager
         return $propertiesMap;
     }
 
+    private static function mergeFilter($filter)
+    {
+        if ($filter === null) {
+            $filter = new ConditionTree();
+        }
+
+        if ($filter instanceof ConditionTree) {
+            $oldFilter = $filter;
+            $filter = (new ConditionTree())->where('IBLOCK_ID', static::getIblockId());
+            if ($oldFilter->hasConditions()) {
+                $filter->where($oldFilter);
+            }
+        } else {
+            // I should trigger notice that array filter may cause an unexpected behavior
+            $filter['IBLOCK_ID'] = static::getIblockId();
+        }
+
+        return $filter;
+    }
+
     /**
      * @inheritDoc
      */
     public static function getList(array $parameters = [])
     {
-        if (!isset($parameters['filter'])) {
-            $parameters['filter'] = new ConditionTree();
-        }
-
-        if ($parameters['filter'] instanceof ConditionTree) {
-            $oldFilter = $parameters['filter'];
-            $parameters['filter'] = (new ConditionTree())->where('IBLOCK_ID', static::getIblockId());
-            if ($oldFilter->hasConditions()) {
-                $parameters['filter']->where($oldFilter);
-            }
-        } else {
-            // I should trigger notice that array filter may cause an unexpected behavior
-            $parameters['filter']['IBLOCK_ID'] = static::getIblockId();
-        }
-
+        $parameters['filter'] = self::mergeFilter($parameters['filter']);
         return parent::getList($parameters);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public static function getCount($filter = [], array $cache = [])
+    {
+        return parent::getCount(self::mergeFilter($filter), $cache);
     }
 
     /**
