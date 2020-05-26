@@ -66,7 +66,9 @@ abstract class BaseRouterComponent extends CBitrixComponent
      */
     protected function isSearchRequest(): bool
     {
-        return $this->templatePage !== 'detail' && $this->request[$this->seachQueryParam] !== '';
+        return $this->request[$this->seachQueryParam] &&
+            $this->request[$this->seachQueryParam] !== '' &&
+            $this->templatePage !== 'detail';
     }
 
     /**

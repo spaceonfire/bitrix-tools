@@ -13,6 +13,7 @@ use CBitrixComponent;
 use CMain;
 use Narrowspark\HttpStatus\Exception\NotFoundException;
 use spaceonfire\BitrixTools\Common as CommonTools;
+use spaceonfire\BitrixTools\Components\Property\ComponentPropertiesTrait;
 use spaceonfire\BitrixTools\HttpStatusTools;
 use Throwable;
 
@@ -25,36 +26,47 @@ Loc::loadMessages(__FILE__);
 trait CommonComponentTrait
 {
     /**
+     * @var string
+     */
+    private $id;
+    /**
      * @var array Массив модулей, которые необходимо загрузить перед подключением компонента
      */
     protected $needModules = [];
-
     /**
      * @var array Массив дополнительных ID кэша
      */
     private $cacheAdditionalId = [];
-
     /**
      * @var string Директория кэша
      */
     protected $cacheDir = false;
-
     /**
      * @var string Salt for component ID for AJAX request
      */
     protected $ajaxComponentIdSalt;
-
     /**
      * @var string Название страницы шаблона (для компонента-роутера)
      */
     protected $templatePage;
-
     /**
      * @var array Настройки для проверки параметров компонента
      * @example $checkParams = array('IBLOCK_TYPE' => array('type' => 'string'), 'ELEMENT_ID' => array('type' => 'int',
      *     'error' => '404'));
      */
     protected $checkParams = [];
+
+    /**
+     * Getter for `id` property
+     * @return string
+     */
+    public function getId(): string
+    {
+        if ($this->id === null) {
+            $this->id = $this->randString();
+        }
+        return $this->id;
+    }
 
     /**
      * Загружает файлы переводов компонента (component.php и class.php)
@@ -85,6 +97,10 @@ trait CommonComponentTrait
      */
     protected function init(): void
     {
+        if (in_array(ComponentPropertiesTrait::class, class_uses($this), true)) {
+            /** @noinspection PhpUndefinedMethodInspection */
+            $this->initPropertiesBag();
+        }
     }
 
     /**
@@ -188,7 +204,7 @@ trait CommonComponentTrait
             $APPLICATION->RestartBuffer();
         }
 
-        if (strlen($this->arParams['AJAX_TEMPLATE_PAGE']) > 0) {
+        if ($this->arParams['AJAX_TEMPLATE_PAGE'] !== '') {
             $this->templatePage = basename($this->arParams['AJAX_TEMPLATE_PAGE']);
         }
     }
@@ -249,7 +265,7 @@ trait CommonComponentTrait
      */
     protected function executeMain(): void
     {
-        if (strlen($this->arParams['AJAX_PARAM_NAME']) > 0 && strlen($this->arParams['AJAX_COMPONENT_ID']) > 0) {
+        if ($this->arParams['AJAX_PARAM_NAME'] !== '' && $this->arParams['AJAX_COMPONENT_ID'] !== '') {
             $this->arResult['AJAX_REQUEST_PARAMS'] = $this->arParams['AJAX_PARAM_NAME'] . '=' . $this->arParams['AJAX_COMPONENT_ID'];
 
             $this->setResultCacheKeys(['AJAX_REQUEST_PARAMS']);
