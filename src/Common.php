@@ -19,13 +19,16 @@ abstract class Common
     /**
      * Загружает модули 1С-Битрикс
      * @param array $modules Массив модулей, которые необходимо загрузить
-     * @throws Main\LoaderException Если какой-нибудь модуль не установлен в системе
      */
     public static function loadModules(array $modules): void
     {
         foreach ($modules as $module) {
-            if (!Main\Loader::includeModule($module)) {
-                throw new Main\LoaderException('Could not load ' . $module . ' module');
+            try {
+                if (!Main\Loader::includeModule($module)) {
+                    throw new RuntimeException('Could not load ' . $module . ' module');
+                }
+            } catch (Main\LoaderException $e) {
+                throw new RuntimeException($e->getMessage(), $e->getCode(), $e);
             }
         }
     }
