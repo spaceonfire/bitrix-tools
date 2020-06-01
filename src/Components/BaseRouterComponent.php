@@ -150,14 +150,13 @@ abstract class BaseRouterComponent extends CBitrixComponent
     }
 
     /**
-     * Универсальный флоу выполнения компонента
-     * @throws Throwable
+     * Универсальный порядок выполнения комплексного компонента
      */
     final public function run(): void
     {
         $this->includeModules();
+        $this->checkParams();
         $this->init();
-        $this->checkAutomaticParams();
         $this->startAjax();
 
         $this->setSefDefaultParams();
@@ -173,7 +172,7 @@ abstract class BaseRouterComponent extends CBitrixComponent
 
     /**
      * Выполнение компонента
-     * @return static возвращает объект компонента
+     * @return $this|mixed возвращает экземпляр текущего компонента
      */
     public function executeComponent()
     {

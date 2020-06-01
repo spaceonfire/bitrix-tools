@@ -19,14 +19,13 @@ abstract class BaseComponent extends CBitrixComponent
     protected $cacheTemplate = true;
 
     /**
-     * Универсальный флоу выполнения компонента
-     * @throws Throwable
+     * Универсальный порядок выполнения простого компонента
      */
     final protected function run(): void
     {
         $this->includeModules();
+        $this->checkParams();
         $this->init();
-        $this->checkAutomaticParams();
         $this->startAjax();
         $this->executeProlog();
 
@@ -50,7 +49,7 @@ abstract class BaseComponent extends CBitrixComponent
 
     /**
      * Выполнение компонента
-     * @return static возвращает объект компонента
+     * @return $this|mixed возвращает текущий экземпляр компонента
      */
     public function executeComponent()
     {

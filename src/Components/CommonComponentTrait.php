@@ -11,10 +11,14 @@ use Bitrix\Main\Localization\Loc;
 use CAjax;
 use CBitrixComponent;
 use CMain;
+use InvalidArgumentException;
 use Narrowspark\HttpStatus\Exception\NotFoundException;
 use spaceonfire\BitrixTools\Common as CommonTools;
 use spaceonfire\BitrixTools\Components\Property\ComponentPropertiesTrait;
 use spaceonfire\BitrixTools\HttpStatusTools;
+use spaceonfire\Type\BuiltinType;
+use spaceonfire\Type\DisjunctionType;
+use spaceonfire\Type\Type;
 use Throwable;
 
 Loc::loadMessages(__FILE__);
@@ -53,11 +57,12 @@ trait CommonComponentTrait
      * @var array Настройки для проверки параметров компонента
      * @example $checkParams = array('IBLOCK_TYPE' => array('type' => 'string'), 'ELEMENT_ID' => array('type' => 'int',
      *     'error' => '404'));
+     * @deprecated Переопределяйте метод getParamsTypes() для указания типов параметров компонента
      */
     protected $checkParams = [];
 
     /**
-     * Getter for `id` property
+     * Возвращает идентификатор компонента
      * @return string
      */
     public function getId(): string
@@ -79,7 +84,6 @@ trait CommonComponentTrait
 
     /**
      * Загружает модули 1С-Битрикс.
-     * @throws Main\LoaderException
      */
     public function includeModules(): void
     {
@@ -104,56 +108,84 @@ trait CommonComponentTrait
     }
 
     /**
-     * @throws Throwable
+     * Возвращает массив типов для проверки параметров компонента
+     * @return Type[]
      */
-    private function checkAutomaticParams(): void
+    protected function getParamsTypes(): array
+    {
+        $result = [];
+
+        if (!empty($this->checkParams)) {
+            trigger_error(sprintf(
+                'Error in component %s: property "checkParams" is deprecated. Use getParamsTypes() method instead.',
+                $this->getName()
+            ), E_USER_DEPRECATED);
+        }
+
+        foreach ($this->checkParams as $key => $options) {
+            switch ($options['type']) {
+                case 'int':
+                    $type = new BuiltinType(BuiltinType::INT, false);
+                    break;
+
+                case 'float':
+                    $type = new BuiltinType(BuiltinType::FLOAT, false);
+                    break;
+
+                case 'string':
+                    $type = new BuiltinType(BuiltinType::STRING, false);
+                    break;
+
+                case 'array':
+                    $type = new BuiltinType(BuiltinType::ARRAY);
+                    break;
+
+                default:
+                    continue 2;
+                    break;
+            }
+
+            if (isset($options['error']) && $options['error'] === false) {
+                $type = new DisjunctionType([$type, new BuiltinType(BuiltinType::NULL)]);
+            }
+
+            $result[$key] = $type;
+        }
+
+        // I should probably add default component params like CACHE_TYPE, CACHE_TIME etc.
+
+        return $result;
+    }
+
+    private function checkParams(): void
     {
         try {
-            foreach ($this->checkParams as $key => $param) {
-                if ($param['error'] === false) {
-                    continue;
+            foreach ($this->getParamsTypes() as $param => $type) {
+                $value = $this->arParams[$param] ?? null;
+
+                if (!$type->check($value)) {
+                    throw new InvalidArgumentException(sprintf(
+                        'Value of "%s" param must be of type "%s". Got: "%s"',
+                        $param,
+                        (string)$type,
+                        gettype($value)
+                    ));
                 }
 
-                switch ($param['type']) {
-                    case 'int':
-                        if (!is_numeric($this->arParams[$key])) {
-                            throw new Main\ArgumentTypeException($key, 'integer');
-                        }
-
-                        $this->arParams[$key] = (int)$this->arParams[$key];
-                        break;
-
-                    case 'float':
-                        if (!is_numeric($this->arParams[$key])) {
-                            throw new Main\ArgumentTypeException($key, 'float');
-                        }
-
-                        $this->arParams[$key] = (float)$this->arParams[$key];
-                        break;
-
-                    case 'string':
-                        $value = htmlspecialchars(trim($this->arParams[$key]));
-
-                        if (strlen($value) <= 0) {
-                            throw new Main\ArgumentNullException($key);
-                        }
-
-                        $this->arParams[$key] = $value;
-                        break;
-
-                    case 'array':
-                        if (!is_array($this->arParams[$key])) {
-                            throw new Main\ArgumentTypeException($key, 'array');
-                        }
-                        break;
-
-                    default:
-                        throw new Main\ArgumentTypeException($key);
-                        break;
+                if ($type instanceof BuiltinType) {
+                    $value = $type->cast($value);
                 }
+
+                if ((string)$type === 'string') {
+                    $value = htmlspecialchars(trim($value));
+                }
+
+                $this->arParams[$param] = $value;
             }
-        } catch (Main\ArgumentException $exception) {
-            if ($this->checkParams[$exception->getParameter()]['error'] === '404') {
+
+            // There should be more options for params checking, validation as example
+        } catch (InvalidArgumentException $exception) {
+            if ($this->canShowExceptionMessage($exception)) {
                 $this->return404($exception);
             } else {
                 throw $exception;
@@ -411,7 +443,7 @@ trait CommonComponentTrait
      * Добавляет дополнительный ID для кэша
      * @param mixed $id
      */
-    public function addCacheAdditionalId($id): void
+    final protected function addCacheAdditionalId($id): void
     {
         $this->cacheAdditionalId[] = $id;
     }
