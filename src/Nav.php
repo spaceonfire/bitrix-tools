@@ -27,7 +27,7 @@ abstract class Nav
             }
         }
 
-        $children = function (&$item, &$list) use (&$children): void {
+        $children = static function (&$item, &$list) use (&$children): void {
             if (!empty($item['CHILDREN'])) {
                 foreach ($item['CHILDREN'] as $key => $id) {
                     $childItem = $list[$id];

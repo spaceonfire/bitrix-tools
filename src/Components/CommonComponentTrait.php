@@ -13,6 +13,7 @@ use CBitrixComponent;
 use CMain;
 use InvalidArgumentException;
 use Narrowspark\HttpStatus\Exception\NotFoundException;
+use RuntimeException;
 use spaceonfire\BitrixTools\Common as CommonTools;
 use spaceonfire\BitrixTools\Components\Property\ComponentPropertiesTrait;
 use spaceonfire\BitrixTools\HttpStatusTools;
@@ -345,8 +346,8 @@ trait CommonComponentTrait
     /**
      * Вызывается при возникновении ошибки
      *
-     * Сбрасывает кэш, показывает сообщение об ошибке (в общем виде для пользователей и детально
-     * для админов), пишет ошибку в лог Битрикса
+     * Сбрасывает кэш, показывает сообщение об ошибке (в общем виде для пользователей и детально для админов),
+     * пишет ошибку в лог Битрикса
      *
      * @param Throwable $exception
      */
@@ -430,12 +431,17 @@ trait CommonComponentTrait
     /**
      * Регистрирует тэг в кэше
      * @param string $tag
-     * @throws Main\SystemException
      */
     public static function registerCacheTag(string $tag): void
     {
-        if ($tag) {
+        if (!$tag) {
+            return;
+        }
+
+        try {
             Application::getInstance()->getTaggedCache()->registerTag($tag);
+        } catch (Main\SystemException $e) {
+            throw new RuntimeException($e->getMessage(), $e->getCode(), $e);
         }
     }
 
@@ -450,7 +456,7 @@ trait CommonComponentTrait
 
     /**
      * Вызывает событие, специфичное для компонента
-     * @param string $type Тип события. Имя класса компонента будет добавлено ввиде префикса.
+     * @param string $type Тип события. Имя класса компонента будет добавлено в виде префикса.
      * @param array $params Параметры события. Параметр `component` будет добавлен автоматически
      * @param null|string|string[] $filter Фильтр события
      * @return Event

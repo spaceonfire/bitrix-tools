@@ -17,7 +17,7 @@ abstract class ArrayTools extends ArrayHelper
      */
     public static function removeTildaKeys(array $data): array
     {
-        $deleteKeys = array_filter(array_keys($data), function ($key) {
+        $deleteKeys = array_filter(array_keys($data), static function ($key) {
             return strpos($key, '~') === 0;
         });
         foreach ($deleteKeys as $key) {

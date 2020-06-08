@@ -2,7 +2,6 @@
 
 namespace spaceonfire\BitrixTools\ORM;
 
-use Bitrix\Main\NotImplementedException;
 use Bitrix\Main\ORM\Data\DataManager;
 use spaceonfire\BitrixTools\Cache;
 
@@ -19,7 +18,6 @@ abstract class IblockSectionPropSimple extends DataManager
     /**
      * @abstract
      * @return int
-     * @throws NotImplementedException
      */
     abstract public static function getIblockId(): int;
 

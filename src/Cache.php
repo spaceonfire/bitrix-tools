@@ -2,8 +2,8 @@
 
 namespace spaceonfire\BitrixTools;
 
-use Bitrix\Main\ArgumentNullException;
 use Bitrix\Main\Data\Cache as BxCache;
+use InvalidArgumentException;
 
 abstract class Cache
 {
@@ -20,9 +20,9 @@ abstract class Cache
             'CACHE_TIME' => 36000000,
         ], $options);
 
-        foreach (['CACHE_ID', 'CACHE_PATH'] as $sParam) {
-            if (empty($options[$sParam])) {
-                throw new ArgumentNullException($sParam);
+        foreach (['CACHE_ID', 'CACHE_PATH'] as $param) {
+            if (empty($options[$param])) {
+                throw new InvalidArgumentException(sprintf('Cache option "%s" should not be empty', $param));
             }
         }
 
@@ -55,7 +55,6 @@ abstract class Cache
      * @param callable $callback Функция, выполнение которой необходимо кэшировать
      * @param array $args Массив аргументов для функции `$callback`
      * @return mixed Данные возвращаемые функцией `$callback` из кэша
-     * @throws ArgumentNullException
      */
     public static function cacheResult(array $options, callable $callback, $args = [])
     {
@@ -101,7 +100,6 @@ abstract class Cache
      * Удаляет кэш
      *
      * @param array $options Массив с параметрами кэширования, как в Cache::cacheResult
-     * @throws ArgumentNullException
      * @see Cache::cacheResult
      */
     public static function clearCache(array $options): void

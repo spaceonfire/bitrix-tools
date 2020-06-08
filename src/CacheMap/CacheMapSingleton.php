@@ -59,7 +59,6 @@ trait CacheMapSingleton
 
     /**
      * Очищает кэш
-     * @throws Main\ArgumentNullException
      */
     public static function clearCache()
     {

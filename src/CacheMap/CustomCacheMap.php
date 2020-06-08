@@ -31,7 +31,6 @@ final class CustomCacheMap implements CacheMapInterface
      *     возвращающую массив значений.
      * @param string $idKey Поле, принимаемое как идентификатор в справочнике. По-умолчанию, `ID`.
      * @param string $codeKey Поле, принимаемое как символьный код в справочнике. По-умолчанию, `CODE`.
-     * @throws ArgumentTypeException
      */
     public function __construct($dataSource, $idKey = 'ID', $codeKey = 'CODE')
     {

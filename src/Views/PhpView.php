@@ -4,6 +4,7 @@ namespace spaceonfire\BitrixTools\Views;
 
 use Bitrix\Main\IO\FileNotFoundException;
 use Bitrix\Main\Localization\Loc;
+use RuntimeException;
 
 /**
  * PHP MVC view
@@ -16,15 +17,12 @@ class PhpView extends BaseView
         header('Content-type: text/html; charset=' . SITE_CHARSET);
     }
 
-    /**
-     * {@inheritDoc}
-     * @throws FileNotFoundException
-     */
+    /** {@inheritDoc} */
     public function render(): string
     {
         $path = $this->getPath();
         if (!is_file($path)) {
-            throw new FileNotFoundException($path);
+            throw new RuntimeException(sprintf('Path "%s" is not found.', $path));
         }
 
         Loc::loadMessages($path);

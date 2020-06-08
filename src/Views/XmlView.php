@@ -32,10 +32,7 @@ class XmlView extends BaseView
         header('Content-type: application/xml; charset=' . SITE_CHARSET);
     }
 
-    /**
-     * {@inheritDoc}
-     * @throws RuntimeException
-     */
+    /** {@inheritDoc} */
     public function render(): string
     {
         if (!class_exists(DOMDocument::class)) {

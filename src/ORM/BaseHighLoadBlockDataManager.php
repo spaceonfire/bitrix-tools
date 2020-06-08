@@ -11,6 +11,7 @@ use Bitrix\Main\ORM\Data\AddResult;
 use Bitrix\Main\ORM\Data\UpdateResult;
 use Bitrix\Main\ORM\Fields\Relations;
 use Bitrix\Main\SystemException;
+use RuntimeException;
 use spaceonfire\BitrixTools\CacheMap\HighloadBlockCacheMap;
 use spaceonfire\BitrixTools\Common;
 
@@ -57,25 +58,29 @@ abstract class BaseHighLoadBlockDataManager extends DataManager
     /**
      * Определяет список полей для сущности
      * @return array
-     * @throws SystemException
      * @see \Bitrix\Main\ORM\Entity::getFields() Используйте чтобы получить список инициализированных полей
      */
     public static function getMap(): array
     {
-        global $USER_FIELD_MANAGER;
+        try {
+            global $USER_FIELD_MANAGER;
 
-        $map = [];
-        $fields = HighloadBlockTable::compileEntity(static::getHighloadBlock())->getFields();
-        $hlId = static::getRealId();
-        $userFields = $USER_FIELD_MANAGER->GetUserFields('HLBLOCK_' . $hlId, 0, LANGUAGE_ID);
+            $map = [];
+            $fields = HighloadBlockTable::compileEntity(static::getHighloadBlock())->getFields();
 
-        foreach ($fields as $field) {
-            $field->resetEntity();
-            $field->configureTitle($userFields[$field->getName()]['LIST_COLUMN_LABEL']);
-            $map[$field->getName()] = $field;
+            $hlId = static::getRealId();
+            $userFields = $USER_FIELD_MANAGER->GetUserFields('HLBLOCK_' . $hlId, 0, LANGUAGE_ID);
+
+            foreach ($fields as $field) {
+                $field->resetEntity();
+                $field->configureTitle($userFields[$field->getName()]['LIST_COLUMN_LABEL']);
+                $map[$field->getName()] = $field;
+            }
+
+            return $map;
+        } catch (SystemException $e) {
+            throw new RuntimeException($e->getMessage(), $e->getCode(), $e);
         }
-
-        return $map;
     }
 
     /**

@@ -5,7 +5,7 @@ namespace spaceonfire\BitrixTools\CacheMap;
 use Bitrix\Highloadblock\HighloadBlockTable;
 use Bitrix\Main;
 use Bitrix\Main\ORM\Data\DataManager;
-use Bitrix\Main\ORM\Query\Query;
+use RuntimeException;
 use spaceonfire\BitrixTools\Common;
 use Throwable;
 
@@ -19,17 +19,18 @@ final class HighloadBlockCacheMap implements CacheMapStaticInterface
 
     /**
      * HighloadBlockCacheMap constructor.
-     * @throws Main\LoaderException
-     * @throws Main\SystemException
      */
     private function __construct()
     {
         Common::loadModules(['highloadblock']);
 
-        /** @var Query $q */
-        $q = HighloadBlockTable::query()
-            ->setSelect(['*'])
-            ->setFilter(['!NAME' => false]);
+        try {
+            $q = HighloadBlockTable::query()
+                ->setSelect(['*'])
+                ->setFilter(['!NAME' => false]);
+        } catch (Main\SystemException $e) {
+            throw new RuntimeException($e->getMessage(), $e->getCode(), $e);
+        }
 
         $this->traitConstruct($q, 'ID', 'NAME');
     }
@@ -37,32 +38,35 @@ final class HighloadBlockCacheMap implements CacheMapStaticInterface
     /**
      * Регистрация обработчиков событий для очистки кэша при изменении сущности
      * Вызывается автоматически при подключении autoloader.
-     * @throws Main\SystemException
      */
     public static function register(): void
     {
         try {
             Common::loadModules(['highloadblock']);
-        } catch (Throwable $err) {
+        } catch (Throwable $e) {
             return;
         }
 
-        $eventManager = Main\EventManager::getInstance();
+        try {
+            $eventManager = Main\EventManager::getInstance();
 
-        $ormEntity = HighloadBlockTable::getEntity();
+            $ormEntity = HighloadBlockTable::getEntity();
 
-        $eventsTree = [
-            $ormEntity->getModule() => [
-                $ormEntity->getNamespace() . $ormEntity->getName() . '::' . DataManager::EVENT_ON_AFTER_ADD,
-                $ormEntity->getNamespace() . $ormEntity->getName() . '::' . DataManager::EVENT_ON_AFTER_UPDATE,
-                $ormEntity->getNamespace() . $ormEntity->getName() . '::' . DataManager::EVENT_ON_AFTER_DELETE,
-            ],
-        ];
+            $eventsTree = [
+                $ormEntity->getModule() => [
+                    $ormEntity->getNamespace() . $ormEntity->getName() . '::' . DataManager::EVENT_ON_AFTER_ADD,
+                    $ormEntity->getNamespace() . $ormEntity->getName() . '::' . DataManager::EVENT_ON_AFTER_UPDATE,
+                    $ormEntity->getNamespace() . $ormEntity->getName() . '::' . DataManager::EVENT_ON_AFTER_DELETE,
+                ],
+            ];
 
-        foreach ($eventsTree as $moduleId => $events) {
-            foreach ($events as $event) {
-                $eventManager->addEventHandler($moduleId, $event, [static::class, 'clearCache']);
+            foreach ($eventsTree as $moduleId => $events) {
+                foreach ($events as $event) {
+                    $eventManager->addEventHandler($moduleId, $event, [static::class, 'clearCache']);
+                }
             }
+        } catch (Main\SystemException $e) {
+            throw new RuntimeException($e->getMessage(), $e->getCode(), $e);
         }
     }
 }

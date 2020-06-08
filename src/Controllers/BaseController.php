@@ -4,12 +4,12 @@ namespace spaceonfire\BitrixTools\Controllers;
 
 use Bitrix\Main\Context;
 use Bitrix\Main\HttpRequest;
-use Exception;
 use Narrowspark\HttpStatus\Exception\NotFoundException;
 use spaceonfire\BitrixTools\ArrayTools;
 use spaceonfire\BitrixTools\Views\JsonView;
 use spaceonfire\BitrixTools\Views\ViewInterface;
 use stdClass;
+use Throwable;
 
 class BaseController implements ControllerInterface
 {
@@ -43,7 +43,7 @@ class BaseController implements ControllerInterface
      * @param string $name Имя сущности
      * @param string $namespace Неймспейс класса
      * @return static
-     * @throws Exception
+     * @throws NotFoundException
      */
     public static function factory($name, $namespace = __NAMESPACE__): ControllerInterface
     {
@@ -57,7 +57,7 @@ class BaseController implements ControllerInterface
 
         $name = preg_replace('/[^A-z0-9_]/', '', $name);
 
-        $checkClasses = [$namespace . '\\' . ucfirst($name), $namespace . '\\' . ucfirst($name) . 'Controller', ];
+        $checkClasses = [$namespace . '\\' . ucfirst($name), $namespace . '\\' . ucfirst($name) . 'Controller',];
 
         foreach ($checkClasses as $className) {
             if (class_exists($className)) {
@@ -90,7 +90,7 @@ class BaseController implements ControllerInterface
         try {
             $response->data = $this->$methodName();
             $response->success = true;
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $response->code = $e->getCode();
             $response->message = $e->getMessage();
         }
@@ -99,7 +99,7 @@ class BaseController implements ControllerInterface
             $this->view->setData($this->returnAsIs ? ($response->data ?? null) : $response);
             $this->view->sendHeaders();
             echo $this->view->render();
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             echo $e->getMessage();
         }
     }

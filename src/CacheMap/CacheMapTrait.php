@@ -5,7 +5,9 @@ namespace spaceonfire\BitrixTools\CacheMap;
 use Bitrix\Main;
 use Bitrix\Main\ORM\Query\Query;
 use Closure;
+use InvalidArgumentException;
 use Opis\Closure\SerializableClosure;
+use RuntimeException;
 use spaceonfire\BitrixTools\Cache;
 
 trait CacheMapTrait
@@ -27,7 +29,11 @@ trait CacheMapTrait
         } elseif (is_array($dataSource)) {
             $this->map = $dataSource;
         } else {
-            throw new Main\ArgumentTypeException('dataSource', [Query::class, 'callable', 'array',]);
+            throw new InvalidArgumentException(sprintf(
+                'Argument "dataSource" should be a callable, an array or instance of %s. Got: %s',
+                Query::class,
+                gettype($dataSource)
+            ));
         }
 
         $this->idKey = $idKey;
@@ -52,7 +58,7 @@ trait CacheMapTrait
         $data = Cache::cacheResult($this->getCacheOptions(), $this->fillCallback);
 
         if (!is_array($data)) {
-            throw new Main\SystemException('fillCallback returned non-array result');
+            throw new RuntimeException('fillCallback returned non-array result');
         }
 
         foreach ($data as $item) {
@@ -133,7 +139,6 @@ trait CacheMapTrait
 
     /**
      * Очищает кэш
-     * @throws Main\ArgumentNullException
      */
     public function traitClearCache(): void
     {

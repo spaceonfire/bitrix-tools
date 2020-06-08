@@ -9,6 +9,7 @@ use Bitrix\Main\Db\SqlQueryException;
 use Bitrix\Main\ORM\Entity;
 use Bitrix\Main\ORM\Objectify\EntityObject;
 use Bitrix\Main\Result;
+use Bitrix\Main\SystemException;
 use RuntimeException;
 use stdClass;
 use Throwable;
@@ -22,17 +23,21 @@ abstract class ORMTools
 
     public static function collectValuesFromEntityObject(EntityObject $object): object
     {
-        $item = new stdClass();
+        try {
+            $item = new stdClass();
 
-        foreach ($object->collectValues() as $key => $value) {
-            if ($value instanceof EntityObject) {
-                $value = self::collectValuesFromEntityObject($value);
+            foreach ($object->collectValues() as $key => $value) {
+                if ($value instanceof EntityObject) {
+                    $value = self::collectValuesFromEntityObject($value);
+                }
+
+                $item->{$key} = $value;
             }
 
-            $item->{$key} = $value;
+            return $item;
+        } catch (SystemException $e) {
+            throw new RuntimeException($e->getMessage(), $e->getCode(), $e);
         }
-
-        return $item;
     }
 
     /**
