@@ -7,9 +7,9 @@ use Bitrix\Iblock\IblockSiteTable;
 use Bitrix\Main\DB\SqlExpression;
 use Bitrix\Main\ORM\Data\DataManager;
 use Bitrix\Main\ORM\Query\Filter\ConditionTree;
+use Bitrix\Main\SystemException;
 use RuntimeException;
 use spaceonfire\BitrixTools\IblockTools;
-use Throwable;
 
 abstract class IblockElement extends DataManager
 {
@@ -115,7 +115,7 @@ abstract class IblockElement extends DataManager
         return $map;
     }
 
-    protected static function getPropertyMultipleMap(): array
+    private static function getPropertyMultipleMap(): array
     {
         $propertiesMap = [];
 
@@ -126,18 +126,78 @@ abstract class IblockElement extends DataManager
 
             foreach ($properties as $code => $property) {
                 if ($property['MULTIPLE'] === 'Y') {
-                    $propertiesMap['PROPERTY_MULTIPLE_' . $code] = [
-                        'data_type' => $propertyMultipleClassName,
-                        'reference' => [
-                            '=this.ID' => 'ref.IBLOCK_ELEMENT_ID',
-                            'ref.IBLOCK_PROPERTY_ID' => new SqlExpression('?i', $property['ID']),
-                        ],
-                    ];
+                    try {
+                        $propertiesMap['PROPERTY_MULTIPLE_' . $code] = [
+                            'data_type' => $propertyMultipleClassName,
+                            'reference' => [
+                                '=this.ID' => 'ref.IBLOCK_ELEMENT_ID',
+                                'ref.IBLOCK_PROPERTY_ID' => new SqlExpression('?i', $property['ID']),
+                            ],
+                        ];
+                    } catch (SystemException $e) {
+                        throw new RuntimeException($e->getMessage(), $e->getCode(), $e);
+                    }
                 }
             }
         }
 
         return $propertiesMap;
+    }
+
+    private static function getUrlTemplateMap(array $modelMap = []): array
+    {
+        $urlTemplateMap = [];
+
+        try {
+            $iblockInfo = IblockSiteTable::getRow([
+                'select' => [
+                    'DETAIL_PAGE_URL' => 'IBLOCK.DETAIL_PAGE_URL',
+                    'SITE_ID',
+                    'DIR' => 'SITE.DIR',
+                    'SERVER_NAME' => 'SITE.DIR',
+                ],
+                'filter' => [
+                    'IBLOCK_ID' => static::getIblockId(),
+                ],
+                'cache' => [
+                    'ttl' => 36000,
+                    'cache_joins' => true,
+                ],
+            ]);
+        } catch (SystemException $e) {
+            throw new RuntimeException($e->getMessage(), $e->getCode(), $e);
+        }
+
+        $isAdminPage = ((defined('ADMIN_SECTION') && ADMIN_SECTION === true) || !defined('BX_STARTED'));
+
+        if ($iblockInfo !== null) {
+            if (!$isAdminPage && defined('SITE_DIR') && defined('SITE_SERVER_NAME')) {
+                $replacements = [SITE_DIR, SITE_SERVER_NAME];
+            } else {
+                $replacements = [$iblockInfo['DIR'], $iblockInfo['SERVER_NAME']];
+            }
+
+            $templateUrl = str_replace(['#SITE_DIR#', '#SERVER_NAME#'], $replacements, $iblockInfo['DETAIL_PAGE_URL']);
+
+            $expressionFields = [];
+            preg_match_all('/#([^#]+)#/u', $templateUrl, $match);
+            if (!empty($match[1])) {
+                foreach ($match[1] as $kid => $fieldName) {
+                    if (array_key_exists($fieldName, $modelMap)) {
+                        $templateUrl = str_replace($match[0][$kid], '\', %s,\'', $templateUrl);
+                        $expressionFields[] = $fieldName;
+                    }
+                }
+            }
+
+            array_unshift($expressionFields, 'CONCAT(\'' . $templateUrl . '\')');
+            $urlTemplateMap['DETAIL_PAGE_URL'] = [
+                'data_type' => 'string',
+                'expression' => $expressionFields
+            ];
+        }
+
+        return $urlTemplateMap;
     }
 
     private static function mergeFilter($filter)
@@ -224,7 +284,6 @@ abstract class IblockElement extends DataManager
 
     /**
      * Возвращает символьный код свойства по его ID
-     *
      * @param int $id ID свойства
      * @return null|string
      */
@@ -235,7 +294,6 @@ abstract class IblockElement extends DataManager
 
     /**
      * Возвращает ID свойства по его коду
-     *
      * @param string $code Символьный код свойства
      * @return null|int
      */
@@ -245,64 +303,12 @@ abstract class IblockElement extends DataManager
     }
 
     /**
-     * Возвращает Expression поле для получения URL детальной страницы
-     *
-     * @param array $modelMap - текущая схема полей сущности
+     * Возвращает SEO мета-данные для элемента инфоблока по ID
+     * @param int $elementId ID элемента
      * @return array
      */
-    private static function getUrlTemplateMap(array $modelMap = []): array
+    public static function getElementMeta(int $elementId): array
     {
-        $urlTemplateMap = [];
-
-        try {
-            $iblockInfo = IblockSiteTable::getRow([
-                'select' => [
-                    'DETAIL_PAGE_URL' => 'IBLOCK.DETAIL_PAGE_URL',
-                    'SITE_ID',
-                    'DIR' => 'SITE.DIR',
-                    'SERVER_NAME' => 'SITE.DIR',
-                ],
-                'filter' => [
-                    'IBLOCK_ID' => static::getIblockId(),
-                ],
-                'cache' => [
-                    'ttl' => 36000,
-                    'cache_joins' => true,
-                ],
-            ]);
-        } catch (Throwable $e) {
-            throw new RuntimeException($e->getMessage(), $e->getCode(), $e);
-        }
-
-        $isAdminPage = ((defined('ADMIN_SECTION') && ADMIN_SECTION === true) || !defined('BX_STARTED'));
-
-        if ($iblockInfo !== null) {
-            if (!$isAdminPage && defined('SITE_DIR') && defined('SITE_SERVER_NAME')) {
-                $replacements = [SITE_DIR, SITE_SERVER_NAME];
-            } else {
-                $replacements = [$iblockInfo['DIR'], $iblockInfo['SERVER_NAME']];
-            }
-
-            $templateUrl = str_replace(['#SITE_DIR#', '#SERVER_NAME#'], $replacements, $iblockInfo['DETAIL_PAGE_URL']);
-
-            $expressionFields = [];
-            preg_match_all('/#([^#]+)#/u', $templateUrl, $match);
-            if (!empty($match[1])) {
-                foreach ($match[1] as $kid => $fieldName) {
-                    if (array_key_exists($fieldName, $modelMap)) {
-                        $templateUrl = str_replace($match[0][$kid], '\', %s,\'', $templateUrl);
-                        $expressionFields[] = $fieldName;
-                    }
-                }
-            }
-
-            array_unshift($expressionFields, 'CONCAT(\'' . $templateUrl . '\')');
-            $urlTemplateMap['DETAIL_PAGE_URL'] = [
-                'data_type' => 'string',
-                'expression' => $expressionFields
-            ];
-        }
-
-        return $urlTemplateMap;
+        return IblockTools::getElementMeta(static::getIblockId(), $elementId);
     }
 }

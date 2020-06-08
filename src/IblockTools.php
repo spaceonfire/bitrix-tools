@@ -3,6 +3,8 @@
 namespace spaceonfire\BitrixTools;
 
 use Bitrix\Iblock;
+use Bitrix\Iblock\InheritedProperty\ElementValues;
+use Bitrix\Iblock\InheritedProperty\SectionValues;
 use Bitrix\Iblock\SectionTable;
 use Bitrix\Main;
 use Bitrix\Main\ORM\Objectify\EntityObject;
@@ -26,13 +28,14 @@ abstract class IblockTools
      */
     public static function getIblockIdByCode(string $code): ?int
     {
-        return (int)IblockCacheMap::getId($code);
+        $id = IblockCacheMap::getId($code);
+        return $id ? (int)$id : null;
     }
 
     /**
-     * Собирает схему инфоблока, состаящую из полей элемента инфоблока и его свойств.
+     * Собирает схему инфоблока, состоящую из полей элемента инфоблока и его свойств.
      *
-     * Принимает в качетсве аргумента `$options` массив со следующими ключами:
+     * Принимает в качестве аргумента `$options` массив со следующими ключами:
      *
      * ```php
      * $options = [
@@ -42,11 +45,8 @@ abstract class IblockTools
      * ]
      * ```
      *
-     * @noinspection PhpDocMissingThrowsInspection
      * @param array $options
-     * @return array Схема инфоблока - массив ассоциативных массивов, описывающих поля инфоблока (тип, название, id
-     *     поля и пр.)
-     * @throws Main\LoaderException
+     * @return array Схема инфоблока - массив ассоциативных массивов, описывающих поля и свойства инфоблока
      */
     public static function buildSchema($options = []): array
     {
@@ -162,7 +162,7 @@ abstract class IblockTools
                                 'filter' => [
                                     'IBLOCK_ID' => $arProp['LINK_IBLOCK_ID'],
                                 ],
-                                'select' => ['ID', 'NAME', ],
+                                'select' => ['ID', 'NAME',],
                                 'limit' => 250,
                             ])->fetchAll();
                             foreach ($arTmpElements as $arElement) {
@@ -179,7 +179,7 @@ abstract class IblockTools
                                 'filter' => [
                                     'IBLOCK_ID' => $arProp['LINK_IBLOCK_ID'],
                                 ],
-                                'select' => ['ID', 'NAME', ],
+                                'select' => ['ID', 'NAME',],
                                 'limit' => 250,
                             ])->fetchAll();
                             foreach ($arTmpSections as $arSection) {
@@ -199,7 +199,7 @@ abstract class IblockTools
                     'arProps' => $arProps,
                 ];
             },
-            [$options['IBLOCK_ID'], $options['DEFAULT_FIELDS'], ]
+            [$options['IBLOCK_ID'], $options['DEFAULT_FIELDS'],]
         );
 
         $arPropertySchema = $arCacheData['arPropertySchema'];
@@ -246,9 +246,6 @@ abstract class IblockTools
      * @param int $iblockId ID инфоблока
      * @param array $parameters дополнительные параметры запроса
      * @return array Массив вида `[SECTION_ID => SECTION_NAME]`
-     * @throws Main\ArgumentException
-     * @throws Main\SystemException
-     * @throws Main\LoaderException
      */
     public static function getSectionsTree(int $iblockId, array $parameters = []): array
     {
@@ -259,7 +256,7 @@ abstract class IblockTools
                 'IBLOCK_ID' => $iblockId,
                 'ACTIVE' => 'Y',
             ],
-            'select' => ['ID', 'NAME', 'DEPTH_LEVEL', ],
+            'select' => ['ID', 'NAME', 'DEPTH_LEVEL',],
             'order' => ['LEFT_MARGIN' => 'ASC'],
         ], $parameters);
 
@@ -290,7 +287,6 @@ abstract class IblockTools
      * Возвращает список свойств для инфоблока
      * @param int $iblockId ID инфоблока
      * @return array
-     * @noinspection PhpDocMissingThrowsInspection
      */
     public static function getProperties(int $iblockId): array
     {
@@ -301,7 +297,6 @@ abstract class IblockTools
             'CACHE_TAG' => 'property_iblock_id_' . $iblockId,
         ];
 
-        /** @noinspection PhpUnhandledExceptionInspection */
         return Cache::cacheResult($cacheOptions, static function (int $iblockId) {
             $propertiesQuery = CIBlockProperty::GetList([], [
                 'IBLOCK_ID' => $iblockId,
@@ -349,10 +344,9 @@ abstract class IblockTools
 
     /**
      * Возвращает значения всех свойств типа "список"
-     * @param int|null $iblockId ID инфоблока. Если передан `null`, будут возвращены все свойства,
-     * сгруппированные по инфоблокам
+     * @param int|null $iblockId ID инфоблока. Если передан `null`, будут возвращены все свойства, сгруппированные по
+     *     инфоблокам
      * @return array
-     * @noinspection PhpDocMissingThrowsInspection
      */
     public static function getEnums(?int $iblockId = null): array
     {
@@ -362,7 +356,6 @@ abstract class IblockTools
             'CACHE_TIME' => 36000,
         ];
 
-        /** @noinspection PhpUnhandledExceptionInspection */
         $enums = Cache::cacheResult($cacheOptions, static function () {
             $propertiesQuery = CIBlockProperty::getList(['ID' => 'ASC'], [
                 'ACTIVE' => 'Y',
@@ -478,5 +471,27 @@ abstract class IblockTools
         }
 
         return null;
+    }
+
+    /**
+     * Возвращает SEO мета-данные для элемента инфоблока по ID
+     * @param int $iblockId ID инфоблока
+     * @param int $elementId ID элемента
+     * @return array
+     */
+    public static function getElementMeta(int $iblockId, int $elementId): array
+    {
+        return (new ElementValues($iblockId, $elementId))->getValues();
+    }
+
+    /**
+     * Возвращает SEO мета-данные для раздела инфоблока по ID
+     * @param int $iblockId ID инфоблока
+     * @param int $sectionId ID раздела
+     * @return array
+     */
+    public static function getSectionMeta(int $iblockId, int $sectionId): array
+    {
+        return (new SectionValues($iblockId, $sectionId))->getValues();
     }
 }
