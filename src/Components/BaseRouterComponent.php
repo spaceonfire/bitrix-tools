@@ -155,7 +155,6 @@ abstract class BaseRouterComponent extends CBitrixComponent
     final public function run(): void
     {
         $this->includeModules();
-        $this->checkParams();
         $this->init();
         $this->startAjax();
 

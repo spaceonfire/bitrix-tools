@@ -24,7 +24,6 @@ abstract class BaseComponent extends CBitrixComponent
     final protected function run(): void
     {
         $this->includeModules();
-        $this->checkParams();
         $this->init();
         $this->startAjax();
         $this->executeProlog();

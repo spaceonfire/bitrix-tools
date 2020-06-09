@@ -84,9 +84,52 @@ trait CommonComponentTrait
     }
 
     /**
+     * Подготовка параметров компонента
+     * @param array $arParams
+     * @return array
+     */
+    public function onPrepareComponentParams(array $arParams): array
+    {
+        try {
+            foreach ($this->getParamsTypes() as $param => $type) {
+                $value = $arParams[$param] ?? null;
+
+                if (!$type->check($value)) {
+                    throw new InvalidArgumentException(sprintf(
+                        'Value of "%s" param must be of type "%s". Got: "%s"',
+                        $param,
+                        (string)$type,
+                        gettype($value)
+                    ));
+                }
+
+                if ($type instanceof BuiltinType) {
+                    $value = $type->cast($value);
+                }
+
+                if ((string)$type === 'string') {
+                    $value = htmlspecialchars(trim($value));
+                }
+
+                $arParams[$param] = $value;
+            }
+
+            // There should be more options for params checking, validation as example
+
+            return $arParams;
+        } catch (InvalidArgumentException $exception) {
+            if (!$this->canShowExceptionMessage($exception)) {
+                throw new NotFoundException($exception->getMessage());
+            }
+
+            throw $exception;
+        }
+    }
+
+    /**
      * Загружает модули 1С-Битрикс.
      */
-    public function includeModules(): void
+    private function includeModules(): void
     {
         if (!is_array($this->needModules) || empty($this->needModules)) {
             return;
@@ -158,48 +201,12 @@ trait CommonComponentTrait
         return $result;
     }
 
-    private function checkParams(): void
-    {
-        try {
-            foreach ($this->getParamsTypes() as $param => $type) {
-                $value = $this->arParams[$param] ?? null;
-
-                if (!$type->check($value)) {
-                    throw new InvalidArgumentException(sprintf(
-                        'Value of "%s" param must be of type "%s". Got: "%s"',
-                        $param,
-                        (string)$type,
-                        gettype($value)
-                    ));
-                }
-
-                if ($type instanceof BuiltinType) {
-                    $value = $type->cast($value);
-                }
-
-                if ((string)$type === 'string') {
-                    $value = htmlspecialchars(trim($value));
-                }
-
-                $this->arParams[$param] = $value;
-            }
-
-            // There should be more options for params checking, validation as example
-        } catch (InvalidArgumentException $exception) {
-            if ($this->canShowExceptionMessage($exception)) {
-                $this->return404($exception);
-            } else {
-                throw $exception;
-            }
-        }
-    }
-
     /**
      * Возвращает значение параметра родительского компонента
      * @param string $paramName
      * @return mixed|null
      */
-    protected function getParentParam(string $paramName)
+    final protected function getParentParam(string $paramName)
     {
         if (!($parent = $this->getParent())) {
             return null;
@@ -253,7 +260,7 @@ trait CommonComponentTrait
      * Инициализация кэширования
      * @return bool
      */
-    public function startCache(): bool
+    private function startCache(): bool
     {
         global $USER;
 
@@ -279,7 +286,7 @@ trait CommonComponentTrait
     /**
      * Записывает результат кэширования на диск.
      */
-    public function writeCache(): void
+    private function writeCache(): void
     {
         $this->endResultCache();
     }
@@ -287,7 +294,7 @@ trait CommonComponentTrait
     /**
      * Сброс кэширования.
      */
-    public function abortCache(): void
+    private function abortCache(): void
     {
         $this->abortResultCache();
     }
@@ -338,7 +345,7 @@ trait CommonComponentTrait
      * @param Throwable|null $throwable Исходное исключение. При наличии будет использовано его сообщение об ошибке
      * @throws NotFoundException
      */
-    public function return404(?Throwable $throwable = null): void
+    final protected function return404(?Throwable $throwable = null): void
     {
         throw new NotFoundException($throwable ? $throwable->getMessage() : null);
     }
@@ -461,7 +468,7 @@ trait CommonComponentTrait
      * @param null|string|string[] $filter Фильтр события
      * @return Event
      */
-    public function triggerEvent(string $type, array $params = [], $filter = null): Event
+    final protected function triggerEvent(string $type, array $params = [], $filter = null): Event
     {
         $event = new Event(
             CommonTools::getModuleIdByFqn(static::class),
