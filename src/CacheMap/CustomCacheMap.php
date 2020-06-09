@@ -1,56 +1,43 @@
 <?php
 
+declare(strict_types=1);
+
 namespace spaceonfire\BitrixTools\CacheMap;
 
-use Bitrix\Main\ArgumentTypeException;
 use Bitrix\Main\ORM\Query\Query;
+use InvalidArgumentException;
 
 /**
  * Класс CustomCacheMap позволяет создать собственный кэшированный справочник
  * @package spaceonfire\BitrixTools\CacheMap
- *
- * @method array|null get(string $code) Возвращает данные элемента по символьному коду
- * @method int|mixed getId(string $code) Возвращает ID элемента по символьному коду
- * @method int|mixed clearCache() Очищает кэш
  */
-final class CustomCacheMap implements CacheMapInterface
+final class CustomCacheMap extends AbstractCacheMapDecorator
 {
-    use CacheMapTrait {
-        CacheMapTrait::getDataByCode as get;
-        CacheMapTrait::getIdByCode as getId;
-        CacheMapTrait::getCacheOptions as traitGetCacheOptions;
-        CacheMapTrait::traitClearCache as clearCache;
-    }
-
     /**
      * Создает собственный кэшированный справочник на основе предоставленного источника данных.
      *
      * **ВАЖНО**: Позаботьтесь самостоятельно об очистке кэша, при изменении данных!
      *
-     * @param Query|callable $dataSource Источник данных для справочника, можно передать объект запроса ORM или функцию
-     *     возвращающую массив значений.
-     * @param string $idKey Поле, принимаемое как идентификатор в справочнике. По-умолчанию, `ID`.
-     * @param string $codeKey Поле, принимаемое как символьный код в справочнике. По-умолчанию, `CODE`.
+     * @param Query|callable|array $dataSource Источник данных, можно передать объект запроса ORM, массив или функцию
+     *     возвращающую `iterable`.
+     * @param CacheMapOptions $options Настройки
      */
-    public function __construct($dataSource, $idKey = 'ID', $codeKey = 'CODE')
+    public function __construct($dataSource, CacheMapOptions $options)
     {
-        $this->traitConstruct($dataSource, $idKey, $codeKey);
-    }
+        if ($dataSource instanceof Query) {
+            $cacheMap = new QueryCacheMap($dataSource, $options);
+        } elseif (is_callable($dataSource)) {
+            $cacheMap = new ClosureCacheMap($dataSource, $options);
+        } elseif (is_array($dataSource)) {
+            $cacheMap = new ArrayCacheMap($dataSource, $options);
+        } else {
+            throw new InvalidArgumentException(sprintf(
+                'Argument "dataSource" should be a callable, an array or instance of %s. Got: %s',
+                Query::class,
+                gettype($dataSource)
+            ));
+        }
 
-    private function getCacheOptions(): array
-    {
-        $options = $this->traitGetCacheOptions();
-
-        $cacheId = substr(md5(serialize($this->query ?? $this->fillCallback)), 0, 10);
-
-        $cachePath = explode(DIRECTORY_SEPARATOR, $options['CACHE_PATH']);
-        array_pop($cachePath);
-        $cachePath[] = $cacheId;
-        $cachePath = implode(DIRECTORY_SEPARATOR, $cachePath);
-
-        $options['CACHE_ID'] = $cacheId;
-        $options['CACHE_PATH'] = $cachePath;
-
-        return $options;
+        parent::__construct($cacheMap);
     }
 }

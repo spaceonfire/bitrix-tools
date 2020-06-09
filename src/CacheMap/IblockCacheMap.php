@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace spaceonfire\BitrixTools\CacheMap;
 
 use Bitrix\Iblock\IblockTable;
@@ -13,29 +15,34 @@ use Throwable;
  * Класс IblockCacheMap позволяет получить информацию об инфоблоке по его символьному коду из кэша
  * @package spaceonfire\BitrixTools\CacheMap
  */
-final class IblockCacheMap implements CacheMapStaticInterface
+final class IblockCacheMap extends AbstractStaticCacheMap
 {
-    use CacheMapTrait, CacheMapSingleton;
-
     /**
-     * IblockCacheMap constructor.
+     * @inheritDoc
      */
-    private function __construct()
+    public static function getInstance(): CacheMap
     {
-        Common::loadModules(['iblock']);
+        static $instance;
 
-        try {
-            $q = IblockTable::query()
-                ->setSelect(['*'])
-                ->setFilter([
-                    'ACTIVE' => 'Y',
-                    '!CODE' => false,
-                ]);
-        } catch (Main\SystemException $e) {
-            throw new RuntimeException($e->getMessage(), $e->getCode(), $e);
+        if ($instance === null) {
+            Common::loadModules(['iblock']);
+
+            try {
+                $instance = new QueryCacheMap(
+                    IblockTable::query()
+                        ->setSelect(['*'])
+                        ->setFilter([
+                            'ACTIVE' => 'Y',
+                            '!CODE' => false,
+                        ]),
+                    new CacheMapOptions('iblock-cache-map-' . md5(self::class))
+                );
+            } catch (Main\SystemException $e) {
+                throw new RuntimeException($e->getMessage(), $e->getCode(), $e);
+            }
         }
 
-        $this->traitConstruct($q);
+        return $instance;
     }
 
     /**
@@ -69,9 +76,9 @@ final class IblockCacheMap implements CacheMapStaticInterface
             foreach ($eventsTree as $moduleId => $events) {
                 foreach ($events as $event => $version) {
                     if ($version === 2) {
-                        $eventManager->addEventHandler($moduleId, $event, [static::class, 'clearCache']);
+                        $eventManager->addEventHandler($moduleId, $event, [self::class, 'clearCache']);
                     } else {
-                        $eventManager->addEventHandlerCompatible($moduleId, $event, [static::class, 'clearCache']);
+                        $eventManager->addEventHandlerCompatible($moduleId, $event, [self::class, 'clearCache']);
                     }
                 }
             }

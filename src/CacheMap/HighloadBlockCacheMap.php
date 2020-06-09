@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace spaceonfire\BitrixTools\CacheMap;
 
 use Bitrix\Highloadblock\HighloadBlockTable;
@@ -13,26 +15,31 @@ use Throwable;
  * Класс HighloadBlockCacheMap позволяет получить информацию об HighLoad блоке по его названию из кэша
  * @package spaceonfire\BitrixTools\CacheMap
  */
-final class HighloadBlockCacheMap implements CacheMapStaticInterface
+final class HighloadBlockCacheMap extends AbstractStaticCacheMap
 {
-    use CacheMapTrait, CacheMapSingleton;
-
     /**
-     * HighloadBlockCacheMap constructor.
+     * @inheritDoc
      */
-    private function __construct()
+    public static function getInstance(): CacheMap
     {
-        Common::loadModules(['highloadblock']);
+        static $instance;
 
-        try {
-            $q = HighloadBlockTable::query()
-                ->setSelect(['*'])
-                ->setFilter(['!NAME' => false]);
-        } catch (Main\SystemException $e) {
-            throw new RuntimeException($e->getMessage(), $e->getCode(), $e);
+        if ($instance === null) {
+            Common::loadModules(['highloadblock']);
+
+            try {
+                $instance = new QueryCacheMap(
+                    HighloadBlockTable::query()
+                        ->setSelect(['*'])
+                        ->setFilter(['!NAME' => false]),
+                    new CacheMapOptions('highload-cache-map-' . md5(self::class), 'ID', 'NAME')
+                );
+            } catch (Main\SystemException $e) {
+                throw new RuntimeException($e->getMessage(), $e->getCode(), $e);
+            }
         }
 
-        $this->traitConstruct($q, 'ID', 'NAME');
+        return $instance;
     }
 
     /**
@@ -62,7 +69,7 @@ final class HighloadBlockCacheMap implements CacheMapStaticInterface
 
             foreach ($eventsTree as $moduleId => $events) {
                 foreach ($events as $event) {
-                    $eventManager->addEventHandler($moduleId, $event, [static::class, 'clearCache']);
+                    $eventManager->addEventHandler($moduleId, $event, [self::class, 'clearCache']);
                 }
             }
         } catch (Main\SystemException $e) {

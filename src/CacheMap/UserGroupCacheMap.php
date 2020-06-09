@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace spaceonfire\BitrixTools\CacheMap;
 
 use Bitrix\Main;
@@ -10,27 +12,32 @@ use RuntimeException;
  * Класс UserGroupCacheMap позволяет получить информацию об группе по ее строковому идентификатора из кэша
  * @package spaceonfire\BitrixTools\CacheMap
  */
-final class UserGroupCacheMap implements CacheMapStaticInterface
+final class UserGroupCacheMap extends AbstractStaticCacheMap
 {
-    use CacheMapTrait, CacheMapSingleton;
-
     /**
-     * UserGroupCacheMap constructor.
+     * @inheritDoc
      */
-    private function __construct()
+    public static function getInstance(): CacheMap
     {
-        try {
-            $q = Main\GroupTable::query()
-                ->setSelect(['*'])
-                ->setFilter([
-                    'ACTIVE' => 'Y',
-                    '!STRING_ID' => false,
-                ]);
-        } catch (Main\SystemException $e) {
-            throw new RuntimeException($e->getMessage(), $e->getCode(), $e);
+        static $instance;
+
+        if ($instance === null) {
+            try {
+                $instance = new QueryCacheMap(
+                    Main\GroupTable::query()
+                        ->setSelect(['*'])
+                        ->setFilter([
+                            'ACTIVE' => 'Y',
+                            '!STRING_ID' => false,
+                        ]),
+                    new CacheMapOptions('user-group-cache-map-' . md5(self::class), 'ID', 'STRING_ID')
+                );
+            } catch (Main\SystemException $e) {
+                throw new RuntimeException($e->getMessage(), $e->getCode(), $e);
+            }
         }
 
-        $this->traitConstruct($q, 'ID', 'STRING_ID');
+        return $instance;
     }
 
     /**
@@ -58,9 +65,9 @@ final class UserGroupCacheMap implements CacheMapStaticInterface
             foreach ($eventsTree as $moduleId => $events) {
                 foreach ($events as $event => $version) {
                     if ($version === 2) {
-                        $eventManager->addEventHandler($moduleId, $event, [static::class, 'clearCache']);
+                        $eventManager->addEventHandler($moduleId, $event, [self::class, 'clearCache']);
                     } else {
-                        $eventManager->addEventHandlerCompatible($moduleId, $event, [static::class, 'clearCache']);
+                        $eventManager->addEventHandlerCompatible($moduleId, $event, [self::class, 'clearCache']);
                     }
                 }
             }
