@@ -24,7 +24,7 @@ trait ComponentPropertiesTrait
         return $this->properties->__get($name);
     }
 
-    public function __set($name, $value)
+    public function __set($name, $value): void
     {
         $this->properties->__set($name, $value);
     }
@@ -34,7 +34,7 @@ trait ComponentPropertiesTrait
         return $this->properties->__isset($name);
     }
 
-    public function __unset($name)
+    public function __unset($name): void
     {
         $this->properties->__unset($name);
     }

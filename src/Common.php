@@ -53,8 +53,10 @@ abstract class Common
      * @param string $className
      * @return Throwable
      */
-    public static function getAppException(string $defaultErrorMessage = 'Error', string $className = RuntimeException::class): Throwable
-    {
+    public static function getAppException(
+        string $defaultErrorMessage = 'Error',
+        string $className = RuntimeException::class
+    ): Throwable {
         global $APPLICATION;
 
         if (!is_subclass_of($className, Throwable::class)) {
@@ -115,7 +117,7 @@ abstract class Common
         EventManager::getInstance()->addEventHandlerCompatible(
             'main',
             'OnBeforeLocalRedirect',
-            static function (&$url, $skipSecurityCheck, &$isExternal) {
+            static function (&$url, $skipSecurityCheck, &$isExternal): void {
                 if ((bool)$isExternal) {
                     return;
                 }

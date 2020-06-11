@@ -57,7 +57,7 @@ class BaseController implements ControllerInterface
 
         $name = preg_replace('/[^A-z0-9_]/', '', $name);
 
-        $checkClasses = [$namespace . '\\' . ucfirst($name), $namespace . '\\' . ucfirst($name) . 'Controller',];
+        $checkClasses = [$namespace . '\\' . ucfirst($name), $namespace . '\\' . ucfirst($name) . 'Controller'];
 
         foreach ($checkClasses as $className) {
             if (class_exists($className)) {

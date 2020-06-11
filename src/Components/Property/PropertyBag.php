@@ -43,7 +43,7 @@ final class PropertyBag
         return $this->component->arResult[$name] ?? null;
     }
 
-    public function __set($name, $value)
+    public function __set($name, $value): void
     {
         $this->assertPropertyWriteable($name);
         $this->component->arResult[$name] = $this->assertPropertyValue($name, $value);
@@ -55,7 +55,7 @@ final class PropertyBag
         return isset($this->component->arResult[$name]);
     }
 
-    public function __unset($name)
+    public function __unset($name): void
     {
         $this->assertPropertyWriteable($name);
         unset($this->component->arResult[$name]);

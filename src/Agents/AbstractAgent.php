@@ -35,9 +35,7 @@ abstract class AbstractAgent implements Agent
         $instance = static::instantiate();
 
         if (!is_callable([$instance, 'run'])) {
-            throw new RuntimeException(
-                sprintf('Agent class %s must implements `run()` method', static::class)
-            );
+            throw new RuntimeException(sprintf('Agent class %s must implements `run()` method', static::class));
         }
 
         call_user_func_array([$instance, 'run'], func_get_args());
@@ -52,7 +50,7 @@ abstract class AbstractAgent implements Agent
     {
         return [
             'MODULE_ID' => Common::getModuleIdByFqn(static::class),
-            'USER_ID' => NULL,
+            'USER_ID' => null,
             'SORT' => '0',
             'NAME' => static::agentName(),
             'ACTIVE' => 'Y',

@@ -109,7 +109,7 @@ abstract class BaseHighLoadBlockDataManager extends DataManager
 
         $entity = static::getEntity();
 
-        foreach ($filteredData as $key => $value) {
+        foreach ($filteredData as $key => $_) {
             if (!$entity->hasField($key)) {
                 unset($filteredData[$key]);
                 continue;

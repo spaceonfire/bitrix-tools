@@ -40,7 +40,7 @@ abstract class Nav
             }
         };
 
-        foreach ($nav as $i => $arItem) {
+        foreach ($nav as $i => $_) {
             $children($nav[$i], $nav);
         }
         $nav = array_filter($nav);

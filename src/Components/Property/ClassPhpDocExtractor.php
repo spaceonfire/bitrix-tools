@@ -57,10 +57,13 @@ final class ClassPhpDocExtractor implements
      * ClassPhpDocExtractor constructor.
      * @param DocBlockFactoryInterface|null $docBlockFactory
      */
-    public function __construct(DocBlockFactoryInterface $docBlockFactory = null)
+    public function __construct(?DocBlockFactoryInterface $docBlockFactory = null)
     {
         if (!class_exists(DocBlockFactory::class)) {
-            throw new LogicException(sprintf('Unable to use the "%s" class as the "phpdocumentor/reflection-docblock" package is not installed.', __CLASS__));
+            throw new LogicException(sprintf(
+                'Unable to use the "%s" class as the "phpdocumentor/reflection-docblock" package is not installed.',
+                __CLASS__
+            ));
         }
 
         $this->docBlockFactory = $docBlockFactory ?: DocBlockFactory::createInstance();

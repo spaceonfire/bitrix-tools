@@ -2,7 +2,6 @@
 
 namespace spaceonfire\BitrixTools\Views;
 
-use Bitrix\Main\IO\FileNotFoundException;
 use Bitrix\Main\Localization\Loc;
 use RuntimeException;
 

@@ -10,7 +10,22 @@ parameters:
     - src/
   skip:
     Unused variable $_.: ~
+    Unused parameter $_.: ~
     PhpCsFixer\Fixer\Strict\DeclareStrictTypesFixer: ~
+    PhpCsFixer\Fixer\Strict\StrictComparisonFixer:
+      - src/CacheMap/AbstractCacheMap.php
+    SlevomatCodingStandard\Sniffs\Functions\UnusedParameterSniff.UnusedParameter:
+      - src/ArrayTools.php
+    Unused variable $result.:
+      - src/Views/*
+    Unused parameter $context.:
+      - src/Components/Property/ClassPhpDocExtractor.php
+    Unused parameter $exception.:
+      - src/Components/CommonComponentTrait.php
+    Unused parameter $skipSecurityCheck.:
+      - src/Common.php
+    Unused parameter $auth.:
+      - src/Common.php
 
 services:
   Symplify\CodingStandard\Fixer\LineLength\LineLengthFixer: ~

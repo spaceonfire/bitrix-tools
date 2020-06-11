@@ -162,7 +162,7 @@ abstract class IblockTools
                                 'filter' => [
                                     'IBLOCK_ID' => $arProp['LINK_IBLOCK_ID'],
                                 ],
-                                'select' => ['ID', 'NAME',],
+                                'select' => ['ID', 'NAME'],
                                 'limit' => 250,
                             ])->fetchAll();
                             foreach ($arTmpElements as $arElement) {
@@ -179,7 +179,7 @@ abstract class IblockTools
                                 'filter' => [
                                     'IBLOCK_ID' => $arProp['LINK_IBLOCK_ID'],
                                 ],
-                                'select' => ['ID', 'NAME',],
+                                'select' => ['ID', 'NAME'],
                                 'limit' => 250,
                             ])->fetchAll();
                             foreach ($arTmpSections as $arSection) {
@@ -199,7 +199,7 @@ abstract class IblockTools
                     'arProps' => $arProps,
                 ];
             },
-            [$options['IBLOCK_ID'], $options['DEFAULT_FIELDS'],]
+            [$options['IBLOCK_ID'], $options['DEFAULT_FIELDS']]
         );
 
         $arPropertySchema = $arCacheData['arPropertySchema'];
@@ -256,7 +256,7 @@ abstract class IblockTools
                 'IBLOCK_ID' => $iblockId,
                 'ACTIVE' => 'Y',
             ],
-            'select' => ['ID', 'NAME', 'DEPTH_LEVEL',],
+            'select' => ['ID', 'NAME', 'DEPTH_LEVEL'],
             'order' => ['LEFT_MARGIN' => 'ASC'],
         ], $parameters);
 
@@ -403,7 +403,7 @@ abstract class IblockTools
     {
         $enums = static::getEnums($iblockId);
 
-        foreach ($enums[$propertyCode] as $xmlId => $enum) {
+        foreach ($enums[$propertyCode] as $enum) {
             if ($id === (int)$enum['ID'] || ($id === null && $enum['IS_DEFAULT'])) {
                 return $enum['VALUE'];
             }
@@ -439,7 +439,7 @@ abstract class IblockTools
         $enums = static::getEnums($iblockId);
 
         if ($xml === null) {
-            foreach ($enums[$propertyCode] as $xmlId => $enum) {
+            foreach ($enums[$propertyCode] as $enum) {
                 if ($enum['IS_DEFAULT']) {
                     return $enum['ID'];
                 }

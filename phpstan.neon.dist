@@ -8,11 +8,15 @@ parameters:
 	checkMissingIterableValueType: false
 	paths:
 		- src/
-	autoload_files:
-		- vendor/autoload.php
-	autoload_directories:
-		- bitrix/modules/main/lib
-		- bitrix/modules/main/classes
+	bootstrapFiles:
+		- phpstan-bootstrap.php
+	scanDirectories:
+		- bitrix/modules/main/classes/
+		- bitrix/modules/main/lib/
+		- bitrix/modules/iblock/classes/
+		- bitrix/modules/iblock/lib/
+		- bitrix/modules/highloadblock/classes/
+		- bitrix/modules/highloadblock/lib/
 #	ignoreErrors:
 #		-
 #			message: '/^Parameter \#1 \$function of function call_user_func_array expects callable/'

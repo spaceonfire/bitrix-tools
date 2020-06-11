@@ -56,7 +56,7 @@ abstract class IblockPropSimple extends DataManager
             }
 
             $fieldOptions = [
-                'expression' => ['%s', 'PROPERTY_' . $property['ID'],],
+                'expression' => ['%s', 'PROPERTY_' . $property['ID']],
             ];
             switch ($property['PROPERTY_TYPE']) {
                 case 'L':
