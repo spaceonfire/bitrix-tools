@@ -14,10 +14,51 @@
 | `$propertyId` | _string_ | ID своего свойства для хранения классов body, по-умолчанию, 'BodyClass' для Bitrix24 |
 
 ```php
-public static function Common::addBodyClass(array $classes, string $propertyId = BodyClass): void
+public static function Common::addBodyClass(array $classes, string $propertyId = 'BodyClass'): void
 ```
 
-File location: `src/Common.php:28`
+File location: `src/Common.php:41`
+
+### disableHttpAuth()
+
+Отключает вход в Битрикс по HTTP авторизации
+
+```php
+public static function Common::disableHttpAuth(): void
+```
+
+File location: `src/Common.php:142`
+
+### getAppException()
+
+Конвертирует сообщение об ошибке из глобального \$APPLICATION в исключение
+
+| Param                  | Type         | Description |
+| ---------------------- | ------------ | ----------- |
+| `$defaultErrorMessage` | _string_     |             |
+| `$className`           | _string_     |             |
+| **Return**             | _\Throwable_ |             |
+
+```php
+public static function Common::getAppException(string $defaultErrorMessage = 'Error', string $className = RuntimeException::class): \Throwable
+```
+
+File location: `src/Common.php:56`
+
+### getModuleIdByFqn()
+
+Возвращает ID модуля из полного имени класса
+
+| Param      | Type     | Description |
+| ---------- | -------- | ----------- |
+| `$fqn`     | _string_ |             |
+| **Return** | _string_ |             |
+
+```php
+public static function Common::getModuleIdByFqn(string $fqn): string
+```
+
+File location: `src/Common.php:93`
 
 ### loadModules()
 
@@ -31,7 +72,17 @@ File location: `src/Common.php:28`
 public static function Common::loadModules(array $modules): void
 ```
 
-File location: `src/Common.php:14`
+File location: `src/Common.php:23`
+
+### trustProxy()
+
+Фикс функции LocalRedirect при запуске проекта за прокси-сервером на нестандартных портах.
+
+```php
+public static function Common::trustProxy(): void
+```
+
+File location: `src/Common.php:115`
 
 ---
 

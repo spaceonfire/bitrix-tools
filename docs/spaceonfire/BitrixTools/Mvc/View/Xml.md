@@ -1,26 +1,14 @@
-# Class HtmlView
+# Class Xml
 
-HTML MVC view
+Class Xml
 
--   Full name: `\spaceonfire\BitrixTools\Views\HtmlView`
--   Parent class: `\spaceonfire\BitrixTools\Views\BaseView`
+-   use spaceonfire\BitrixTools\Views\XmlView
+
+-   Full name: `\spaceonfire\BitrixTools\Mvc\View\Xml`
+-   Parent class: `\spaceonfire\BitrixTools\Views\XmlView`
 -   This class implements: `\spaceonfire\BitrixTools\Views\ViewInterface`
 
 ## Methods
-
-### \_\_construct()
-
-Создает новый MVC HTML view
-
-| Param   | Type     | Description |
-| ------- | -------- | ----------- |
-| `$data` | _string_ | HTML текст  |
-
-```php
-public function HtmlView::__construct(mixed $data = ''): mixed
-```
-
-File location: `src/Views/HtmlView.php:14`
 
 ### \_\_toString()
 
@@ -35,6 +23,23 @@ public function BaseView::__toString(): mixed
 ```
 
 File location: `src/Views/BaseView.php:59`
+
+### buildNode()
+
+Формирует узел дерева
+
+| Param      | Type           | Description       |
+| ---------- | -------------- | ----------------- |
+| `$doc`     | _\DOMDocument_ | Документ          |
+| `$parent`  | _\DOMElement_  | Родительский узел |
+| `$data`    | _mixed_        | Данные            |
+| **Return** | _void_         |                   |
+
+```php
+protected function XmlView::buildNode(mixed $doc, mixed $parent, mixed $data): void
+```
+
+File location: `src/Views/XmlView.php:59`
 
 ### getBaseDir()
 
@@ -101,20 +106,20 @@ File location: `src/Views/BaseView.php:117`
 | **Return** | _string_ |             |
 
 ```php
-public function HtmlView::render(): string
+public function XmlView::render(): string
 ```
 
-File location: `src/Views/HtmlView.php:26`
+File location: `src/Views/XmlView.php:36`
 
 ### sendHeaders()
 
 Отсылает http-заголовки для view
 
 ```php
-public function HtmlView::sendHeaders(): void
+public function XmlView::sendHeaders(): void
 ```
 
-File location: `src/Views/HtmlView.php:20`
+File location: `src/Views/XmlView.php:30`
 
 ### setBaseDir()
 

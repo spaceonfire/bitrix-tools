@@ -2,7 +2,7 @@
 
 Class IblockSectionPropSimple
 
-If you are using access user fields using @see \Bitrix\Main\Entity\DataManager::getUfId ,
+If you are using access user fields using @see \Bitrix\Main\ORM\Data\DataManager::getUfId ,
 you may encounter problem when need to do a join on the value of the property.
 Bitrix orm generates wrong alias for the join table.
 To resolve this problem, use this class.
@@ -12,6 +12,10 @@ To resolve this problem, use this class.
 ## Methods
 
 ### getFilePath()
+
+| Param      | Type                | Description |
+| ---------- | ------------------- | ----------- |
+| **Return** | _string&#124;mixed_ |             |
 
 ```php
 public static function IblockSectionPropSimple::getFilePath(): mixed
@@ -26,10 +30,10 @@ File location: `src/ORM/IblockSectionPropSimple.php:33`
 | **Return** | _int_ |             |
 
 ```php
-public static function IblockSectionPropSimple::getIblockId(): int
+abstract public static function IblockSectionPropSimple::getIblockId(): int
 ```
 
-File location: `src/ORM/IblockSectionPropSimple.php:23`
+File location: `src/ORM/IblockSectionPropSimple.php:22`
 
 ### getMap()
 
@@ -45,7 +49,7 @@ File location: `src/ORM/IblockSectionPropSimple.php:38`
 public static function IblockSectionPropSimple::getTableName(): string
 ```
 
-File location: `src/ORM/IblockSectionPropSimple.php:28`
+File location: `src/ORM/IblockSectionPropSimple.php:24`
 
 ---
 

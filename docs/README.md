@@ -8,25 +8,41 @@
         -   [HttpStatusTools](./spaceonfire/BitrixTools/HttpStatusTools.md)
         -   [IblockTools](./spaceonfire/BitrixTools/IblockTools.md)
         -   [Nav](./spaceonfire/BitrixTools/Nav.md)
+        -   [ORMTools](./spaceonfire/BitrixTools/ORMTools.md)
         -   [Php](./spaceonfire/BitrixTools/Php.md)
+-   [\spaceonfire\BitrixTools\Agents](./spaceonfire/BitrixTools/Agents)
+    -   Classes
+        -   [AbstractAgent](./spaceonfire/BitrixTools/Agents/AbstractAgent.md)
+    -   Interfaces
+        -   [Agent](./spaceonfire/BitrixTools/Agent.mds/Agent.md)
 -   [\spaceonfire\BitrixTools\CacheMap](./spaceonfire/BitrixTools/CacheMap)
     -   Classes
+        -   [AbstractCacheMap](./spaceonfire/BitrixTools/CacheMap/AbstractCacheMap.md)
+        -   [AbstractCacheMapDecorator](./spaceonfire/BitrixTools/CacheMap/AbstractCacheMapDecorator.md)
+        -   [AbstractStaticCacheMap](./spaceonfire/BitrixTools/CacheMap/AbstractStaticCacheMap.md)
+        -   [ArrayCacheMap](./spaceonfire/BitrixTools/CacheMap/ArrayCacheMap.md)
+        -   [CacheMapOptions](./spaceonfire/BitrixTools/CacheMap/CacheMapOptions.md)
+        -   [ClosureCacheMap](./spaceonfire/BitrixTools/CacheMap/ClosureCacheMap.md)
         -   [CustomCacheMap](./spaceonfire/BitrixTools/CacheMap/CustomCacheMap.md)
         -   [HighloadBlockCacheMap](./spaceonfire/BitrixTools/CacheMap/HighloadBlockCacheMap.md)
         -   [IblockCacheMap](./spaceonfire/BitrixTools/CacheMap/IblockCacheMap.md)
+        -   [QueryCacheMap](./spaceonfire/BitrixTools/CacheMap/QueryCacheMap.md)
         -   [UserGroupCacheMap](./spaceonfire/BitrixTools/CacheMap/UserGroupCacheMap.md)
     -   Interfaces
-        -   [CacheMapInterface](./spaceonfire/BitrixTools/CacheMap/CacheMapInterface.md)
-        -   [CacheMapStaticInterface](./spaceonfire/BitrixTools/CacheMap/CacheMapStaticInterface.md)
-    -   Traits
-        -   [CacheMapSingleton](./spaceonfire/BitrixTools/CacheMap/CacheMapSingleton.md)
-        -   [CacheMapTrait](./spaceonfire/BitrixTools/CacheMap/CacheMapTrait.md)
+        -   [CacheMap](./spaceonfire/BitrixTools/CacheMap.md/CacheMap.md)
+        -   [StaticCacheMap](./spaceonfire/BitrixTools/CacheMap/StaticCacheMap.md)
 -   [\spaceonfire\BitrixTools\Components](./spaceonfire/BitrixTools/Components)
     -   Classes
         -   [BaseComponent](./spaceonfire/BitrixTools/Components/BaseComponent.md)
         -   [BaseRouterComponent](./spaceonfire/BitrixTools/Components/BaseRouterComponent.md)
     -   Traits
         -   [CommonComponentTrait](./spaceonfire/BitrixTools/Components/CommonComponentTrait.md)
+-   [\spaceonfire\BitrixTools\Components\Property](./spaceonfire/BitrixTools/Components/Property)
+    -   Classes
+        -   [ClassPhpDocExtractor](./spaceonfire/BitrixTools/Components/Property/ClassPhpDocExtractor.md)
+        -   [PropertyBag](./spaceonfire/BitrixTools/Components/Property/PropertyBag.md)
+    -   Traits
+        -   [ComponentPropertiesTrait](./spaceonfire/BitrixTools/Components/Property/ComponentPropertiesTrait.md)
 -   [\spaceonfire\BitrixTools\Controllers](./spaceonfire/BitrixTools/Controllers)
     -   Classes
         -   [BaseController](./spaceonfire/BitrixTools/Controllers/BaseController.md)
@@ -34,6 +50,18 @@
         -   [FormController](./spaceonfire/BitrixTools/Controllers/FormController.md)
     -   Interfaces
         -   [ControllerInterface](./spaceonfire/BitrixTools/Controllers/ControllerInterface.md)
+-   [\spaceonfire\BitrixTools\Mvc\Controller](./spaceonfire/BitrixTools/Mvc/Controller)
+    -   Classes
+        -   [Basket](./spaceonfire/BitrixTools/Mvc/Controller/Basket.md)
+        -   [Form](./spaceonfire/BitrixTools/Mvc/Controller/Form.md)
+        -   [Prototype](./spaceonfire/BitrixTools/Mvc/Controller/Prototype.md)
+-   [\spaceonfire\BitrixTools\Mvc\View](./spaceonfire/BitrixTools/Mvc/View)
+    -   Classes
+        -   [Html](./spaceonfire/BitrixTools/Mvc/View/Html.md)
+        -   [Json](./spaceonfire/BitrixTools/Mvc/View/Json.md)
+        -   [Php](./spaceonfire/BitrixTools/Mvc/View/Php.md)
+        -   [Prototype](./spaceonfire/BitrixTools/Mvc/View/Prototype.md)
+        -   [Xml](./spaceonfire/BitrixTools/Mvc/View/Xml.md)
 -   [\spaceonfire\BitrixTools\ORM](./spaceonfire/BitrixTools/ORM)
     -   Classes
         -   [BaseHighLoadBlockDataManager](./spaceonfire/BitrixTools/ORM/BaseHighLoadBlockDataManager.md)

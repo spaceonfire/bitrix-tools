@@ -17,7 +17,7 @@
 public static function Nav::isUserHasAccessToFile(string $path): bool
 ```
 
-File location: `src/Nav.php:51`
+File location: `src/Nav.php:55`
 
 ### normalizeMenuNav()
 
@@ -33,7 +33,7 @@ File location: `src/Nav.php:51`
 public static function Nav::normalizeMenuNav(array $nav): array
 ```
 
-File location: `src/Nav.php:13`
+File location: `src/Nav.php:17`
 
 ---
 

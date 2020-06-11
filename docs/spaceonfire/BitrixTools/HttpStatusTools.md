@@ -13,7 +13,7 @@
 | `$throwable` | _\Throwable_ |             |
 
 ```php
-public static function HttpStatusTools::catchError(\Throwable $throwable): mixed
+public static function HttpStatusTools::catchError(\Throwable $throwable): void
 ```
 
 File location: `src/HttpStatusTools.php:17`

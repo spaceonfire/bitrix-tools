@@ -13,14 +13,14 @@
 | **Return** | _int_ |             |
 
 ```php
-public static function IblockPropSimple::getIblockId(): int
+abstract public static function IblockPropSimple::getIblockId(): int
 ```
 
-File location: `src/ORM/IblockPropSimple.php:18`
+File location: `src/ORM/IblockPropSimple.php:14`
 
 ### getMap()
 
-Возврщает схему полей сущности
+Возвращает схему полей сущности
 
 | Param      | Type    | Description |
 | ---------- | ------- | ----------- |
@@ -30,7 +30,7 @@ File location: `src/ORM/IblockPropSimple.php:18`
 public static function IblockPropSimple::getMap(): array
 ```
 
-File location: `src/ORM/IblockPropSimple.php:38`
+File location: `src/ORM/IblockPropSimple.php:29`
 
 ### getTableName()
 
@@ -44,7 +44,7 @@ File location: `src/ORM/IblockPropSimple.php:38`
 public static function IblockPropSimple::getTableName(): string
 ```
 
-File location: `src/ORM/IblockPropSimple.php:29`
+File location: `src/ORM/IblockPropSimple.php:20`
 
 ---
 

@@ -13,7 +13,8 @@
 ```php
 $options = [
     'CACHE_ID' => (string) ID кэша (обязательный параметр)
-    'CACHE_PATH' => (string) Относительный путь для сохранения кэша (обязательный параметр). Будет автоматически добавлен ID сайта и CACHE_TAG, если указан
+    'CACHE_PATH' => (string) Относительный путь для сохранения кэша (обязательный параметр). Будет автоматически
+добавлен ID сайта и CACHE_TAG, если указан
     'CACHE_TAG' => (string | array) Включает использование тегированного кэша с переданным тэгом/тэгами
     'CACHE_TIME' => (int) Время жизни кэша (TTL) в секундах, по-умолчанию 36000000
 ]
@@ -30,7 +31,7 @@ $options = [
 public static function Cache::cacheResult(array $options, callable $callback, mixed $args = []): mixed
 ```
 
-File location: `src/Cache.php:55`
+File location: `src/Cache.php:59`
 
 ### clearCache()
 
@@ -44,7 +45,7 @@ File location: `src/Cache.php:55`
 public static function Cache::clearCache(array $options): void
 ```
 
-File location: `src/Cache.php:102`
+File location: `src/Cache.php:105`
 
 ---
 

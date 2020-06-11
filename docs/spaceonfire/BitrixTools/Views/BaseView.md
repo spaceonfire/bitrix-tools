@@ -16,10 +16,10 @@
 | `$baseDir` | _string_ |             |
 
 ```php
-public function BaseView::__construct(string $name, mixed $data = [], string $baseDir): mixed
+public function BaseView::__construct(string $name = '', mixed $data = [], string $baseDir = ''): mixed
 ```
 
-File location: `src/Views/BaseView.php:28`
+File location: `src/Views/BaseView.php:29`
 
 ### \_\_toString()
 
@@ -33,7 +33,7 @@ File location: `src/Views/BaseView.php:28`
 public function BaseView::__toString(): mixed
 ```
 
-File location: `src/Views/BaseView.php:58`
+File location: `src/Views/BaseView.php:59`
 
 ### getBaseDir()
 
@@ -47,7 +47,7 @@ File location: `src/Views/BaseView.php:58`
 public function BaseView::getBaseDir(): string
 ```
 
-File location: `src/Views/BaseView.php:89`
+File location: `src/Views/BaseView.php:90`
 
 ### getData()
 
@@ -61,7 +61,7 @@ File location: `src/Views/BaseView.php:89`
 public function BaseView::getData(): array
 ```
 
-File location: `src/Views/BaseView.php:71`
+File location: `src/Views/BaseView.php:72`
 
 ### getName()
 
@@ -75,7 +75,7 @@ File location: `src/Views/BaseView.php:71`
 public function BaseView::getName(): string
 ```
 
-File location: `src/Views/BaseView.php:107`
+File location: `src/Views/BaseView.php:108`
 
 ### getPath()
 
@@ -89,7 +89,7 @@ File location: `src/Views/BaseView.php:107`
 public function BaseView::getPath(): string
 ```
 
-File location: `src/Views/BaseView.php:116`
+File location: `src/Views/BaseView.php:117`
 
 ### render()
 
@@ -103,7 +103,7 @@ File location: `src/Views/BaseView.php:116`
 public function BaseView::render(): string
 ```
 
-File location: `src/Views/BaseView.php:49`
+File location: `src/Views/BaseView.php:50`
 
 ### sendHeaders()
 
@@ -113,7 +113,7 @@ File location: `src/Views/BaseView.php:49`
 public function BaseView::sendHeaders(): void
 ```
 
-File location: `src/Views/BaseView.php:41`
+File location: `src/Views/BaseView.php:42`
 
 ### setBaseDir()
 
@@ -127,7 +127,7 @@ File location: `src/Views/BaseView.php:41`
 public function BaseView::setBaseDir(string $baseDir): void
 ```
 
-File location: `src/Views/BaseView.php:98`
+File location: `src/Views/BaseView.php:99`
 
 ### setData()
 
@@ -141,7 +141,7 @@ File location: `src/Views/BaseView.php:98`
 public function BaseView::setData(mixed $data): void
 ```
 
-File location: `src/Views/BaseView.php:80`
+File location: `src/Views/BaseView.php:81`
 
 ---
 

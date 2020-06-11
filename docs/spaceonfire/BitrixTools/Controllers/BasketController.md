@@ -20,7 +20,7 @@
 public function BaseController::doAction(mixed $name): void
 ```
 
-File location: `src/Controllers/BaseController.php:78`
+File location: `src/Controllers/BaseController.php:76`
 
 ### factory()
 
@@ -33,10 +33,10 @@ File location: `src/Controllers/BaseController.php:78`
 | **Return**   | _static_ |                  |
 
 ```php
-public static function BaseController::factory(mixed $name, mixed $namespace = __NAMESPACE__): \spaceonfire\BitrixTools\Controllers\spaceonfire\BitrixTools\Controllers\ControllerInterface
+public static function BaseController::factory(mixed $name, mixed $namespace = __NAMESPACE__): \spaceonfire\BitrixTools\Controllers\ControllerInterface
 ```
 
-File location: `src/Controllers/BaseController.php:47`
+File location: `src/Controllers/BaseController.php:48`
 
 ### getComponent()
 
@@ -51,10 +51,10 @@ File location: `src/Controllers/BaseController.php:47`
 | **Return**         | _string_ |                                  |
 
 ```php
-protected function BaseController::getComponent(mixed $name, mixed $template, mixed $params = [], mixed &$componentResult = null): string
+protected function BaseController::getComponent(mixed $name, mixed $template = '', mixed $params = [], mixed &$componentResult = null): string
 ```
 
-File location: `src/Controllers/BaseController.php:118`
+File location: `src/Controllers/BaseController.php:116`
 
 ### getIncludeArea()
 
@@ -71,7 +71,7 @@ File location: `src/Controllers/BaseController.php:118`
 protected function BaseController::getIncludeArea(mixed $path, mixed $params = [], mixed $functionParams = []): string
 ```
 
-File location: `src/Controllers/BaseController.php:133`
+File location: `src/Controllers/BaseController.php:131`
 
 ### getParam()
 
@@ -87,7 +87,7 @@ File location: `src/Controllers/BaseController.php:133`
 public function BaseController::getParam(string $name, mixed $default = null): mixed
 ```
 
-File location: `src/Controllers/BaseController.php:172`
+File location: `src/Controllers/BaseController.php:170`
 
 ### getRequest()
 
@@ -98,10 +98,10 @@ File location: `src/Controllers/BaseController.php:172`
 | **Return** | _\Bitrix\Main\HttpRequest_ |             |
 
 ```php
-public function BaseController::getRequest(): \spaceonfire\BitrixTools\Controllers\Bitrix\Main\HttpRequest
+public function BaseController::getRequest(): \Bitrix\Main\HttpRequest
 ```
 
-File location: `src/Controllers/BaseController.php:195`
+File location: `src/Controllers/BaseController.php:193`
 
 ### getView()
 
@@ -112,10 +112,10 @@ File location: `src/Controllers/BaseController.php:195`
 | **Return** | _\spaceonfire\BitrixTools\Views\ViewInterface&#124;null_ |             |
 
 ```php
-public function BaseController::getView(): ?\spaceonfire\BitrixTools\Controllers\spaceonfire\BitrixTools\Views\ViewInterface
+public function BaseController::getView(): ?\spaceonfire\BitrixTools\Views\ViewInterface
 ```
 
-File location: `src/Controllers/BaseController.php:204`
+File location: `src/Controllers/BaseController.php:202`
 
 ### hasParam()
 
@@ -130,7 +130,7 @@ File location: `src/Controllers/BaseController.php:204`
 public function BaseController::hasParam(string $name): bool
 ```
 
-File location: `src/Controllers/BaseController.php:186`
+File location: `src/Controllers/BaseController.php:184`
 
 ### removeAction()
 
@@ -155,7 +155,7 @@ File location: `src/Controllers/BasketController.php:24`
 public function BaseController::setParams(array $params, bool $merge = true): void
 ```
 
-File location: `src/Controllers/BaseController.php:145`
+File location: `src/Controllers/BaseController.php:143`
 
 ### setParamsPairs()
 
@@ -169,7 +169,7 @@ File location: `src/Controllers/BaseController.php:145`
 public function BaseController::setParamsPairs(mixed $pairs): void
 ```
 
-File location: `src/Controllers/BaseController.php:158`
+File location: `src/Controllers/BaseController.php:156`
 
 ### setView()
 
@@ -181,10 +181,10 @@ File location: `src/Controllers/BaseController.php:158`
 | **Return** | _static_                                                 |             |
 
 ```php
-public function BaseController::setView(?\spaceonfire\BitrixTools\Views\ViewInterface $view): \spaceonfire\BitrixTools\Controllers\spaceonfire\BitrixTools\Controllers\ControllerInterface
+public function BaseController::setView(?\spaceonfire\BitrixTools\Views\ViewInterface $view): \spaceonfire\BitrixTools\Controllers\ControllerInterface
 ```
 
-File location: `src/Controllers/BaseController.php:214`
+File location: `src/Controllers/BaseController.php:212`
 
 ### updateCountAction()
 

@@ -1,26 +1,14 @@
-# Class HtmlView
+# Class Prototype
 
-HTML MVC view
+Class Prototype
 
--   Full name: `\spaceonfire\BitrixTools\Views\HtmlView`
+-   use spaceonfire\BitrixTools\Views\BaseView
+
+-   Full name: `\spaceonfire\BitrixTools\Mvc\View\Prototype`
 -   Parent class: `\spaceonfire\BitrixTools\Views\BaseView`
 -   This class implements: `\spaceonfire\BitrixTools\Views\ViewInterface`
 
 ## Methods
-
-### \_\_construct()
-
-Создает новый MVC HTML view
-
-| Param   | Type     | Description |
-| ------- | -------- | ----------- |
-| `$data` | _string_ | HTML текст  |
-
-```php
-public function HtmlView::__construct(mixed $data = ''): mixed
-```
-
-File location: `src/Views/HtmlView.php:14`
 
 ### \_\_toString()
 
@@ -101,20 +89,20 @@ File location: `src/Views/BaseView.php:117`
 | **Return** | _string_ |             |
 
 ```php
-public function HtmlView::render(): string
+public function BaseView::render(): string
 ```
 
-File location: `src/Views/HtmlView.php:26`
+File location: `src/Views/BaseView.php:50`
 
 ### sendHeaders()
 
 Отсылает http-заголовки для view
 
 ```php
-public function HtmlView::sendHeaders(): void
+public function BaseView::sendHeaders(): void
 ```
 
-File location: `src/Views/HtmlView.php:20`
+File location: `src/Views/BaseView.php:42`
 
 ### setBaseDir()
 

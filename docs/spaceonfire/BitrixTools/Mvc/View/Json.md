@@ -1,26 +1,14 @@
-# Class HtmlView
+# Class Json
 
-HTML MVC view
+Class Json
 
--   Full name: `\spaceonfire\BitrixTools\Views\HtmlView`
--   Parent class: `\spaceonfire\BitrixTools\Views\BaseView`
+-   use \spaceonfire\BitrixTools\Views\JsonView
+
+-   Full name: `\spaceonfire\BitrixTools\Mvc\View\Json`
+-   Parent class: `\spaceonfire\BitrixTools\Views\JsonView`
 -   This class implements: `\spaceonfire\BitrixTools\Views\ViewInterface`
 
 ## Methods
-
-### \_\_construct()
-
-Создает новый MVC HTML view
-
-| Param   | Type     | Description |
-| ------- | -------- | ----------- |
-| `$data` | _string_ | HTML текст  |
-
-```php
-public function HtmlView::__construct(mixed $data = ''): mixed
-```
-
-File location: `src/Views/HtmlView.php:14`
 
 ### \_\_toString()
 
@@ -101,20 +89,20 @@ File location: `src/Views/BaseView.php:117`
 | **Return** | _string_ |             |
 
 ```php
-public function HtmlView::render(): string
+public function JsonView::render(): string
 ```
 
-File location: `src/Views/HtmlView.php:26`
+File location: `src/Views/JsonView.php:28`
 
 ### sendHeaders()
 
 Отсылает http-заголовки для view
 
 ```php
-public function HtmlView::sendHeaders(): void
+public function JsonView::sendHeaders(): void
 ```
 
-File location: `src/Views/HtmlView.php:20`
+File location: `src/Views/JsonView.php:22`
 
 ### setBaseDir()
 

@@ -1,40 +1,14 @@
-# Class FormController
+# Class Basket
 
-Контроллер веб-форм
+Class Basket
 
--   Full name: `\spaceonfire\BitrixTools\Controllers\FormController`
--   Parent class: `\spaceonfire\BitrixTools\Controllers\BaseController`
+-   use \spaceonfire\BitrixTools\Controllers\BasketController
+
+-   Full name: `\spaceonfire\BitrixTools\Mvc\Controller\Basket`
+-   Parent class: `\spaceonfire\BitrixTools\Controllers\BasketController`
 -   This class implements: `\spaceonfire\BitrixTools\Controllers\ControllerInterface`
 
 ## Methods
-
-### addAction()
-
-Выводит форму по параметру в запросе
-
-| Param      | Type     | Description |
-| ---------- | -------- | ----------- |
-| **Return** | _string_ |             |
-
-```php
-public function FormController::addAction(): string
-```
-
-File location: `src/Controllers/FormController.php:46`
-
-### callbackAction()
-
-Выводит форму обратного звонка
-
-| Param      | Type     | Description |
-| ---------- | -------- | ----------- |
-| **Return** | _string_ |             |
-
-```php
-public function FormController::callbackAction(): string
-```
-
-File location: `src/Controllers/FormController.php:37`
 
 ### doAction()
 
@@ -66,20 +40,6 @@ public static function BaseController::factory(mixed $name, mixed $namespace = _
 
 File location: `src/Controllers/BaseController.php:48`
 
-### feedbackAction()
-
-Выводит форму обратной связи
-
-| Param      | Type     | Description |
-| ---------- | -------- | ----------- |
-| **Return** | _string_ |             |
-
-```php
-public function FormController::feedbackAction(): string
-```
-
-File location: `src/Controllers/FormController.php:28`
-
 ### getComponent()
 
 Возвращает код, сгенерированный компонентом Битрикс
@@ -97,21 +57,6 @@ protected function BaseController::getComponent(mixed $name, mixed $template = '
 ```
 
 File location: `src/Controllers/BaseController.php:116`
-
-### getForm()
-
-Выводит компонент добавления результата формы
-
-| Param      | Type     | Description          |
-| ---------- | -------- | -------------------- |
-| `$sid`     | _string_ | Символьный код формы |
-| **Return** | _string_ |                      |
-
-```php
-protected function FormController::getForm(mixed $sid): string
-```
-
-File location: `src/Controllers/FormController.php:56`
 
 ### getIncludeArea()
 
@@ -189,19 +134,15 @@ public function BaseController::hasParam(string $name): bool
 
 File location: `src/Controllers/BaseController.php:184`
 
-### resultAction()
+### removeAction()
 
-Выводит результат заполнения формы
-
-| Param      | Type    | Description |
-| ---------- | ------- | ----------- |
-| **Return** | _array_ |             |
+Удаляет товар из корзины
 
 ```php
-public function FormController::resultAction(): array
+public function BasketController::removeAction(): void
 ```
 
-File location: `src/Controllers/FormController.php:97`
+File location: `src/Controllers/BasketController.php:24`
 
 ### setParams()
 
@@ -247,19 +188,15 @@ public function BaseController::setView(?\spaceonfire\BitrixTools\Views\ViewInte
 
 File location: `src/Controllers/BaseController.php:212`
 
-### subscribeAction()
+### updateCountAction()
 
-Выводит результаты действий в форме подписки
-
-| Param      | Type     | Description |
-| ---------- | -------- | ----------- |
-| **Return** | _string_ |             |
+Изменение количества покупаемого товара
 
 ```php
-public function FormController::subscribeAction(): string
+public function BasketController::updateCountAction(): void
 ```
 
-File location: `src/Controllers/FormController.php:112`
+File location: `src/Controllers/BasketController.php:35`
 
 ---
 

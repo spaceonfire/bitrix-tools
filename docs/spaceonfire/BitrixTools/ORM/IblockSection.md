@@ -4,6 +4,14 @@
 
 ## Methods
 
+### getCount()
+
+```php
+public static function IblockSection::getCount(mixed $filter = [], array $cache = []): mixed
+```
+
+File location: `src/ORM/IblockSection.php:125`
+
 ### getIblockId()
 
 Возвращает ID инфоблока. Необходимо переопределять метод.
@@ -13,7 +21,7 @@
 | **Return** | _int_ |             |
 
 ```php
-public static function IblockSection::getIblockId(): int
+abstract public static function IblockSection::getIblockId(): int
 ```
 
 File location: `src/ORM/IblockSection.php:18`
@@ -24,11 +32,11 @@ File location: `src/ORM/IblockSection.php:18`
 public static function IblockSection::getList(array $parameters = []): mixed
 ```
 
-File location: `src/ORM/IblockSection.php:26`
+File location: `src/ORM/IblockSection.php:116`
 
 ### getMap()
 
-Возврщает схему полей сущности
+Возвращает схему полей сущности
 
 | Param      | Type    | Description |
 | ---------- | ------- | ----------- |
@@ -38,7 +46,22 @@ File location: `src/ORM/IblockSection.php:26`
 public static function IblockSection::getMap(): array
 ```
 
-File location: `src/ORM/IblockSection.php:36`
+File location: `src/ORM/IblockSection.php:24`
+
+### getSectionMeta()
+
+Возвращает SEO мета-данные для раздела инфоблока по ID
+
+| Param        | Type    | Description |
+| ------------ | ------- | ----------- |
+| `$sectionId` | _int_   | ID раздела  |
+| **Return**   | _array_ |             |
+
+```php
+public static function IblockSection::getSectionMeta(int $sectionId): array
+```
+
+File location: `src/ORM/IblockSection.php:135`
 
 ---
 

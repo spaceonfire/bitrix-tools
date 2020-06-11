@@ -1,26 +1,14 @@
-# Class HtmlView
+# Class Php
 
-HTML MVC view
+Class Php
 
--   Full name: `\spaceonfire\BitrixTools\Views\HtmlView`
--   Parent class: `\spaceonfire\BitrixTools\Views\BaseView`
+-   use \spaceonfire\BitrixTools\Views\PhpView
+
+-   Full name: `\spaceonfire\BitrixTools\Mvc\View\Php`
+-   Parent class: `\spaceonfire\BitrixTools\Views\PhpView`
 -   This class implements: `\spaceonfire\BitrixTools\Views\ViewInterface`
 
 ## Methods
-
-### \_\_construct()
-
-Создает новый MVC HTML view
-
-| Param   | Type     | Description |
-| ------- | -------- | ----------- |
-| `$data` | _string_ | HTML текст  |
-
-```php
-public function HtmlView::__construct(mixed $data = ''): mixed
-```
-
-File location: `src/Views/HtmlView.php:14`
 
 ### \_\_toString()
 
@@ -35,6 +23,21 @@ public function BaseView::__toString(): mixed
 ```
 
 File location: `src/Views/BaseView.php:59`
+
+### escape()
+
+Выводит HTML в безопасном виде
+
+| Param      | Type     | Description      |
+| ---------- | -------- | ---------------- |
+| `$data`    | _string_ | Выводимые данные |
+| **Return** | _string_ |                  |
+
+```php
+public function PhpView::escape(mixed $data): string
+```
+
+File location: `src/Views/PhpView.php:40`
 
 ### getBaseDir()
 
@@ -101,20 +104,20 @@ File location: `src/Views/BaseView.php:117`
 | **Return** | _string_ |             |
 
 ```php
-public function HtmlView::render(): string
+public function PhpView::render(): string
 ```
 
-File location: `src/Views/HtmlView.php:26`
+File location: `src/Views/PhpView.php:20`
 
 ### sendHeaders()
 
 Отсылает http-заголовки для view
 
 ```php
-public function HtmlView::sendHeaders(): void
+public function PhpView::sendHeaders(): void
 ```
 
-File location: `src/Views/HtmlView.php:20`
+File location: `src/Views/PhpView.php:14`
 
 ### setBaseDir()
 

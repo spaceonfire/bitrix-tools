@@ -1,26 +1,14 @@
-# Class HtmlView
+# Class Html
 
-HTML MVC view
+Class Html
 
--   Full name: `\spaceonfire\BitrixTools\Views\HtmlView`
--   Parent class: `\spaceonfire\BitrixTools\Views\BaseView`
+-   use spaceonfire\BitrixTools\Views\HtmlView
+
+-   Full name: `\spaceonfire\BitrixTools\Mvc\View\Html`
+-   Parent class: `\spaceonfire\BitrixTools\Views\HtmlView`
 -   This class implements: `\spaceonfire\BitrixTools\Views\ViewInterface`
 
 ## Methods
-
-### \_\_construct()
-
-Создает новый MVC HTML view
-
-| Param   | Type     | Description |
-| ------- | -------- | ----------- |
-| `$data` | _string_ | HTML текст  |
-
-```php
-public function HtmlView::__construct(mixed $data = ''): mixed
-```
-
-File location: `src/Views/HtmlView.php:14`
 
 ### \_\_toString()
 

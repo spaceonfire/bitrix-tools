@@ -14,7 +14,7 @@
 public static function EventHandler::OnAfterIBlockPropertyAdd(mixed $arFields): void
 ```
 
-File location: `src/ORM/EventHandler.php:23`
+File location: `src/ORM/EventHandler.php:38`
 
 ### OnAfterIBlockPropertyUpdate()
 
@@ -26,7 +26,7 @@ File location: `src/ORM/EventHandler.php:23`
 public static function EventHandler::OnAfterIBlockPropertyUpdate(mixed $arFields): void
 ```
 
-File location: `src/ORM/EventHandler.php:32`
+File location: `src/ORM/EventHandler.php:47`
 
 ### OnBeforeIBlockPropertyDelete()
 
@@ -38,7 +38,7 @@ File location: `src/ORM/EventHandler.php:32`
 public static function EventHandler::OnBeforeIBlockPropertyDelete(mixed $ID): void
 ```
 
-File location: `src/ORM/EventHandler.php:41`
+File location: `src/ORM/EventHandler.php:56`
 
 ### boot()
 
@@ -49,7 +49,7 @@ File location: `src/ORM/EventHandler.php:41`
 public static function EventHandler::boot(): void
 ```
 
-File location: `src/ORM/EventHandler.php:11`
+File location: `src/ORM/EventHandler.php:14`
 
 ---
 

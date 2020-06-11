@@ -23,7 +23,7 @@ Class HighLoadBlock
 public static function BaseHighLoadBlockDataManager::add(array $data): mixed
 ```
 
-File location: `src/ORM/BaseHighLoadBlockDataManager.php:137`
+File location: `src/ORM/BaseHighLoadBlockDataManager.php:133`
 
 ### filterData()
 
@@ -31,12 +31,12 @@ File location: `src/ORM/BaseHighLoadBlockDataManager.php:137`
 protected static function BaseHighLoadBlockDataManager::filterData(array $data): array
 ```
 
-File location: `src/ORM/BaseHighLoadBlockDataManager.php:104`
+File location: `src/ORM/BaseHighLoadBlockDataManager.php:100`
 
 ### getByPrimary()
 
 ```php
-public static function HighLoadBlock::getByPrimary(mixed $primary, array $parameters = array()): mixed
+public static function HighLoadBlock::getByPrimary(mixed $primary, array $parameters = []): mixed
 ```
 
 File location: `src/ORM/HighLoadBlock.php:40`
@@ -53,7 +53,7 @@ File location: `src/ORM/HighLoadBlock.php:40`
 abstract public static function BaseHighLoadBlockDataManager::getHLId(): mixed
 ```
 
-File location: `src/ORM/BaseHighLoadBlockDataManager.php:31`
+File location: `src/ORM/BaseHighLoadBlockDataManager.php:33`
 
 ### getHighloadBlock()
 
@@ -67,12 +67,12 @@ File location: `src/ORM/BaseHighLoadBlockDataManager.php:31`
 public static function BaseHighLoadBlockDataManager::getHighloadBlock(): ?array
 ```
 
-File location: `src/ORM/BaseHighLoadBlockDataManager.php:94`
+File location: `src/ORM/BaseHighLoadBlockDataManager.php:90`
 
 ### getList()
 
 ```php
-public static function HighLoadBlock::getList(array $parameters = array()): mixed
+public static function HighLoadBlock::getList(array $parameters = []): mixed
 ```
 
 File location: `src/ORM/HighLoadBlock.php:34`
@@ -103,7 +103,7 @@ File location: `src/ORM/HighLoadBlock.php:73`
 public static function BaseHighLoadBlockDataManager::getRealId(): ?int
 ```
 
-File location: `src/ORM/BaseHighLoadBlockDataManager.php:37`
+File location: `src/ORM/BaseHighLoadBlockDataManager.php:39`
 
 ### getTableName()
 
@@ -117,21 +117,7 @@ File location: `src/ORM/BaseHighLoadBlockDataManager.php:37`
 public static function BaseHighLoadBlockDataManager::getTableName(): ?string
 ```
 
-File location: `src/ORM/BaseHighLoadBlockDataManager.php:50`
-
-### getUfId()
-
-Возвращает ID пользовательских полей для HighLoad блока
-
-| Param      | Type               | Description |
-| ---------- | ------------------ | ----------- |
-| **Return** | _string&#124;null_ |             |
-
-```php
-public static function BaseHighLoadBlockDataManager::getUfId(): mixed
-```
-
-File location: `src/ORM/BaseHighLoadBlockDataManager.php:60`
+File location: `src/ORM/BaseHighLoadBlockDataManager.php:52`
 
 ### mergeOrmParameters()
 
@@ -175,7 +161,7 @@ File location: `src/ORM/HighLoadBlock.php:46`
 public static function BaseHighLoadBlockDataManager::update(mixed $primary, array $data): mixed
 ```
 
-File location: `src/ORM/BaseHighLoadBlockDataManager.php:148`
+File location: `src/ORM/BaseHighLoadBlockDataManager.php:144`
 
 ---
 

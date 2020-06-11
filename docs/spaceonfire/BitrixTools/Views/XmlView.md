@@ -35,7 +35,7 @@ File location: `src/Views/XmlView.php:24`
 public function BaseView::__toString(): mixed
 ```
 
-File location: `src/Views/BaseView.php:58`
+File location: `src/Views/BaseView.php:59`
 
 ### buildNode()
 
@@ -52,7 +52,7 @@ File location: `src/Views/BaseView.php:58`
 protected function XmlView::buildNode(mixed $doc, mixed $parent, mixed $data): void
 ```
 
-File location: `src/Views/XmlView.php:62`
+File location: `src/Views/XmlView.php:59`
 
 ### getBaseDir()
 
@@ -66,7 +66,7 @@ File location: `src/Views/XmlView.php:62`
 public function BaseView::getBaseDir(): string
 ```
 
-File location: `src/Views/BaseView.php:89`
+File location: `src/Views/BaseView.php:90`
 
 ### getData()
 
@@ -80,7 +80,7 @@ File location: `src/Views/BaseView.php:89`
 public function BaseView::getData(): array
 ```
 
-File location: `src/Views/BaseView.php:71`
+File location: `src/Views/BaseView.php:72`
 
 ### getName()
 
@@ -94,7 +94,7 @@ File location: `src/Views/BaseView.php:71`
 public function BaseView::getName(): string
 ```
 
-File location: `src/Views/BaseView.php:107`
+File location: `src/Views/BaseView.php:108`
 
 ### getPath()
 
@@ -108,7 +108,7 @@ File location: `src/Views/BaseView.php:107`
 public function BaseView::getPath(): string
 ```
 
-File location: `src/Views/BaseView.php:116`
+File location: `src/Views/BaseView.php:117`
 
 ### render()
 
@@ -122,7 +122,7 @@ File location: `src/Views/BaseView.php:116`
 public function XmlView::render(): string
 ```
 
-File location: `src/Views/XmlView.php:39`
+File location: `src/Views/XmlView.php:36`
 
 ### sendHeaders()
 
@@ -146,7 +146,7 @@ File location: `src/Views/XmlView.php:30`
 public function BaseView::setBaseDir(string $baseDir): void
 ```
 
-File location: `src/Views/BaseView.php:98`
+File location: `src/Views/BaseView.php:99`
 
 ### setData()
 
@@ -160,7 +160,7 @@ File location: `src/Views/BaseView.php:98`
 public function BaseView::setData(mixed $data): void
 ```
 
-File location: `src/Views/BaseView.php:80`
+File location: `src/Views/BaseView.php:81`
 
 ---
 

@@ -1,9 +1,11 @@
-# Class FormController
+# Class Form
 
-Контроллер веб-форм
+Class Form
 
--   Full name: `\spaceonfire\BitrixTools\Controllers\FormController`
--   Parent class: `\spaceonfire\BitrixTools\Controllers\BaseController`
+-   use \spaceonfire\BitrixTools\Controllers\FormController
+
+-   Full name: `\spaceonfire\BitrixTools\Mvc\Controller\Form`
+-   Parent class: `\spaceonfire\BitrixTools\Controllers\FormController`
 -   This class implements: `\spaceonfire\BitrixTools\Controllers\ControllerInterface`
 
 ## Methods
