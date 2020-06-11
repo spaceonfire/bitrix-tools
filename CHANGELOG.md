@@ -1,23 +1,38 @@
 # Changelog
 
-All notable changes to `bitrix-tools` will be documented in this file.
+Все значимые изменения в `bitrix-tools` должны быть задокументированы в данном файле.
 
-Updates should follow the [Keep a CHANGELOG](http://keepachangelog.com/) principles.
+Обновления должны следовать принципам [Keep a CHANGELOG](http://keepachangelog.com/).
 
 <!--
 ## [X.Y.Z] - YYYY-MM-DD
-### Added
+### Добавлено
 - Nothing
 
-### Deprecated
+### Устаревшее
 - Nothing
 
-### Fixed
+### Исправлено
 - Nothing
 
-### Removed
+### Удалено
 - Nothing
 
-### Security
+### Безопасность
 - Nothing
 -->
+
+## [0.8.0] - 2020-06-11
+### Добавлено
+- Переделаны CacheMap'ы, удалена зависимость от `jeremeamia/superclosure`
+- Добавлена абстракция для агентов
+- Отрефакторены классы для работы с ORM
+- Класс `ORMTools`
+- Исключения 1С-Битрикс заменены на исключения SPL
+- Добавлена возможность задавать свойства для компонента (`ComponentPropertiesTrait`)
+- Обновлена проверка параметров компонента
+- Добавлен пропатченный автолоадер
+- Добавлены методы `Common::getAppException()`, `Common::trustProxy()` и `Common::disableHttpAuth()`
+
+### Устаревшее
+- Возвращены и помечены как устаревшие классы `spaceonfire\BitrixTools\Mvc`
