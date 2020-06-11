@@ -43,7 +43,7 @@ File location: `src/Controllers/ControllerInterface.php:28`
 | **Return** | _\Bitrix\Main\HttpRequest_ |             |
 
 ```php
-public function ControllerInterface::getRequest(): \spaceonfire\BitrixTools\Controllers\Bitrix\Main\HttpRequest
+public function ControllerInterface::getRequest(): \Bitrix\Main\HttpRequest
 ```
 
 File location: `src/Controllers/ControllerInterface.php:41`
@@ -57,7 +57,7 @@ File location: `src/Controllers/ControllerInterface.php:41`
 | **Return** | _\spaceonfire\BitrixTools\Views\ViewInterface&#124;null_ |             |
 
 ```php
-public function ControllerInterface::getView(): ?\spaceonfire\BitrixTools\Controllers\spaceonfire\BitrixTools\Views\ViewInterface
+public function ControllerInterface::getView(): ?\spaceonfire\BitrixTools\Views\ViewInterface
 ```
 
 File location: `src/Controllers/ControllerInterface.php:47`
@@ -101,7 +101,7 @@ File location: `src/Controllers/ControllerInterface.php:20`
 | **Return** | _static_                                                 |             |
 
 ```php
-public function ControllerInterface::setView(?\spaceonfire\BitrixTools\Views\ViewInterface $view): \spaceonfire\BitrixTools\Controllers\spaceonfire\BitrixTools\Controllers\ControllerInterface
+public function ControllerInterface::setView(?\spaceonfire\BitrixTools\Views\ViewInterface $view): \spaceonfire\BitrixTools\Controllers\ControllerInterface
 ```
 
 File location: `src/Controllers/ControllerInterface.php:54`

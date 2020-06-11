@@ -16,10 +16,10 @@
 | **Return**   | _array_  | Одноуровневый массив                                                                     |
 
 ```php
-public static function ArrayTools::flatten(array $array, mixed $separator = ., mixed $prefix): array
+public static function ArrayTools::flatten(array $array, mixed $separator = '.', mixed $prefix = ''): array
 ```
 
-File location: `src/ArrayTools.php:32`
+File location: `src/ArrayTools.php:36`
 
 ### isArrayAssoc()
 
@@ -34,7 +34,7 @@ File location: `src/ArrayTools.php:32`
 public static function ArrayTools::isArrayAssoc(mixed $var): bool
 ```
 
-File location: `src/ArrayTools.php:53`
+File location: `src/ArrayTools.php:57`
 
 ### merge()
 
@@ -49,7 +49,7 @@ File location: `src/ArrayTools.php:53`
 public static function ArrayTools::merge(mixed ...$arrays): array
 ```
 
-File location: `src/ArrayTools.php:63`
+File location: `src/ArrayTools.php:67`
 
 ### removeTildaKeys()
 
@@ -64,7 +64,7 @@ File location: `src/ArrayTools.php:63`
 public static function ArrayTools::removeTildaKeys(array $data): array
 ```
 
-File location: `src/ArrayTools.php:14`
+File location: `src/ArrayTools.php:18`
 
 ### unflatten()
 
@@ -77,10 +77,10 @@ File location: `src/ArrayTools.php:14`
 | **Return**   | _array_  | Многоуровневый массив                           |
 
 ```php
-public static function ArrayTools::unflatten(array $array, mixed $separator = .): array
+public static function ArrayTools::unflatten(array $array, mixed $separator = '.'): array
 ```
 
-File location: `src/ArrayTools.php:43`
+File location: `src/ArrayTools.php:47`
 
 ---
 

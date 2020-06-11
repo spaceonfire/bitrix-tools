@@ -3,8 +3,8 @@
 Класс CustomCacheMap позволяет создать собственный кэшированный справочник
 
 -   Full name: `\spaceonfire\BitrixTools\CacheMap\CustomCacheMap`
--   This class implements: `\spaceonfire\BitrixTools\CacheMap\CacheMapInterface`
--   This class uses: `\spaceonfire\BitrixTools\CacheMap\CacheMapTrait`
+-   Parent class: `\spaceonfire\BitrixTools\CacheMap\AbstractCacheMapDecorator`
+-   This class implements: `\spaceonfire\BitrixTools\CacheMap\CacheMap`
 
 ## Methods
 
@@ -14,81 +14,49 @@
 
 **ВАЖНО**: Позаботьтесь самостоятельно об очистке кэша, при изменении данных!
 
-| Param         | Type                                         | Description                                                                                                  |
-| ------------- | -------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
-| `$dataSource` | _\Bitrix\Main\ORM\Query\Query&#124;callable_ | Источник данных для справочника, можно передать объект запроса ORM или функцию возвращающую массив значений. |
-| `$idKey`      | _string_                                     | Поле, принимаемое как идентификатор в справочнике. По-умолчанию, `ID`.                                       |
-| `$codeKey`    | _string_                                     | Поле, принимаемое как символьный код в справочнике. По-умолчанию, `CODE`.                                    |
+| Param                    | Type                                                    | Description                                                            |
+| ------------------------ | ------------------------------------------------------- | ---------------------------------------------------------------------- |
+| `$dataSource`            | _\Bitrix\Main\ORM\Query\Query&#124;callable&#124;array_ | Источник данных, можно передать объект запроса ORM, массив или функцию |
+| возвращающую `iterable`. |
+| `$options`               | _\spaceonfire\BitrixTools\CacheMap\CacheMapOptions_     | Настройки                                                              |
 
 ```php
-public function CustomCacheMap::__construct(mixed $dataSource, mixed $idKey = ID, mixed $codeKey = CODE): mixed
+public function CustomCacheMap::__construct(mixed $dataSource, \spaceonfire\BitrixTools\CacheMap\CacheMapOptions $options): mixed
 ```
 
-File location: `src/CacheMap/CustomCacheMap.php:34`
+File location: `src/CacheMap/CustomCacheMap.php:25`
 
-### getDataByCode()
-
-Возвращает данные элемента по символьному коду
-
-| Param      | Type              | Description    |
-| ---------- | ----------------- | -------------- |
-| `$code`    | _string_          | символьный код |
-| **Return** | _array&#124;null_ |                |
+### clearCache()
 
 ```php
-public function CacheMapTrait::getDataByCode(mixed $code): ?array
+public function AbstractCacheMapDecorator::clearCache(): void
 ```
 
-File location: `src/CacheMap/CustomCacheMap.php:117`
+File location: `src/CacheMap/AbstractCacheMapDecorator.php:44`
 
-### getIdByCode()
-
-Возвращает ID элемента по символьному коду
-
-| Param      | Type             | Description                                                      |
-| ---------- | ---------------- | ---------------------------------------------------------------- |
-| `$code`    | _string_         | символьный код                                                   |
-| **Return** | _int&#124;mixed_ | ID элемента. По возможности будет приведен к целочисленному типу |
+### get()
 
 ```php
-public function CacheMapTrait::getIdByCode(mixed $code): mixed
+public function AbstractCacheMapDecorator::get(mixed $code): mixed
 ```
 
-File location: `src/CacheMap/CustomCacheMap.php:128`
+File location: `src/CacheMap/AbstractCacheMapDecorator.php:28`
 
-### isCaseSensitive()
-
-| Param      | Type   | Description |
-| ---------- | ------ | ----------- |
-| **Return** | _bool_ |             |
+### getId()
 
 ```php
-public function CacheMapTrait::isCaseSensitive(): bool
+public function AbstractCacheMapDecorator::getId(mixed $code): mixed
 ```
 
-File location: `src/CacheMap/CustomCacheMap.php:155`
+File location: `src/CacheMap/AbstractCacheMapDecorator.php:36`
 
-### setIsCaseSensitive()
-
-| Param              | Type   | Description |
-| ------------------ | ------ | ----------- |
-| `$isCaseSensitive` | _bool_ |             |
+### getIterator()
 
 ```php
-public function CacheMapTrait::setIsCaseSensitive(bool $isCaseSensitive): void
+public function AbstractCacheMapDecorator::getIterator(): \Traversable
 ```
 
-File location: `src/CacheMap/CustomCacheMap.php:163`
-
-### traitClearCache()
-
-Очищает кэш
-
-```php
-public function CacheMapTrait::traitClearCache(): mixed
-```
-
-File location: `src/CacheMap/CustomCacheMap.php:147`
+File location: `src/CacheMap/AbstractCacheMapDecorator.php:52`
 
 ---
 

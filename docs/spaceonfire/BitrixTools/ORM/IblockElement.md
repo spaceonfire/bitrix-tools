@@ -4,6 +4,29 @@
 
 ## Methods
 
+### getCount()
+
+```php
+public static function IblockElement::getCount(mixed $filter = [], array $cache = []): mixed
+```
+
+File location: `src/ORM/IblockElement.php:235`
+
+### getElementMeta()
+
+Возвращает SEO мета-данные для элемента инфоблока по ID
+
+| Param        | Type    | Description |
+| ------------ | ------- | ----------- |
+| `$elementId` | _int_   | ID элемента |
+| **Return**   | _array_ |             |
+
+```php
+public static function IblockElement::getElementMeta(int $elementId): array
+```
+
+File location: `src/ORM/IblockElement.php:310`
+
 ### getEnumIdByXmlId()
 
 Возвращает id значения enum свойства по XML_ID
@@ -18,7 +41,7 @@
 public static function IblockElement::getEnumIdByXmlId(mixed $xml, mixed $propertyCode): ?int
 ```
 
-File location: `src/ORM/IblockElement.php:214`
+File location: `src/ORM/IblockElement.php:259`
 
 ### getEnumValueById()
 
@@ -34,7 +57,7 @@ File location: `src/ORM/IblockElement.php:214`
 public static function IblockElement::getEnumValueById(?int $id, string $propertyCode): ?string
 ```
 
-File location: `src/ORM/IblockElement.php:187`
+File location: `src/ORM/IblockElement.php:247`
 
 ### getIblockCode()
 
@@ -48,7 +71,7 @@ File location: `src/ORM/IblockElement.php:187`
 public static function IblockElement::getIblockCode(): string
 ```
 
-File location: `src/ORM/IblockElement.php:48`
+File location: `src/ORM/IblockElement.php:45`
 
 ### getIblockId()
 
@@ -65,7 +88,7 @@ File location: `src/ORM/IblockElement.php:48`
 public static function IblockElement::getIblockId(): int
 ```
 
-File location: `src/ORM/IblockElement.php:27`
+File location: `src/ORM/IblockElement.php:25`
 
 ### getList()
 
@@ -73,11 +96,11 @@ File location: `src/ORM/IblockElement.php:27`
 public static function IblockElement::getList(array $parameters = []): mixed
 ```
 
-File location: `src/ORM/IblockElement.php:169`
+File location: `src/ORM/IblockElement.php:226`
 
 ### getMap()
 
-Возврщает схему полей сущности
+Возвращает схему полей сущности
 
 | Param      | Type    | Description |
 | ---------- | ------- | ----------- |
@@ -87,15 +110,19 @@ File location: `src/ORM/IblockElement.php:169`
 public static function IblockElement::getMap(): array
 ```
 
-File location: `src/ORM/IblockElement.php:69`
+File location: `src/ORM/IblockElement.php:64`
 
 ### getProperties()
+
+| Param      | Type               | Description |
+| ---------- | ------------------ | ----------- |
+| **Return** | _array&#124;mixed_ |             |
 
 ```php
 protected static function IblockElement::getProperties(): mixed
 ```
 
-File location: `src/ORM/IblockElement.php:298`
+File location: `src/ORM/IblockElement.php:280`
 
 ### getPropertyCodeById()
 
@@ -110,7 +137,7 @@ File location: `src/ORM/IblockElement.php:298`
 public static function IblockElement::getPropertyCodeById(int $id): ?string
 ```
 
-File location: `src/ORM/IblockElement.php:334`
+File location: `src/ORM/IblockElement.php:290`
 
 ### getPropertyIdByCode()
 
@@ -125,15 +152,7 @@ File location: `src/ORM/IblockElement.php:334`
 public static function IblockElement::getPropertyIdByCode(string $code): ?int
 ```
 
-File location: `src/ORM/IblockElement.php:352`
-
-### getPropertyMultipleMap()
-
-```php
-protected static function IblockElement::getPropertyMultipleMap(): mixed
-```
-
-File location: `src/ORM/IblockElement.php:123`
+File location: `src/ORM/IblockElement.php:300`
 
 ### getTableName()
 
@@ -147,7 +166,7 @@ File location: `src/ORM/IblockElement.php:123`
 public static function IblockElement::getTableName(): string
 ```
 
-File location: `src/ORM/IblockElement.php:58`
+File location: `src/ORM/IblockElement.php:55`
 
 ### getXmlIdById()
 
@@ -163,7 +182,7 @@ File location: `src/ORM/IblockElement.php:58`
 public static function IblockElement::getXmlIdById(?int $id, string $propertyCode): mixed
 ```
 
-File location: `src/ORM/IblockElement.php:241`
+File location: `src/ORM/IblockElement.php:271`
 
 ---
 

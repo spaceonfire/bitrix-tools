@@ -1,0 +1,42 @@
+parameters:
+  sets:
+    - clean-code
+    - strict
+    - php70
+    - php71
+    - psr12
+  cache_directory: ._ecs_cache
+  paths:
+    - src/
+  skip:
+    Unused variable $_.: ~
+    Unused parameter $_.: ~
+    PhpCsFixer\Fixer\Strict\DeclareStrictTypesFixer: ~
+    PhpCsFixer\Fixer\Strict\StrictComparisonFixer:
+      - src/CacheMap/AbstractCacheMap.php
+    SlevomatCodingStandard\Sniffs\Functions\UnusedParameterSniff.UnusedParameter:
+      - src/ArrayTools.php
+    Unused variable $result.:
+      - src/Views/*
+    Unused parameter $context.:
+      - src/Components/Property/ClassPhpDocExtractor.php
+    Unused parameter $exception.:
+      - src/Components/CommonComponentTrait.php
+    Unused parameter $skipSecurityCheck.:
+      - src/Common.php
+    Unused parameter $auth.:
+      - src/Common.php
+
+services:
+  Symplify\CodingStandard\Fixer\LineLength\LineLengthFixer: ~
+
+  # Types
+  # SlevomatCodingStandard\Sniffs\TypeHints\ParameterTypeHintSniff: ~
+  # SlevomatCodingStandard\Sniffs\TypeHints\PropertyTypeHintSniff: ~
+  # SlevomatCodingStandard\Sniffs\TypeHints\ReturnTypeHintSniff: ~
+
+  # Dead code
+  SlevomatCodingStandard\Sniffs\Classes\UnusedPrivateElementsSniff: ~
+  SlevomatCodingStandard\Sniffs\Functions\UnusedInheritedVariablePassedToClosureSniff: ~
+  SlevomatCodingStandard\Sniffs\Functions\UnusedParameterSniff: ~
+  SlevomatCodingStandard\Sniffs\Variables\UnusedVariableSniff: ~

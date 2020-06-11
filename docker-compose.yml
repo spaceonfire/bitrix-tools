@@ -1,0 +1,15 @@
+version: '3'
+
+services:
+  app:
+    image: spaceonfire/nginx-php-fpm:latest-7.2
+    environment:
+      - SOF_PRESET=default
+      - APPLICATION_ENV=test
+      - WEBROOT=/dev/null
+      - ENABLE_XDEBUG=1
+      - XDEBUG_IDEKEY=bitrix-tools
+      - PAGER=more
+      - PUID=1000
+    volumes:
+      - ./:/var/www/html

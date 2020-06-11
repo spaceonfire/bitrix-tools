@@ -1,15 +1,8 @@
-# Project folders and files to ignore
-vendor
-node_modules
-bower_components
-.awcache
-exclude*
-
 # Numerous always-ignore extensions
 *.diff
 *.err
 *.orig
-*.log
+*.log*
 *.rej
 *.swo
 *.swp
@@ -18,7 +11,6 @@ exclude*
 *~
 *.lock
 !**/yarn.lock
-!**/composer.lock
 
 # Dotenv
 .env
@@ -30,6 +22,7 @@ exclude*
 ._*
 Thumbs.db
 .cache
+.buildpath
 .project
 .settings
 .tmproj
@@ -38,9 +31,21 @@ nbproject
 *.sublime-project
 *.sublime-workspace
 .idea
+.phpstorm.meta.php
 *.komodoproject
 .komodotools
 .atom
 .vscode
 .directory
-.sql
+*.sql
+*.tar*
+
+# Project folders and files to ignore
+build
+phpunit.xml
+vendor
+phpstan.neon
+docker-compose.override.yml
+auth.json
+.phpunit.result.cache
+/bitrix

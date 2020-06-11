@@ -11,14 +11,14 @@
 require_once $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/main/include/prolog_before.php';
 
 try {
-	if (!\Bitrix\Main\Loader::includeModule('site.main')) {
-		throw new \Exception('Can\'t include module "".');
+	if (!Bitrix\Main\Loader::includeModule('site.main')) {
+		throw new RuntimeException('Can\'t include module "".');
 	}
 
 	$urlParts = explode('/', $_SERVER['REQUEST_URI']);
 	array_shift($urlParts);
 	array_shift($urlParts);
-	$controller = spaceonfire\BitrixTools\Mvc\Controller\Prototype::factory(
+	$controller = spaceonfire\BitrixTools\Controllers\BaseController::factory(
 		array_shift($urlParts) ?: 'default',
 		'Vendor\Mvc\Namespace'
 	);

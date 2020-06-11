@@ -1,0 +1,28 @@
+# Start command: composer update --classmap-authoritative && vendor/bin/phpstan analyze
+
+includes:
+	- phar://phpstan.phar/conf/bleedingEdge.neon
+parameters:
+	level: max
+	inferPrivatePropertyTypeFromConstructor: true
+	checkMissingIterableValueType: false
+	paths:
+		- src/
+	bootstrapFiles:
+		- phpstan-bootstrap.php
+	scanDirectories:
+		- bitrix/modules/main/classes/
+		- bitrix/modules/main/lib/
+		- bitrix/modules/iblock/classes/
+		- bitrix/modules/iblock/lib/
+		- bitrix/modules/highloadblock/classes/
+		- bitrix/modules/highloadblock/lib/
+#	ignoreErrors:
+#		-
+#			message: '/^Parameter \#1 \$function of function call_user_func_array expects callable/'
+#			paths:
+#				- src/AbstractCriteriaAdapter.php
+#				- src/Expression/ExpressionFactory.php
+#				- src/Expression/AbstractExpressionAdapter.php
+#		- '/^Static method Webmozart\\Assert\\Assert::allOneOf\(\) invoked with 3 parameters, 1-2 required.$/'
+#		- '/^Method (.*) should return static\((.*)\) but returns (.*)\.$/'

@@ -7,29 +7,19 @@
 
 ## Methods
 
-### abortCache()
-
-Сброс кэширования.
-
-```php
-public function CommonComponentTrait::abortCache(): void
-```
-
-File location: `src/Components/BaseRouterComponent.php:242`
-
 ### addCacheAdditionalId()
 
-Добавиляет дополнительный ID для кэша
+Добавляет дополнительный ID для кэша
 
 | Param | Type    | Description |
 | ----- | ------- | ----------- |
 | `$id` | _mixed_ |             |
 
 ```php
-public function CommonComponentTrait::addCacheAdditionalId(mixed $id): void
+final protected function CommonComponentTrait::addCacheAdditionalId(mixed $id): void
 ```
 
-File location: `src/Components/BaseRouterComponent.php:372`
+File location: `src/Components/BaseRouterComponent.php:459`
 
 ### buildUrl()
 
@@ -47,30 +37,60 @@ public function BaseRouterComponent::buildUrl(string $templateName, array $param
 
 File location: `src/Components/BaseRouterComponent.php:217`
 
+### canShowExceptionMessage()
+
+Определяет можно ли показать сообщение исключения
+
+| Param        | Type         | Description |
+| ------------ | ------------ | ----------- |
+| `$exception` | _\Throwable_ |             |
+| **Return**   | _bool_       |             |
+
+```php
+protected function CommonComponentTrait::canShowExceptionMessage(\Throwable $exception): bool
+```
+
+File location: `src/Components/BaseRouterComponent.php:389`
+
+### canShowExceptionTrace()
+
+Определяет можно ли показать трейс исключения
+
+| Param        | Type         | Description |
+| ------------ | ------------ | ----------- |
+| `$exception` | _\Throwable_ |             |
+| **Return**   | _bool_       |             |
+
+```php
+protected function CommonComponentTrait::canShowExceptionTrace(\Throwable $exception): bool
+```
+
+File location: `src/Components/BaseRouterComponent.php:400`
+
 ### catchError()
 
 Вызывается при возникновении ошибки
 
-Сбрасывает кэш, показывает сообщение об ошибке (в общем виде для пользователей и детально
-для админов), пишет ошибку в лог Битрикса
+Сбрасывает кэш, показывает сообщение об ошибке (в общем виде для пользователей и детально для админов),
+пишет ошибку в лог Битрикса
 
 | Param        | Type         | Description |
 | ------------ | ------------ | ----------- |
-| `$throwable` | _\Throwable_ |             |
+| `$exception` | _\Throwable_ |             |
 
 ```php
-protected function CommonComponentTrait::catchError(\Throwable $throwable): mixed
+protected function CommonComponentTrait::catchError(\Throwable $exception): void
 ```
 
-File location: `src/Components/BaseRouterComponent.php:306`
+File location: `src/Components/BaseRouterComponent.php:361`
 
 ### executeComponent()
 
 Выполнение компонента
 
-| Param      | Type     | Description                  |
-| ---------- | -------- | ---------------------------- |
-| **Return** | _static_ | возвращает объект компонента |
+| Param      | Type                | Description                              |
+| ---------- | ------------------- | ---------------------------------------- |
+| **Return** | _\$this&#124;mixed_ | возвращает экземпляр текущего компонента |
 
 ```php
 public function BaseRouterComponent::executeComponent(): mixed
@@ -83,10 +103,10 @@ File location: `src/Components/BaseRouterComponent.php:176`
 Выполняется после получения результатов. Не кэшируется
 
 ```php
-protected function CommonComponentTrait::executeEpilog(): mixed
+protected function CommonComponentTrait::executeEpilog(): void
 ```
 
-File location: `src/Components/BaseRouterComponent.php:263`
+File location: `src/Components/BaseRouterComponent.php:318`
 
 ### executeMain()
 
@@ -95,20 +115,48 @@ File location: `src/Components/BaseRouterComponent.php:263`
 Результат работы метода будет закэширован.
 
 ```php
-protected function CommonComponentTrait::executeMain(): mixed
+protected function CommonComponentTrait::executeMain(): void
 ```
 
-File location: `src/Components/BaseRouterComponent.php:251`
+File location: `src/Components/BaseRouterComponent.php:306`
 
 ### executeProlog()
 
 Выполняется до получения результатов. Не кэшируется
 
 ```php
-protected function CommonComponentTrait::executeProlog(): mixed
+protected function CommonComponentTrait::executeProlog(): void
 ```
 
-File location: `src/Components/BaseRouterComponent.php:200`
+File location: `src/Components/BaseRouterComponent.php:255`
+
+### getId()
+
+Возвращает идентификатор компонента
+
+| Param      | Type     | Description |
+| ---------- | -------- | ----------- |
+| **Return** | _string_ |             |
+
+```php
+public function CommonComponentTrait::getId(): string
+```
+
+File location: `src/Components/BaseRouterComponent.php:69`
+
+### getParamsTypes()
+
+Возвращает массив типов для проверки параметров компонента
+
+| Param      | Type                       | Description |
+| ---------- | -------------------------- | ----------- |
+| **Return** | _\spaceonfire\Type\Type[]_ |             |
+
+```php
+protected function CommonComponentTrait::getParamsTypes(): array
+```
+
+File location: `src/Components/BaseRouterComponent.php:158`
 
 ### getParentParam()
 
@@ -120,10 +168,10 @@ File location: `src/Components/BaseRouterComponent.php:200`
 | **Return**   | _mixed&#124;null_ |             |
 
 ```php
-protected function CommonComponentTrait::getParentParam(string $paramName): mixed
+final protected function CommonComponentTrait::getParentParam(string $paramName): mixed
 ```
 
-File location: `src/Components/BaseRouterComponent.php:150`
+File location: `src/Components/BaseRouterComponent.php:209`
 
 ### getUrlTemplate()
 
@@ -155,16 +203,6 @@ public function BaseRouterComponent::hasUrlTemplate(string $templateName): bool
 
 File location: `src/Components/BaseRouterComponent.php:191`
 
-### includeModules()
-
-Загружает модули 1С-Битрикс.
-
-```php
-public function CommonComponentTrait::includeModules(): void
-```
-
-File location: `src/Components/BaseRouterComponent.php:69`
-
 ### init()
 
 Инициализация компонента.
@@ -173,10 +211,10 @@ File location: `src/Components/BaseRouterComponent.php:69`
 Служит для выполнения дополнительных настроек.
 
 ```php
-protected function CommonComponentTrait::init(): mixed
+protected function CommonComponentTrait::init(): void
 ```
 
-File location: `src/Components/BaseRouterComponent.php:83`
+File location: `src/Components/BaseRouterComponent.php:146`
 
 ### isAjax()
 
@@ -190,7 +228,7 @@ File location: `src/Components/BaseRouterComponent.php:83`
 public function CommonComponentTrait::isAjax(): bool
 ```
 
-File location: `src/Components/BaseRouterComponent.php:350`
+File location: `src/Components/BaseRouterComponent.php:432`
 
 ### isSearchRequest()
 
@@ -214,7 +252,22 @@ File location: `src/Components/BaseRouterComponent.php:67`
 public function CommonComponentTrait::onIncludeComponentLang(): void
 ```
 
-File location: `src/Components/BaseRouterComponent.php:59`
+File location: `src/Components/BaseRouterComponent.php:80`
+
+### onPrepareComponentParams()
+
+Подготовка параметров компонента
+
+| Param       | Type    | Description |
+| ----------- | ------- | ----------- |
+| `$arParams` | _array_ |             |
+| **Return**  | _array_ |             |
+
+```php
+public function CommonComponentTrait::onPrepareComponentParams(array $arParams): array
+```
+
+File location: `src/Components/BaseRouterComponent.php:91`
 
 ### registerCacheTag()
 
@@ -228,17 +281,45 @@ File location: `src/Components/BaseRouterComponent.php:59`
 public static function CommonComponentTrait::registerCacheTag(string $tag): void
 ```
 
-File location: `src/Components/BaseRouterComponent.php:361`
+File location: `src/Components/BaseRouterComponent.php:442`
 
 ### render()
 
-Ренедеринг шаблона компонента
+Рендеринг шаблона компонента
 
 ```php
-public function CommonComponentTrait::render(): mixed
+public function CommonComponentTrait::render(): void
 ```
 
-File location: `src/Components/BaseRouterComponent.php:283`
+File location: `src/Components/BaseRouterComponent.php:338`
+
+### renderExceptionMessage()
+
+Отображает сообщение об ошибке
+
+| Param      | Type     | Description |
+| ---------- | -------- | ----------- |
+| `$message` | _string_ |             |
+
+```php
+protected function CommonComponentTrait::renderExceptionMessage(string $message): void
+```
+
+File location: `src/Components/BaseRouterComponent.php:414`
+
+### renderExceptionTrace()
+
+Отображает трейс ошибки
+
+| Param        | Type         | Description |
+| ------------ | ------------ | ----------- |
+| `$throwable` | _\Throwable_ |             |
+
+```php
+protected function CommonComponentTrait::renderExceptionTrace(\Throwable $throwable): void
+```
+
+File location: `src/Components/BaseRouterComponent.php:423`
 
 ### return404()
 
@@ -249,20 +330,20 @@ File location: `src/Components/BaseRouterComponent.php:283`
 | `$throwable` | _\Throwable&#124;null_ | Исходное исключение. При наличии будет использовано его сообщение об ошибке |
 
 ```php
-public function CommonComponentTrait::return404(?\Throwable $throwable = null): mixed
+final protected function CommonComponentTrait::return404(?\Throwable $throwable = null): void
 ```
 
-File location: `src/Components/BaseRouterComponent.php:293`
+File location: `src/Components/BaseRouterComponent.php:348`
 
 ### run()
 
-Универсальный флоу выполнения компонента
+Универсальный порядок выполнения комплексного компонента
 
 ```php
-final public function BaseRouterComponent::run(): mixed
+final public function BaseRouterComponent::run(): void
 ```
 
-File location: `src/Components/BaseRouterComponent.php:154`
+File location: `src/Components/BaseRouterComponent.php:155`
 
 ### setPage()
 
@@ -272,7 +353,7 @@ File location: `src/Components/BaseRouterComponent.php:154`
 protected function BaseRouterComponent::setPage(): void
 ```
 
-File location: `src/Components/BaseRouterComponent.php:75`
+File location: `src/Components/BaseRouterComponent.php:77`
 
 ### setSefDefaultParams()
 
@@ -284,74 +365,22 @@ protected function BaseRouterComponent::setSefDefaultParams(): void
 
 File location: `src/Components/BaseRouterComponent.php:53`
 
-### showExceptionAdmin()
-
-Отображат сообщение об ошибке для админов
-
-| Param        | Type         | Description |
-| ------------ | ------------ | ----------- |
-| `$throwable` | _\Throwable_ |             |
-
-```php
-protected function CommonComponentTrait::showExceptionAdmin(\Throwable $throwable): mixed
-```
-
-File location: `src/Components/BaseRouterComponent.php:340`
-
-### showExceptionUser()
-
-Отображат сообщение об ошибке для пользователей
-
-| Param        | Type         | Description |
-| ------------ | ------------ | ----------- |
-| `$throwable` | _\Throwable_ |             |
-
-```php
-protected function CommonComponentTrait::showExceptionUser(\Throwable $throwable): mixed
-```
-
-File location: `src/Components/BaseRouterComponent.php:331`
-
-### startCache()
-
-Инициализация кэширования
-
-| Param      | Type   | Description |
-| ---------- | ------ | ----------- |
-| **Return** | _bool_ |             |
-
-```php
-public function CommonComponentTrait::startCache(): bool
-```
-
-File location: `src/Components/BaseRouterComponent.php:208`
-
 ### triggerEvent()
 
 Вызывает событие, специфичное для компонента
 
 | Param      | Type                             | Description                                                          |
 | ---------- | -------------------------------- | -------------------------------------------------------------------- |
-| `$type`    | _string_                         | Тип события. Имя класса компонента будет добавлено ввиде префикса.   |
+| `$type`    | _string_                         | Тип события. Имя класса компонента будет добавлено в виде префикса.  |
 | `$params`  | _array_                          | Параметры события. Параметр `component` будет добавлен автоматически |
 | `$filter`  | _null&#124;string&#124;string[]_ | Фильтр события                                                       |
 | **Return** | _\Bitrix\Main\Event_             |                                                                      |
 
 ```php
-public function CommonComponentTrait::triggerEvent(string $type, array $params = [], mixed $filter = null): \spaceonfire\BitrixTools\Components\Bitrix\Main\Event
+final protected function CommonComponentTrait::triggerEvent(string $type, array $params = [], mixed $filter = null): \Bitrix\Main\Event
 ```
 
-File location: `src/Components/BaseRouterComponent.php:384`
-
-### writeCache()
-
-Записывает результат кэширования на диск.
-
-```php
-public function CommonComponentTrait::writeCache(): void
-```
-
-File location: `src/Components/BaseRouterComponent.php:234`
+File location: `src/Components/BaseRouterComponent.php:471`
 
 ---
 

@@ -13,10 +13,10 @@
 | **Return** | _int_ |             |
 
 ```php
-public static function IblockPropMultiple::getIblockId(): int
+abstract public static function IblockPropMultiple::getIblockId(): int
 ```
 
-File location: `src/ORM/IblockPropMultiple.php:16`
+File location: `src/ORM/IblockPropMultiple.php:13`
 
 ### getMap()
 
@@ -30,7 +30,7 @@ File location: `src/ORM/IblockPropMultiple.php:16`
 public static function IblockPropMultiple::getMap(): array
 ```
 
-File location: `src/ORM/IblockPropMultiple.php:36`
+File location: `src/ORM/IblockPropMultiple.php:28`
 
 ### getTableName()
 
@@ -44,7 +44,7 @@ File location: `src/ORM/IblockPropMultiple.php:36`
 public static function IblockPropMultiple::getTableName(): string
 ```
 
-File location: `src/ORM/IblockPropMultiple.php:27`
+File location: `src/ORM/IblockPropMultiple.php:19`
 
 ---
 

@@ -11,6 +11,6 @@ try {
 	CacheMap\HighloadBlockCacheMap::register();
 	CacheMap\UserGroupCacheMap::register();
 	ORM\EventHandler::boot();
-} catch (\Throwable $err) {
+} catch (Throwable $err) {
 	Bitrix\Main\Application::getInstance()->getExceptionHandler()->writeToLog($err);
 }

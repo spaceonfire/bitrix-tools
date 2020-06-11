@@ -1,67 +1,79 @@
 <?php
 
+declare(strict_types=1);
+
 namespace spaceonfire\BitrixTools\CacheMap;
 
 use Bitrix\Highloadblock\HighloadBlockTable;
 use Bitrix\Main;
 use Bitrix\Main\ORM\Data\DataManager;
-use Bitrix\Main\ORM\Query\Query;
+use RuntimeException;
 use spaceonfire\BitrixTools\Common;
+use Throwable;
 
 /**
  * Класс HighloadBlockCacheMap позволяет получить информацию об HighLoad блоке по его названию из кэша
  * @package spaceonfire\BitrixTools\CacheMap
  */
-final class HighloadBlockCacheMap implements CacheMapStaticInterface
+final class HighloadBlockCacheMap extends AbstractStaticCacheMap
 {
-	use CacheMapTrait, CacheMapSingleton;
+    /**
+     * @inheritDoc
+     */
+    public static function getInstance(): CacheMap
+    {
+        static $instance;
 
-	/**
-	 * HighloadBlockCacheMap constructor.
-	 * @throws Main\LoaderException
-	 * @throws Main\SystemException
-	 */
-	private function __construct()
-	{
-		Common::loadModules(['highloadblock']);
+        if ($instance === null) {
+            Common::loadModules(['highloadblock']);
 
-		/** @var Query $q */
-		$q = HighloadBlockTable::query()
-			->setSelect(['*'])
-			->setFilter(['!NAME' => false]);
+            try {
+                $instance = new QueryCacheMap(
+                    HighloadBlockTable::query()
+                        ->setSelect(['*'])
+                        ->setFilter(['!NAME' => false]),
+                    new CacheMapOptions('highload-cache-map-' . md5(self::class), 'ID', 'NAME')
+                );
+            } catch (Main\SystemException $e) {
+                throw new RuntimeException($e->getMessage(), $e->getCode(), $e);
+            }
+        }
 
-		$this->traitConstruct($q, 'ID', 'NAME');
-	}
+        return $instance;
+    }
 
-	/**
-	 * Регистрация обработчиков событий для очистки кэша при изменении сущности
-	 * Вызывается автоматически при подключении autoloader.
-	 * @throws Main\SystemException
-	 */
-	public static function register(): void
-	{
-		try {
-			Common::loadModules(['highloadblock']);
-		} catch (\Throwable $err) {
-			return;
-		}
+    /**
+     * Регистрация обработчиков событий для очистки кэша при изменении сущности
+     * Вызывается автоматически при подключении autoloader.
+     */
+    public static function register(): void
+    {
+        try {
+            Common::loadModules(['highloadblock']);
+        } catch (Throwable $e) {
+            return;
+        }
 
-		$eventManager = Main\EventManager::getInstance();
+        try {
+            $eventManager = Main\EventManager::getInstance();
 
-		$ormEntity = HighloadBlockTable::getEntity();
+            $ormEntity = HighloadBlockTable::getEntity();
 
-		$eventsTree = [
-			$ormEntity->getModule() => [
-				$ormEntity->getNamespace() . $ormEntity->getName() . '::' . DataManager::EVENT_ON_AFTER_ADD,
-				$ormEntity->getNamespace() . $ormEntity->getName() . '::' . DataManager::EVENT_ON_AFTER_UPDATE,
-				$ormEntity->getNamespace() . $ormEntity->getName() . '::' . DataManager::EVENT_ON_AFTER_DELETE,
-			],
-		];
+            $eventsTree = [
+                $ormEntity->getModule() => [
+                    $ormEntity->getNamespace() . $ormEntity->getName() . '::' . DataManager::EVENT_ON_AFTER_ADD,
+                    $ormEntity->getNamespace() . $ormEntity->getName() . '::' . DataManager::EVENT_ON_AFTER_UPDATE,
+                    $ormEntity->getNamespace() . $ormEntity->getName() . '::' . DataManager::EVENT_ON_AFTER_DELETE,
+                ],
+            ];
 
-		foreach ($eventsTree as $moduleId => $events) {
-			foreach ($events as $event) {
-				$eventManager->addEventHandler($moduleId, $event, [static::class, 'clearCache']);
-			}
-		}
-	}
+            foreach ($eventsTree as $moduleId => $events) {
+                foreach ($events as $event) {
+                    $eventManager->addEventHandler($moduleId, $event, [self::class, 'clearCache']);
+                }
+            }
+        } catch (Main\SystemException $e) {
+            throw new RuntimeException($e->getMessage(), $e->getCode(), $e);
+        }
+    }
 }

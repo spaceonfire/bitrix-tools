@@ -1,77 +1,89 @@
 <?php
 
+declare(strict_types=1);
+
 namespace spaceonfire\BitrixTools\CacheMap;
 
 use Bitrix\Iblock\IblockTable;
 use Bitrix\Main;
 use Bitrix\Main\ORM\Data\DataManager;
-use Bitrix\Main\ORM\Query\Query;
+use RuntimeException;
 use spaceonfire\BitrixTools\Common;
+use Throwable;
 
 /**
  * Класс IblockCacheMap позволяет получить информацию об инфоблоке по его символьному коду из кэша
  * @package spaceonfire\BitrixTools\CacheMap
  */
-final class IblockCacheMap implements CacheMapStaticInterface
+final class IblockCacheMap extends AbstractStaticCacheMap
 {
-	use CacheMapTrait, CacheMapSingleton;
+    /**
+     * @inheritDoc
+     */
+    public static function getInstance(): CacheMap
+    {
+        static $instance;
 
-	/**
-	 * IblockCacheMap constructor.
-	 * @throws Main\LoaderException
-	 * @throws Main\SystemException
-	 */
-	private function __construct()
-	{
-		Common::loadModules(['iblock']);
+        if ($instance === null) {
+            Common::loadModules(['iblock']);
 
-		/** @var Query $q */
-		$q = IblockTable::query()
-			->setSelect(['*'])
-			->setFilter([
-				'ACTIVE' => 'Y',
-				'!CODE' => false,
-			]);
+            try {
+                $instance = new QueryCacheMap(
+                    IblockTable::query()
+                        ->setSelect(['*'])
+                        ->setFilter([
+                            'ACTIVE' => 'Y',
+                            '!CODE' => false,
+                        ]),
+                    new CacheMapOptions('iblock-cache-map-' . md5(self::class))
+                );
+            } catch (Main\SystemException $e) {
+                throw new RuntimeException($e->getMessage(), $e->getCode(), $e);
+            }
+        }
 
-		$this->traitConstruct($q);
-	}
+        return $instance;
+    }
 
-	/**
-	 * Регистрация обработчиков событий для очистки кэша при изменении сущности
-	 * Вызывается автоматически при подключении autoloader.
-	 * @throws Main\SystemException
-	 */
-	public static function register(): void
-	{
-		try {
-			Common::loadModules(['iblock']);
-		} catch (\Throwable $err) {
-			return;
-		}
+    /**
+     * Регистрация обработчиков событий для очистки кэша при изменении сущности
+     * Вызывается автоматически при подключении autoloader.
+     */
+    public static function register(): void
+    {
+        try {
+            Common::loadModules(['iblock']);
+        } catch (Throwable $e) {
+            return;
+        }
 
-		$eventManager = Main\EventManager::getInstance();
+        try {
+            $eventManager = Main\EventManager::getInstance();
 
-		$ormEntity = IblockTable::getEntity();
+            $ormEntity = IblockTable::getEntity();
 
-		$eventsTree = [
-			'iblock' => [
-				'OnAfterIBlockAdd' => 1,
-				'OnAfterIBlockUpdate' => 1,
-				'OnAfterIBlockDelete' => 1,
-				$ormEntity->getNamespace() . $ormEntity->getName() . '::' . DataManager::EVENT_ON_AFTER_ADD => 2,
-				$ormEntity->getNamespace() . $ormEntity->getName() . '::' . DataManager::EVENT_ON_AFTER_UPDATE => 2,
-				$ormEntity->getNamespace() . $ormEntity->getName() . '::' . DataManager::EVENT_ON_AFTER_DELETE => 2,
-			],
-		];
+            $eventsTree = [
+                'iblock' => [
+                    'OnAfterIBlockAdd' => 1,
+                    'OnAfterIBlockUpdate' => 1,
+                    'OnAfterIBlockDelete' => 1,
+                    $ormEntity->getNamespace() . $ormEntity->getName() . '::' . DataManager::EVENT_ON_AFTER_ADD => 2,
+                    $ormEntity->getNamespace() . $ormEntity->getName() . '::' . DataManager::EVENT_ON_AFTER_UPDATE => 2,
+                    $ormEntity->getNamespace() . $ormEntity->getName() . '::' . DataManager::EVENT_ON_AFTER_DELETE => 2,
+                ],
+            ];
 
-		foreach ($eventsTree as $moduleId => $events) {
-			foreach ($events as $event => $version) {
-				if ($version === 2) {
-					$eventManager->addEventHandler($moduleId, $event, [static::class, 'clearCache']);
-				} else {
-					$eventManager->addEventHandlerCompatible($moduleId, $event, [static::class, 'clearCache']);
-				}
-			}
-		}
-	}
+            foreach ($eventsTree as $moduleId => $events) {
+                foreach ($events as $event => $version) {
+                    if ($version === 2) {
+                        $eventManager->addEventHandler($moduleId, $event, [self::class, 'clearCache']);
+                    } else {
+                        $eventManager->addEventHandlerCompatible($moduleId, $event, [self::class, 'clearCache']);
+                    }
+                }
+            }
+        } catch (Main\SystemException $e) {
+            throw new RuntimeException($e->getMessage(), $e->getCode(), $e);
+        }
+    }
 }

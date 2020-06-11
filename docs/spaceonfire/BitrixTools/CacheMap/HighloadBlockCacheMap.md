@@ -3,108 +3,42 @@
 Класс HighloadBlockCacheMap позволяет получить информацию об HighLoad блоке по его названию из кэша
 
 -   Full name: `\spaceonfire\BitrixTools\CacheMap\HighloadBlockCacheMap`
--   This class implements: `\spaceonfire\BitrixTools\CacheMap\CacheMapStaticInterface`
--   This class uses:
-    -   `\spaceonfire\BitrixTools\CacheMap\CacheMapTrait`
-    -   `\spaceonfire\BitrixTools\CacheMap\CacheMapSingleton`
+-   Parent class: `\spaceonfire\BitrixTools\CacheMap\AbstractStaticCacheMap`
+-   This class implements: `\spaceonfire\BitrixTools\CacheMap\StaticCacheMap`
 
 ## Methods
 
 ### clearCache()
 
-Очищает кэш
-
 ```php
-public static function CacheMapSingleton::clearCache(): mixed
+public static function AbstractStaticCacheMap::clearCache(): void
 ```
 
-File location: `src/CacheMap/HighloadBlockCacheMap.php:64`
+File location: `src/CacheMap/AbstractStaticCacheMap.php:28`
 
 ### get()
 
-Возвращает данные элемента по символьному коду
-
-| Param      | Type              | Description    |
-| ---------- | ----------------- | -------------- |
-| `$code`    | _string_          | символьный код |
-| **Return** | _array&#124;null_ |                |
-
 ```php
-public static function CacheMapSingleton::get(mixed $code): mixed
+public static function AbstractStaticCacheMap::get(mixed $code): mixed
 ```
 
-File location: `src/CacheMap/HighloadBlockCacheMap.php:45`
-
-### getDataByCode()
-
-Возвращает данные элемента по символьному коду
-
-| Param      | Type              | Description    |
-| ---------- | ----------------- | -------------- |
-| `$code`    | _string_          | символьный код |
-| **Return** | _array&#124;null_ |                |
-
-```php
-public function CacheMapTrait::getDataByCode(mixed $code): ?array
-```
-
-File location: `src/CacheMap/HighloadBlockCacheMap.php:117`
+File location: `src/CacheMap/AbstractStaticCacheMap.php:12`
 
 ### getId()
 
-Возвращает ID элемента по символьному коду
-
-| Param      | Type             | Description                                                      |
-| ---------- | ---------------- | ---------------------------------------------------------------- |
-| `$code`    | _string_         | символьный код                                                   |
-| **Return** | _int&#124;mixed_ | ID элемента, по возможности будет приведен к целочисленному типу |
-
 ```php
-public static function CacheMapSingleton::getId(mixed $code): mixed
+public static function AbstractStaticCacheMap::getId(mixed $code): mixed
 ```
 
-File location: `src/CacheMap/HighloadBlockCacheMap.php:55`
-
-### getIdByCode()
-
-Возвращает ID элемента по символьному коду
-
-| Param      | Type             | Description                                                      |
-| ---------- | ---------------- | ---------------------------------------------------------------- |
-| `$code`    | _string_         | символьный код                                                   |
-| **Return** | _int&#124;mixed_ | ID элемента. По возможности будет приведен к целочисленному типу |
-
-```php
-public function CacheMapTrait::getIdByCode(mixed $code): mixed
-```
-
-File location: `src/CacheMap/HighloadBlockCacheMap.php:128`
+File location: `src/CacheMap/AbstractStaticCacheMap.php:20`
 
 ### getInstance()
 
-Возвращает экземпляр класса
-
-| Param      | Type     | Description |
-| ---------- | -------- | ----------- |
-| **Return** | _static_ |             |
-
 ```php
-public static function CacheMapSingleton::getInstance(): mixed
+public static function HighloadBlockCacheMap::getInstance(): \spaceonfire\BitrixTools\CacheMap\CacheMap
 ```
 
-File location: `src/CacheMap/HighloadBlockCacheMap.php:16`
-
-### isCaseSensitive()
-
-| Param      | Type   | Description |
-| ---------- | ------ | ----------- |
-| **Return** | _bool_ |             |
-
-```php
-public function CacheMapTrait::isCaseSensitive(): bool
-```
-
-File location: `src/CacheMap/HighloadBlockCacheMap.php:155`
+File location: `src/CacheMap/HighloadBlockCacheMap.php:23`
 
 ### register()
 
@@ -115,29 +49,7 @@ File location: `src/CacheMap/HighloadBlockCacheMap.php:155`
 public static function HighloadBlockCacheMap::register(): void
 ```
 
-File location: `src/CacheMap/HighloadBlockCacheMap.php:41`
-
-### setIsCaseSensitive()
-
-| Param              | Type   | Description |
-| ------------------ | ------ | ----------- |
-| `$isCaseSensitive` | _bool_ |             |
-
-```php
-public function CacheMapTrait::setIsCaseSensitive(bool $isCaseSensitive): void
-```
-
-File location: `src/CacheMap/HighloadBlockCacheMap.php:163`
-
-### traitClearCache()
-
-Очищает кэш
-
-```php
-public function CacheMapTrait::traitClearCache(): mixed
-```
-
-File location: `src/CacheMap/HighloadBlockCacheMap.php:147`
+File location: `src/CacheMap/HighloadBlockCacheMap.php:49`
 
 ---
 

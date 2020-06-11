@@ -9,10 +9,17 @@ use Bitrix\Main\Diag\ExceptionHandlerLog;
 use Bitrix\Main\Event;
 use Bitrix\Main\Localization\Loc;
 use CAjax;
+use CBitrixComponent;
 use CMain;
+use InvalidArgumentException;
 use Narrowspark\HttpStatus\Exception\NotFoundException;
+use RuntimeException;
 use spaceonfire\BitrixTools\Common as CommonTools;
+use spaceonfire\BitrixTools\Components\Property\ComponentPropertiesTrait;
 use spaceonfire\BitrixTools\HttpStatusTools;
+use spaceonfire\Type\BuiltinType;
+use spaceonfire\Type\DisjunctionType;
+use spaceonfire\Type\Type;
 use Throwable;
 
 Loc::loadMessages(__FILE__);
@@ -23,401 +30,453 @@ Loc::loadMessages(__FILE__);
  */
 trait CommonComponentTrait
 {
-	/**
-	 * @var array Массив модулей, которые необходимо загрузить перед подключением компонента
-	 */
-	protected $needModules = [];
+    /**
+     * @var string
+     */
+    private $id;
+    /**
+     * @var array Массив модулей, которые необходимо загрузить перед подключением компонента
+     */
+    protected $needModules = [];
+    /**
+     * @var array Массив дополнительных ID кэша
+     */
+    private $cacheAdditionalId = [];
+    /**
+     * @var string Директория кэша
+     */
+    protected $cacheDir = false;
+    /**
+     * @var string Salt for component ID for AJAX request
+     */
+    protected $ajaxComponentIdSalt;
+    /**
+     * @var string Название страницы шаблона (для компонента-роутера)
+     */
+    protected $templatePage;
+    /**
+     * @var array Настройки для проверки параметров компонента
+     * @example $checkParams = array('IBLOCK_TYPE' => array('type' => 'string'), 'ELEMENT_ID' => array('type' => 'int',
+     *     'error' => '404'));
+     * @deprecated Переопределяйте метод getParamsTypes() для указания типов параметров компонента
+     */
+    protected $checkParams = [];
 
-	/**
-	 * @var array Массив дополнительных ID кэша
-	 */
-	private $cacheAdditionalId = [];
+    /**
+     * Возвращает идентификатор компонента
+     * @return string
+     */
+    public function getId(): string
+    {
+        if ($this->id === null) {
+            $this->id = $this->randString();
+        }
+        return $this->id;
+    }
 
-	/**
-	 * @var string Директория кэша
-	 */
-	protected $cacheDir = false;
+    /**
+     * Загружает файлы переводов компонента (component.php и class.php)
+     */
+    public function onIncludeComponentLang(): void
+    {
+        parent::onIncludeComponentLang();
+        $this->includeComponentLang('class.php');
+    }
 
-	/**
-	 * @var string Salt for component ID for AJAX request
-	 */
-	protected $ajaxComponentIdSalt;
+    /**
+     * Подготовка параметров компонента
+     * @param array $arParams
+     * @return array
+     */
+    public function onPrepareComponentParams(array $arParams): array
+    {
+        try {
+            foreach ($this->getParamsTypes() as $param => $type) {
+                $value = $arParams[$param] ?? null;
 
-	/**
-	 * @var string Название страницы шаблона (для компонента-роутера)
-	 */
-	protected $templatePage;
+                if (!$type->check($value)) {
+                    throw new InvalidArgumentException(sprintf(
+                        'Value of "%s" param must be of type "%s". Got: "%s"',
+                        $param,
+                        (string)$type,
+                        gettype($value)
+                    ));
+                }
 
-	/**
-	 * @var array Настройки для проверки параметров компонента
-	 * @example $checkParams = array('IBLOCK_TYPE' => array('type' => 'string'), 'ELEMENT_ID' => array('type' => 'int', 'error' => '404'));
-	 */
-	protected $checkParams = [];
+                if ($type instanceof BuiltinType) {
+                    $value = $type->cast($value);
+                }
 
-	/**
-	 * Загружает файлы переводов компонента (component.php и class.php)
-	 */
-	public function onIncludeComponentLang(): void
-	{
-		parent::onIncludeComponentLang();
-		$this->includeComponentLang('class.php');
-	}
+                if ((string)$type === 'string') {
+                    $value = htmlspecialchars(trim($value));
+                }
 
-	/**
-	 * Загружает модули 1С-Битрикс.
-	 * @throws Main\LoaderException
-	 */
-	public function includeModules(): void
-	{
-		if (!is_array($this->needModules) || empty($this->needModules)) {
-			return;
-		}
+                $arParams[$param] = $value;
+            }
 
-		CommonTools::loadModules($this->needModules);
-	}
+            // There should be more options for params checking, validation as example
 
-	/**
-	 * Инициализация компонента.
-	 * Метод вызывается после вызова конструктора и подключения необходимых модулей.
-	 * Служит для выполнения дополнительных настроек.
-	 */
-	protected function init()
-	{
-	}
+            return $arParams;
+        } catch (InvalidArgumentException $exception) {
+            if (!$this->canShowExceptionMessage($exception)) {
+                throw new NotFoundException($exception->getMessage());
+            }
 
-	/**
-	 * @throws Throwable
-	 */
-	private function checkAutomaticParams()
-	{
-		try {
-			foreach ($this->checkParams as $key => $param) {
-				if ($param['error'] === false) {
-					continue;
-				}
+            throw $exception;
+        }
+    }
 
-				switch ($param['type']) {
-					case 'int':
-						if (!is_numeric($this->arParams[$key])) {
-							throw new Main\ArgumentTypeException($key, 'integer');
-						}
+    /**
+     * Загружает модули 1С-Битрикс.
+     */
+    private function includeModules(): void
+    {
+        if (!is_array($this->needModules) || empty($this->needModules)) {
+            return;
+        }
 
-						$this->arParams[$key] = (int)$this->arParams[$key];
-						break;
+        CommonTools::loadModules($this->needModules);
+    }
 
-					case 'float':
-						if (!is_numeric($this->arParams[$key])) {
-							throw new Main\ArgumentTypeException($key, 'float');
-						}
+    /**
+     * Инициализация компонента.
+     * Метод вызывается после вызова конструктора и подключения необходимых модулей.
+     * Служит для выполнения дополнительных настроек.
+     */
+    protected function init(): void
+    {
+        if (in_array(ComponentPropertiesTrait::class, class_uses($this), true)) {
+            /** @noinspection PhpUndefinedMethodInspection */
+            $this->initPropertiesBag();
+        }
+    }
 
-						$this->arParams[$key] = (float)$this->arParams[$key];
-						break;
+    /**
+     * Возвращает массив типов для проверки параметров компонента
+     * @return Type[]
+     */
+    protected function getParamsTypes(): array
+    {
+        $result = [];
 
-					case 'string':
-						$value = htmlspecialchars(trim($this->arParams[$key]));
+        if (!empty($this->checkParams)) {
+            trigger_error(sprintf(
+                'Error in component %s: property "checkParams" is deprecated. Use getParamsTypes() method instead.',
+                $this->getName()
+            ), E_USER_DEPRECATED);
+        }
 
-						if (strlen($value) <= 0) {
-							throw new Main\ArgumentNullException($key);
-						}
+        foreach ($this->checkParams as $key => $options) {
+            switch ($options['type']) {
+                case 'int':
+                    $type = new BuiltinType(BuiltinType::INT, false);
+                    break;
 
-						$this->arParams[$key] = $value;
-						break;
+                case 'float':
+                    $type = new BuiltinType(BuiltinType::FLOAT, false);
+                    break;
 
-					case 'array':
-						if (!is_array($this->arParams[$key])) {
-							throw new Main\ArgumentTypeException($key, 'array');
-						}
-						break;
+                case 'string':
+                    $type = new BuiltinType(BuiltinType::STRING, false);
+                    break;
 
-					default:
-						throw new Main\ArgumentTypeException($key);
-						break;
-				}
-			}
-		} catch (Main\ArgumentException $exception) {
-			if ($this->checkParams[$exception->getParameter()]['error'] === '404') {
-				$this->return404($exception);
-			} else {
-				throw $exception;
-			}
-		}
-	}
+                case 'array':
+                    $type = new BuiltinType(BuiltinType::ARRAY);
+                    break;
 
-	/**
-	 * Возвращает значение параметра родительского компонента
-	 * @param string $paramName
-	 * @return mixed|null
-	 */
-	protected function getParentParam(string $paramName)
-	{
-		if (!($parent = $this->getParent())) {
-			return null;
-		}
+                default:
+                    continue 2;
+                    break;
+            }
 
-		if (!isset($parent->arParams[$paramName])) {
-			return null;
-		}
+            if (isset($options['error']) && $options['error'] === false) {
+                $type = new DisjunctionType([$type, new BuiltinType(BuiltinType::NULL)]);
+            }
 
-		return $parent->arParams[$paramName];
-	}
+            $result[$key] = $type;
+        }
 
-	/**
-	 * Рестарт буфера для AJAX запроса
-	 */
-	private function startAjax()
-	{
-		if ($this->arParams['USE_AJAX'] !== 'Y' || !$this->isAjax()) {
-			return;
-		}
+        // I should probably add default component params like CACHE_TYPE, CACHE_TIME etc.
 
-		if (strlen($this->arParams['AJAX_PARAM_NAME']) <= 0) {
-			$this->arParams['AJAX_PARAM_NAME'] = 'compid';
-		}
+        return $result;
+    }
 
-		if (strlen($this->arParams['AJAX_COMPONENT_ID']) <= 0) {
-			$this->arParams['AJAX_COMPONENT_ID'] = CAjax::GetComponentID($this->getName(), $this->getTemplateName(), $this->ajaxComponentIdSalt);
-		}
+    /**
+     * Возвращает значение параметра родительского компонента
+     * @param string $paramName
+     * @return mixed|null
+     */
+    final protected function getParentParam(string $paramName)
+    {
+        if (!($parent = $this->getParent())) {
+            return null;
+        }
 
-		global $APPLICATION;
+        if (!isset($parent->arParams[$paramName])) {
+            return null;
+        }
 
-		if ($this->arParams['AJAX_HEAD_RELOAD'] === 'Y') {
-			$APPLICATION->ShowAjaxHead();
-		} else {
-			$APPLICATION->RestartBuffer();
-		}
+        return $parent->arParams[$paramName];
+    }
 
-		if (strlen($this->arParams['AJAX_TEMPLATE_PAGE']) > 0) {
-			$this->templatePage = basename($this->arParams['AJAX_TEMPLATE_PAGE']);
-		}
-	}
+    /**
+     * Рестарт буфера для AJAX запроса
+     */
+    private function startAjax(): void
+    {
+        if ($this->arParams['USE_AJAX'] !== 'Y' || !$this->isAjax()) {
+            return;
+        }
 
-	/**
-	 * Выполняется до получения результатов. Не кэшируется
-	 */
-	protected function executeProlog()
-	{
-	}
+        if (strlen($this->arParams['AJAX_PARAM_NAME']) <= 0) {
+            $this->arParams['AJAX_PARAM_NAME'] = 'compid';
+        }
 
-	/**
-	 * Инициализация кэширования
-	 * @return bool
-	 */
-	public function startCache(): bool
-	{
-		global $USER;
+        if (strlen($this->arParams['AJAX_COMPONENT_ID']) <= 0) {
+            $this->arParams['AJAX_COMPONENT_ID'] = CAjax::GetComponentID($this->getName(), $this->getTemplateName(), $this->ajaxComponentIdSalt);
+        }
 
-		if ($this->arParams['CACHE_TYPE'] && $this->arParams['CACHE_TYPE'] !== 'N' && $this->arParams['CACHE_TIME'] > 0) {
-			if ($this->templatePage) {
-				$this->addCacheAdditionalId($this->templatePage);
-			}
+        global $APPLICATION;
 
-			if ($this->arParams['CACHE_GROUPS'] === 'Y') {
-				$this->addCacheAdditionalId($USER->GetGroups());
-			}
+        if ($this->arParams['AJAX_HEAD_RELOAD'] === 'Y') {
+            $APPLICATION->ShowAjaxHead();
+        } else {
+            $APPLICATION->RestartBuffer();
+        }
 
-			if ($this->startResultCache($this->arParams['CACHE_TIME'], $this->cacheAdditionalId, $this->cacheDir)) {
-				return true;
-			}
+        if ($this->arParams['AJAX_TEMPLATE_PAGE'] !== '') {
+            $this->templatePage = basename($this->arParams['AJAX_TEMPLATE_PAGE']);
+        }
+    }
 
-			return false;
-		}
+    /**
+     * Выполняется до получения результатов. Не кэшируется
+     */
+    protected function executeProlog(): void
+    {
+    }
 
-		return true;
-	}
+    /**
+     * Инициализация кэширования
+     * @return bool
+     */
+    private function startCache(): bool
+    {
+        global $USER;
 
-	/**
-	 * Записывает результат кэширования на диск.
-	 */
-	public function writeCache(): void
-	{
-		$this->endResultCache();
-	}
+        if ($this->arParams['CACHE_TYPE'] && $this->arParams['CACHE_TYPE'] !== 'N' && $this->arParams['CACHE_TIME'] > 0) {
+            if ($this->templatePage) {
+                $this->addCacheAdditionalId($this->templatePage);
+            }
 
-	/**
-	 * Сброс кэширования.
-	 */
-	public function abortCache(): void
-	{
-		$this->abortResultCache();
-	}
+            if ($this->arParams['CACHE_GROUPS'] === 'Y') {
+                $this->addCacheAdditionalId($USER->GetGroups());
+            }
 
-	/**
-	 * Основная логика компонента.
-	 * Результат работы метода будет закэширован.
-	 */
-	protected function executeMain()
-	{
-		if (strlen($this->arParams['AJAX_PARAM_NAME']) > 0 && strlen($this->arParams['AJAX_COMPONENT_ID']) > 0) {
-			$this->arResult['AJAX_REQUEST_PARAMS'] = $this->arParams['AJAX_PARAM_NAME'] . '=' . $this->arParams['AJAX_COMPONENT_ID'];
+            if ($this->startResultCache($this->arParams['CACHE_TIME'], $this->cacheAdditionalId, $this->cacheDir)) {
+                return true;
+            }
 
-			$this->setResultCacheKeys(['AJAX_REQUEST_PARAMS']);
-		}
-	}
+            return false;
+        }
 
-	/**
-	 * Выполняется после получения результатов. Не кэшируется
-	 */
-	protected function executeEpilog()
-	{
-	}
+        return true;
+    }
 
-	/**
-	 * Заканчивает выполнение скрипта для AJAX запроса
-	 */
-	private function stopAjax()
-	{
-		if ($this->arParams['USE_AJAX'] !== 'Y' || !$this->isAjax()) {
-			return;
-		}
+    /**
+     * Записывает результат кэширования на диск.
+     */
+    private function writeCache(): void
+    {
+        $this->endResultCache();
+    }
 
-		CMain::FinalActions();
-		die();
-	}
+    /**
+     * Сброс кэширования.
+     */
+    private function abortCache(): void
+    {
+        $this->abortResultCache();
+    }
 
-	/**
-	 * Ренедеринг шаблона компонента
-	 */
-	public function render()
-	{
-		$this->includeComponentTemplate($this->templatePage);
-	}
+    /**
+     * Основная логика компонента.
+     * Результат работы метода будет закэширован.
+     */
+    protected function executeMain(): void
+    {
+        if ($this->arParams['AJAX_PARAM_NAME'] !== '' && $this->arParams['AJAX_COMPONENT_ID'] !== '') {
+            $this->arResult['AJAX_REQUEST_PARAMS'] = $this->arParams['AJAX_PARAM_NAME'] . '=' . $this->arParams['AJAX_COMPONENT_ID'];
 
-	/**
-	 * Выбрасывает NotFoundException
-	 * @param Throwable|null $throwable Исходное исключение. При наличии будет использовано его сообщение об ошибке
-	 * @throws NotFoundException
-	 */
-	public function return404(?Throwable $throwable = null)
-	{
-		throw new NotFoundException($throwable ? $throwable->getMessage() : null);
-	}
+            $this->setResultCacheKeys(['AJAX_REQUEST_PARAMS']);
+        }
+    }
 
-	/**
-	 * Вызывается при возникновении ошибки
-	 *
-	 * Сбрасывает кэш, показывает сообщение об ошибке (в общем виде для пользователей и детально
-	 * для админов), пишет ошибку в лог Битрикса
-	 *
-	 * @param Throwable $exception
-	 */
-	protected function catchError(Throwable $exception)
-	{
-		$this->abortCache();
+    /**
+     * Выполняется после получения результатов. Не кэшируется
+     */
+    protected function executeEpilog(): void
+    {
+    }
 
-		HttpStatusTools::catchError($exception);
+    /**
+     * Заканчивает выполнение скрипта для AJAX запроса
+     */
+    private function stopAjax(): void
+    {
+        if ($this->arParams['USE_AJAX'] !== 'Y' || !$this->isAjax()) {
+            return;
+        }
 
-		$errorMessage = $this->canShowExceptionMessage($exception)
-			? $exception->getMessage()
-			: Loc::getMessage('COMPONENT_CATCH_EXCEPTION');
+        CMain::FinalActions();
+        die();
+    }
 
-		$this->renderExceptionMessage($errorMessage);
+    /**
+     * Рендеринг шаблона компонента
+     */
+    public function render(): void
+    {
+        $this->includeComponentTemplate($this->templatePage);
+    }
 
-		if ($this->canShowExceptionTrace($exception)) {
-			$this->renderExceptionTrace($exception);
-		}
+    /**
+     * Выбрасывает NotFoundException
+     * @param Throwable|null $throwable Исходное исключение. При наличии будет использовано его сообщение об ошибке
+     * @throws NotFoundException
+     */
+    final protected function return404(?Throwable $throwable = null): void
+    {
+        throw new NotFoundException($throwable ? $throwable->getMessage() : null);
+    }
 
-		try {
-			Application::getInstance()->getExceptionHandler()
-				->writeToLog($exception, ExceptionHandlerLog::CAUGHT_EXCEPTION);
-		} catch (Throwable $e) {
-		}
-	}
+    /**
+     * Вызывается при возникновении ошибки
+     *
+     * Сбрасывает кэш, показывает сообщение об ошибке (в общем виде для пользователей и детально для админов),
+     * пишет ошибку в лог Битрикса
+     *
+     * @param Throwable $exception
+     */
+    protected function catchError(Throwable $exception): void
+    {
+        $this->abortCache();
 
-	/**
-	 * Определяет можно ли показать сообщение исключения
-	 * @param Throwable $exception
-	 * @return bool
-	 */
-	protected function canShowExceptionMessage(Throwable $exception): bool
-	{
-		global $USER;
-		return $USER->IsAdmin();
-	}
+        HttpStatusTools::catchError($exception);
 
-	/**
-	 * Определяет можно ли показать трейс исключения
-	 * @param Throwable $exception
-	 * @return bool
-	 */
-	protected function canShowExceptionTrace(Throwable $exception): bool
-	{
-		global $USER;
+        $errorMessage = $this->canShowExceptionMessage($exception)
+            ? $exception->getMessage()
+            : Loc::getMessage('COMPONENT_CATCH_EXCEPTION');
 
-		$exceptionHandling = Configuration::getValue('exception_handling') ?? ['debug' => false];
-		$isDebugEnabled = (bool)$exceptionHandling['debug'];
+        $this->renderExceptionMessage($errorMessage);
 
-		return $USER->IsAdmin() && $isDebugEnabled;
-	}
+        if ($this->canShowExceptionTrace($exception)) {
+            $this->renderExceptionTrace($exception);
+        }
 
-	/**
-	 * Отображат сообщение об ошибке
-	 * @param string $message
-	 */
-	protected function renderExceptionMessage(string $message): void
-	{
-		ShowError($message);
-	}
+        try {
+            Application::getInstance()->getExceptionHandler()
+                ->writeToLog($exception, ExceptionHandlerLog::CAUGHT_EXCEPTION);
+        } catch (Throwable $e) {
+        }
+    }
 
-	/**
-	 * Отображат трейс ошибки
-	 * @param Throwable $throwable
-	 */
-	protected function renderExceptionTrace(Throwable $throwable): void
-	{
-		echo nl2br($throwable->getTraceAsString());
-	}
+    /**
+     * Определяет можно ли показать сообщение исключения
+     * @param Throwable $exception
+     * @return bool
+     */
+    protected function canShowExceptionMessage(Throwable $exception): bool
+    {
+        global $USER;
+        return $USER->IsAdmin();
+    }
 
-	/**
-	 * Проверяет отправлен ли запрос через AJAX
-	 * @return bool
-	 */
-	public function isAjax(): bool
-	{
-		/** @var \CBitrixComponent $this */
-		return $this->request->isAjaxRequest();
-	}
+    /**
+     * Определяет можно ли показать трейс исключения
+     * @param Throwable $exception
+     * @return bool
+     */
+    protected function canShowExceptionTrace(Throwable $exception): bool
+    {
+        global $USER;
 
-	/**
-	 * Регистрирует тэг в кэше
-	 * @param string $tag
-	 * @throws Main\SystemException
-	 */
-	public static function registerCacheTag(string $tag): void
-	{
-		if ($tag) {
-			Application::getInstance()->getTaggedCache()->registerTag($tag);
-		}
-	}
+        $exceptionHandling = Configuration::getValue('exception_handling') ?? ['debug' => false];
+        $isDebugEnabled = (bool)$exceptionHandling['debug'];
 
-	/**
-	 * Добавиляет дополнительный ID для кэша
-	 * @param mixed $id
-	 */
-	public function addCacheAdditionalId($id): void
-	{
-		$this->cacheAdditionalId[] = $id;
-	}
+        return $USER->IsAdmin() && $isDebugEnabled;
+    }
 
-	/**
-	 * Вызывает событие, специфичное для компонента
-	 * @param string $type Тип события. Имя класса компонента будет добавлено ввиде префикса.
-	 * @param array $params Параметры события. Параметр `component` будет добавлен автоматически
-	 * @param null|string|string[] $filter Фильтр события
-	 * @return Event
-	 */
-	public function triggerEvent(string $type, array $params = [], $filter = null): Event
-	{
-		$firstTwoNamespaces = array_slice(explode('\\', static::class), 0, 2);
-		$moduleId = strtolower(implode('.', $firstTwoNamespaces));
+    /**
+     * Отображает сообщение об ошибке
+     * @param string $message
+     */
+    protected function renderExceptionMessage(string $message): void
+    {
+        ShowError($message);
+    }
 
-		$params = array_merge($params, [
-			'component' => $this,
-		]);
+    /**
+     * Отображает трейс ошибки
+     * @param Throwable $throwable
+     */
+    protected function renderExceptionTrace(Throwable $throwable): void
+    {
+        echo nl2br($throwable->getTraceAsString());
+    }
 
-		$type = static::class . '::' . $type;
+    /**
+     * Проверяет отправлен ли запрос через AJAX
+     * @return bool
+     */
+    public function isAjax(): bool
+    {
+        /** @var CBitrixComponent $this */
+        return $this->request->isAjaxRequest();
+    }
 
-		$event = new Event($moduleId, $type, $params, $filter);
-		$event->send();
-		return $event;
-	}
+    /**
+     * Регистрирует тэг в кэше
+     * @param string $tag
+     */
+    public static function registerCacheTag(string $tag): void
+    {
+        if (!$tag) {
+            return;
+        }
+
+        try {
+            Application::getInstance()->getTaggedCache()->registerTag($tag);
+        } catch (Main\SystemException $e) {
+            throw new RuntimeException($e->getMessage(), $e->getCode(), $e);
+        }
+    }
+
+    /**
+     * Добавляет дополнительный ID для кэша
+     * @param mixed $id
+     */
+    final protected function addCacheAdditionalId($id): void
+    {
+        $this->cacheAdditionalId[] = $id;
+    }
+
+    /**
+     * Вызывает событие, специфичное для компонента
+     * @param string $type Тип события. Имя класса компонента будет добавлено в виде префикса.
+     * @param array $params Параметры события. Параметр `component` будет добавлен автоматически
+     * @param null|string|string[] $filter Фильтр события
+     * @return Event
+     */
+    final protected function triggerEvent(string $type, array $params = [], $filter = null): Event
+    {
+        $event = new Event(
+            CommonTools::getModuleIdByFqn(static::class),
+            static::class . '::' . $type,
+            ['component' => $this] + $params,
+            $filter
+        );
+        $event->send();
+        return $event;
+    }
 }
