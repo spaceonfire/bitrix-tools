@@ -117,6 +117,10 @@ abstract class BaseHighLoadBlockDataManager extends DataManager
 
             $field = $entity->getField($key);
 
+            if ($field->isPrimary()) {
+                unset($filteredData[$key]);
+            }
+
             if ($field instanceof Relations\Reference && !empty($field->getElementals())) {
                 unset($filteredData[$key]);
             }
