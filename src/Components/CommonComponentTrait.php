@@ -129,7 +129,7 @@ trait CommonComponentTrait
     /**
      * Загружает модули 1С-Битрикс.
      */
-    private function includeModules(): void
+    final protected function includeModules(): void
     {
         if (!is_array($this->needModules) || empty($this->needModules)) {
             return;
