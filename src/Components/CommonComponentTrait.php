@@ -61,6 +61,10 @@ trait CommonComponentTrait
      * @deprecated Переопределяйте метод getParamsTypes() для указания типов параметров компонента
      */
     protected $checkParams = [];
+    /**
+     * @var InvalidComponentParameterException|null
+     */
+    private $paramsValidationException;
 
     /**
      * Возвращает идентификатор компонента
@@ -88,10 +92,15 @@ trait CommonComponentTrait
      * @param array $arParams
      * @return array
      */
-    public function onPrepareComponentParams(array $arParams): array
+    public function onPrepareComponentParams($arParams): array
     {
-        try {
-            foreach ($this->getParamsTypes() as $param => $type) {
+        // I should probably add default component params like CACHE_TYPE, CACHE_TIME etc.
+        // Also there should be more options for params checking, validation as example
+
+        $validationExceptions = [];
+
+        foreach ($this->getParamsTypes() as $param => $type) {
+            try {
                 $value = $arParams[$param] ?? null;
 
                 if (!$type->check($value)) {
@@ -112,18 +121,16 @@ trait CommonComponentTrait
                 }
 
                 $arParams[$param] = $value;
+            } catch (InvalidArgumentException $exception) {
+                $validationExceptions[] = $exception;
             }
-
-            // There should be more options for params checking, validation as example
-
-            return $arParams;
-        } catch (InvalidArgumentException $exception) {
-            if (!$this->canShowExceptionMessage($exception)) {
-                throw new NotFoundException($exception->getMessage());
-            }
-
-            throw $exception;
         }
+
+        if (!empty($validationExceptions)) {
+            $this->paramsValidationException = new InvalidComponentParameterException(...$validationExceptions);
+        }
+
+        return $arParams;
     }
 
     /**
@@ -145,6 +152,10 @@ trait CommonComponentTrait
      */
     protected function init(): void
     {
+        if ($this->paramsValidationException !== null) {
+            throw $this->paramsValidationException;
+        }
+
         if (in_array(ComponentPropertiesTrait::class, class_uses($this), true)) {
             /** @noinspection PhpUndefinedMethodInspection */
             $this->initPropertiesBag();
@@ -195,8 +206,6 @@ trait CommonComponentTrait
 
             $result[$key] = $type;
         }
-
-        // I should probably add default component params like CACHE_TYPE, CACHE_TIME etc.
 
         return $result;
     }
@@ -347,7 +356,15 @@ trait CommonComponentTrait
      */
     final protected function return404(?Throwable $throwable = null): void
     {
-        throw new NotFoundException($throwable ? $throwable->getMessage() : null);
+        $errorMessage = $throwable && $this->canShowExceptionMessage($throwable)
+            ? $throwable->getMessage()
+            : Loc::getMessage('COMPONENT_NOT_FOUND_MESSAGE');
+
+        if ($throwable) {
+            throw new NotFoundException($errorMessage, $throwable);
+        }
+
+        throw new NotFoundException($errorMessage);
     }
 
     /**

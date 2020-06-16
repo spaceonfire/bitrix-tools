@@ -22,6 +22,10 @@
 - Nothing
 -->
 
+## [0.8.3] - 2020-06-16
+### Исправлено
+- Исправлена обработка ошибок в `CommonComponentTrait::onPrepareComponentParams`.
+
 ## [0.8.2] - 2020-06-15
 ### Исправлено
 - Метод `CommonComponentTrait::includeModules()` стал `final protected`,
