@@ -117,7 +117,7 @@ abstract class BaseHighLoadBlockDataManager extends DataManager
 
             $field = $entity->getField($key);
 
-            if ($field->isPrimary()) {
+            if ($field instanceof ScalarField && $field->isPrimary()) {
                 unset($filteredData[$key]);
             }
 

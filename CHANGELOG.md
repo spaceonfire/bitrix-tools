@@ -22,6 +22,11 @@
 - Nothing
 -->
 
+## [0.8.4] - 2020-06-29
+### Исправлено
+- Проверка, что поле является первичным ключом, вызывается только на скалярных полях в
+  `BaseHighLoadBlockDataManager::filterData`.
+
 ## [0.8.3] - 2020-06-16
 ### Исправлено
 - Исправлена обработка ошибок в `CommonComponentTrait::onPrepareComponentParams`.
