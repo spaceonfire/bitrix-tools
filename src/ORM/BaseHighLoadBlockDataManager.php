@@ -10,6 +10,7 @@ use Bitrix\Main\Localization\Loc;
 use Bitrix\Main\ORM\Data\AddResult;
 use Bitrix\Main\ORM\Data\UpdateResult;
 use Bitrix\Main\ORM\Fields\Relations;
+use Bitrix\Main\ORM\Fields\ScalarField;
 use Bitrix\Main\SystemException;
 use RuntimeException;
 use spaceonfire\BitrixTools\CacheMap\HighloadBlockCacheMap;
