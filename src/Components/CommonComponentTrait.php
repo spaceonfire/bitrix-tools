@@ -317,7 +317,9 @@ trait CommonComponentTrait
         if ($this->arParams['AJAX_PARAM_NAME'] !== '' && $this->arParams['AJAX_COMPONENT_ID'] !== '') {
             $this->arResult['AJAX_REQUEST_PARAMS'] = $this->arParams['AJAX_PARAM_NAME'] . '=' . $this->arParams['AJAX_COMPONENT_ID'];
 
-            $this->setResultCacheKeys(['AJAX_REQUEST_PARAMS']);
+            if ($this->arResultCacheKeys !== false) {
+                $this->setResultCacheKeys(['AJAX_REQUEST_PARAMS']);
+            }
         }
     }
 
