@@ -8,8 +8,8 @@ use spaceonfire\BitrixTools\Views\ViewInterface;
 interface ControllerInterface
 {
     /**
-     * Выполняет экшн контроллера
-     * @param string $name Имя экшена
+     * Выполняет действие контроллера
+     * @param string $name Имя действия
      */
     public function doAction($name): void;
 

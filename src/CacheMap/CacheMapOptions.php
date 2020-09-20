@@ -33,7 +33,7 @@ final class CacheMapOptions
      * @param string $idKey
      * @param string $codeKey
      * @param bool $isCaseSensitive
-     * @param array $cacheOptions
+     * @param array|null $cacheOptions
      */
     public function __construct(
         string $id,

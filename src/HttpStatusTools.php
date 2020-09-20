@@ -19,7 +19,7 @@ abstract class HttpStatusTools extends HttpStatus
         if ($throwable instanceof HttpExceptionContract) {
             $httpError = $throwable;
         } else {
-            $httpError = new InternalServerErrorException($throwable->getMessage());
+            $httpError = new InternalServerErrorException($throwable->getMessage(), $throwable);
         }
 
         // Define error constant

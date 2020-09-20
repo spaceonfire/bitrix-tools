@@ -131,7 +131,7 @@ abstract class BaseHighLoadBlockDataManager extends DataManager
     }
 
     /**
-     * Добавлят новую строку в таблицу HighLoad блока
+     * Добавляет новую строку в таблицу HighLoad блока
      * @param array $data
      * @return AddResult
      */
