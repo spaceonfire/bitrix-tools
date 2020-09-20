@@ -28,7 +28,7 @@ abstract class BaseView implements ViewInterface
      */
     public function __construct(string $name = '', $data = [], string $baseDir = '')
     {
-        $this->name = $name;
+        $this->name = ltrim($name, '/\\');
         $this->data = $data;
 
         if ($baseDir) {
@@ -67,9 +67,9 @@ abstract class BaseView implements ViewInterface
 
     /**
      * Геттер для свойства `data`
-     * @return array
+     * @return mixed
      */
-    public function getData(): array
+    public function getData()
     {
         return $this->data;
     }
@@ -98,7 +98,7 @@ abstract class BaseView implements ViewInterface
      */
     public function setBaseDir(string $baseDir): void
     {
-        $this->baseDir = $baseDir;
+        $this->baseDir = rtrim($baseDir, '/\\');
     }
 
     /**
@@ -116,6 +116,6 @@ abstract class BaseView implements ViewInterface
      */
     public function getPath(): string
     {
-        return $this->baseDir . $this->name;
+        return $this->baseDir . DIRECTORY_SEPARATOR . $this->name;
     }
 }
