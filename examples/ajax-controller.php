@@ -10,24 +10,25 @@
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/main/include/prolog_before.php';
 
+use Bitrix\Main\Context;
+use spaceonfire\BitrixTools\Controllers\BaseController;
+
 try {
-	if (!Bitrix\Main\Loader::includeModule('site.main')) {
-		throw new RuntimeException('Can\'t include module "".');
-	}
+    $requestUri = Context::getCurrent()->getServer()->getRequestUri();
+    $requestUri = substr(rtrim($requestUri, '/\\'), 6); // '/ajax/' is 6 symbols long
 
-	$urlParts = explode('/', $_SERVER['REQUEST_URI']);
-	array_shift($urlParts);
-	array_shift($urlParts);
-	$controller = spaceonfire\BitrixTools\Controllers\BaseController::factory(
-		array_shift($urlParts) ?: 'default',
-		'Vendor\Mvc\Namespace'
-	);
+    $urlParts = explode('/', $requestUri);
 
-	$action = array_shift($urlParts) ?: 'default';
-	$controller->setParamsPairs($urlParts);
-	$controller->doAction($action);
-} catch(Exception $e) {
-	print $e->getMessage();
+    [$controllerName, $actionName] = $urlParts + [null, null];
+    $paramPairs = array_slice($urlParts, 2);
+
+    $controller = BaseController::factory($controllerName ?: 'default', 'Vendor\Module\Controllers');
+
+    $controller->setParamsPairs($paramPairs);
+
+    $controller->doAction($actionName ?: 'default');
+} catch (Throwable $e) {
+    echo $e->GetMessage();
 }
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/main/include/epilog_after.php';

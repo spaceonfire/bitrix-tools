@@ -1,10 +1,10 @@
 <?php
 
-use spaceonfire\BitrixTools\CacheMap\CustomCacheMap;
 use spaceonfire\BitrixTools\CacheMap\CacheMapOptions;
+use spaceonfire\BitrixTools\CacheMap\CustomCacheMap;
 
-$map = new CustomCacheMap(function () {
-	return [['id' => 42, 'code' => 'test']];
+$cacheMap = new CustomCacheMap(function () {
+    return [['id' => 42, 'code' => 'test']];
 }, new CacheMapOptions('my-unique-id', 'id', 'code'));
 
-var_dump($map->getId('test'));
+var_dump($cacheMap->getId('test'));

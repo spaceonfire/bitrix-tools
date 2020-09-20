@@ -43,10 +43,7 @@
     "bin/run-in-background.php"
   ],
   "scripts": {
-    "doc": [
-      "apidoc --propertiesVisibility=public --methodsVisibility=public --methodsVisibility=protected",
-      "npx prettier --write docs/**/*.md"
-    ],
+    "doc": "bash bin/apidoc.sh",
     "codestyle": "ecs check --ansi",
     "lint": "phpstan analyze --memory-limit=512M --ansi"
   },
