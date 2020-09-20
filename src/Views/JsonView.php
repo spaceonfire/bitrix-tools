@@ -10,12 +10,21 @@ use Bitrix\Main\Text\Encoding;
 class JsonView extends BaseView
 {
     /**
+     * @var int options for json_encode
+     */
+    private $options = JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_UNICODE;
+
+    /**
      * Создает новый MVC JSON view
      * @param mixed $data Данные view
+     * @param int|null $options
      */
-    public function __construct($data = [])
-    {
+    public function __construct($data = [], ?int $options = null) {
         parent::__construct('', $data);
+
+        if ($options !== null) {
+            $this->options = $options;
+        }
     }
 
     /** {@inheritDoc} */
@@ -27,10 +36,12 @@ class JsonView extends BaseView
     /** {@inheritDoc} */
     public function render(): string
     {
-        return json_encode(
-            defined('SITE_CHARSET') && SITE_CHARSET !== 'UTF-8' ?
-                Encoding::convertEncoding($this->data, 'UTF-8', SITE_CHARSET) :
-                $this->data
-        );
+        $result = json_encode($this->data, $this->options);
+
+        if (defined('SITE_CHARSET') && strtoupper(SITE_CHARSET) !== 'UTF-8') {
+            return Encoding::convertEncoding($result, 'UTF-8', SITE_CHARSET);
+        }
+
+        return $result;
     }
 }
