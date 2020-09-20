@@ -18,6 +18,14 @@ abstract class IblockSection extends SectionTable
     abstract public static function getIblockId(): int;
 
     /**
+     * @return string
+     */
+    public static function getUfId(): string
+    {
+        return sprintf('IBLOCK_%s_SECTION', static::getIblockId());
+    }
+
+    /**
      * Возвращает схему полей сущности
      * @return array
      */
