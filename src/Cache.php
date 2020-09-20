@@ -17,7 +17,7 @@ abstract class Cache
             'CACHE_ID' => null,
             'CACHE_TAG' => null,
             'CACHE_PATH' => null,
-            'CACHE_TIME' => 36000000,
+            'CACHE_TIME' => 604800, // 1 week
         ], $options);
 
         foreach (['CACHE_ID', 'CACHE_PATH'] as $param) {
@@ -47,7 +47,7 @@ abstract class Cache
      *     'CACHE_PATH' => (string) Относительный путь для сохранения кэша (обязательный параметр). Будет автоматически
      * добавлен ID сайта и CACHE_TAG, если указан
      *     'CACHE_TAG' => (string | array) Включает использование тегированного кэша с переданным тэгом/тэгами
-     *     'CACHE_TIME' => (int) Время жизни кэша (TTL) в секундах, по-умолчанию 36000000
+     *     'CACHE_TIME' => (int) Время жизни кэша (TTL) в секундах, по-умолчанию 604800 (одна неделя)
      * ]
      * ```
      *
