@@ -48,7 +48,7 @@ abstract class BaseRouterComponent extends CBitrixComponent
     protected $variableAliases;
 
     /**
-     * Устанавливает параметры по-умолчанию для ЧПУ
+     * Устанавливает параметры ЧПУ по-умолчанию
      */
     protected function setSefDefaultParams(): void
     {

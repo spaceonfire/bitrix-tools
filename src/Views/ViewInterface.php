@@ -23,9 +23,9 @@ interface ViewInterface
 
     /**
      * Геттер для свойства `data`
-     * @return array
+     * @return mixed
      */
-    public function getData(): array;
+    public function getData();
 
     /**
      * Сеттер для свойства `data`

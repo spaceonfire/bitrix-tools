@@ -10,6 +10,11 @@ set_time_limit(0);
 ini_set('memory_limit', '2048M');
 error_reporting(E_ERROR | E_STRICT);
 
+trigger_error(
+    sprintf('Script %s is deprecated. You probable should use agents functionality instead.', __FILE__),
+    E_USER_DEPRECATED
+);
+
 // Parse options
 $arScriptArgs = getopt('', ['options:']);
 

@@ -274,7 +274,7 @@ abstract class IblockTools
             foreach ($sections as $section) {
                 $name = $section->get('NAME');
                 if ($section->get('DEPTH_LEVEL') > 1) {
-                    $name = str_repeat(' . ', $section->get('DEPTH_LEVEL')) . $name;
+                    $name = sprintf(' %s%s', str_repeat('. ', $section->get('DEPTH_LEVEL')), $name);
                 }
                 $ret[$section->getId()] = $name;
             }

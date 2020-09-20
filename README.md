@@ -6,32 +6,26 @@
 
 Классы-помощники для разработки под 1С-Битрикс. Работает с Composer и PHP >= 7.2.
 
-## Начало работы
+- [Гайд по использованию библиотеки](./docs/guide/README.md)
+- [Документация API](./docs/api/README.md)
 
-### Установка
+## Участие в разработке
 
-```bash
-composer require spaceonfire/bitrix-tools
-```
+Чтобы помочь в разработке, смотрите документы [CONTRIBUTING](CONTRIBUTING.md) и [CODE_OF_CONDUCT](CODE_OF_CONDUCT.md).
 
-[Документация](./docs/README.md)
+## Безопасность
 
-## Contributing
+Если Вы нашили любую проблему связанную с безопасностью, пожалуйста, напишите об этом на email genteelknight@gmail.com
+вместо создания issue.
 
-Please see [CONTRIBUTING](CONTRIBUTING.md) and [CODE_OF_CONDUCT](CODE_OF_CONDUCT.md) for details.
-
-## Security
-
-If you discover any security related issues, please email genteelknight@gmail.com instead of using the issue tracker.
-
-## Credits
+## Участники
 
 - [Constantine Karnaukhov][link-author]
-- [All Contributors][link-contributors]
+- [Все участники][link-contributors]
 
-## License
+## Лицензия
 
-The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
+The MIT License (MIT). Посмотреть [файл лицензии](LICENSE.md) для информации.
 
 [ico-version]: https://img.shields.io/packagist/v/spaceonfire/bitrix-tools.svg?style=flat-square
 [ico-license]: https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square

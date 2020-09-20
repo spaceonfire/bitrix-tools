@@ -8,6 +8,7 @@ use CDatabase;
 use CSite;
 use RuntimeException;
 use spaceonfire\BitrixTools\Common;
+use Webmozart\Assert\Assert;
 
 /**
  * Class AbstractAgent
@@ -17,14 +18,20 @@ use spaceonfire\BitrixTools\Common;
  */
 abstract class AbstractAgent implements Agent
 {
-    protected static function instantiate(): self
+    protected static function instantiate(): Agent
     {
         return new static();
     }
 
     final public static function agentName(): string
     {
-        return static::class . '::agent();';
+        Assert::allScalar($args = func_get_args());
+
+        $args = array_map(static function ($arg): string {
+            return var_export($arg, true);
+        }, $args);
+
+        return sprintf('%s::agent(%s);', static::class, implode(', ', $args));
     }
 
     /**
@@ -38,9 +45,11 @@ abstract class AbstractAgent implements Agent
             throw new RuntimeException(sprintf('Agent class %s must implements `run()` method', static::class));
         }
 
-        call_user_func_array([$instance, 'run'], func_get_args());
+        $args = func_get_args();
 
-        return static::agentName();
+        call_user_func_array([$instance, 'run'], $args);
+
+        return call_user_func_array([static::class, 'agentName'], $args);
     }
 
     /**
@@ -52,7 +61,7 @@ abstract class AbstractAgent implements Agent
             'MODULE_ID' => Common::getModuleIdByFqn(static::class),
             'USER_ID' => null,
             'SORT' => '0',
-            'NAME' => static::agentName(),
+            'NAME' => call_user_func_array([static::class, 'agentName'], func_get_args()),
             'ACTIVE' => 'Y',
             'NEXT_EXEC' => date(CDatabase::DateFormatToPHP(CSite::GetDateFormat('FULL'))),
             'AGENT_INTERVAL' => static::INTERVAL_EVERY_DAY,

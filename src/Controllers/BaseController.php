@@ -69,8 +69,8 @@ class BaseController implements ControllerInterface
     }
 
     /**
-     * Выполняет экшн контроллера
-     * @param string $name Имя экшена
+     * Выполняет действие контроллера
+     * @param string $name Имя действия
      * @throws NotFoundException
      */
     public function doAction($name): void
@@ -91,6 +91,7 @@ class BaseController implements ControllerInterface
             $response->data = $this->$methodName();
             $response->success = true;
         } catch (Throwable $e) {
+            $this->returnAsIs = false;
             $response->code = $e->getCode();
             $response->message = $e->getMessage();
         }
