@@ -27,7 +27,7 @@ $options = [
 public static function IblockTools::buildSchema(mixed $options = []): array
 ```
 
-File location: `src/IblockTools.php:51`
+File location: `src/IblockTools.php:52`
 
 ### disableIblockCacheClear()
 
@@ -41,7 +41,7 @@ File location: `src/IblockTools.php:51`
 public static function IblockTools::disableIblockCacheClear(): bool
 ```
 
-File location: `src/IblockTools.php:224`
+File location: `src/IblockTools.php:225`
 
 ### enableIblockCacheClear()
 
@@ -55,7 +55,7 @@ File location: `src/IblockTools.php:224`
 public static function IblockTools::enableIblockCacheClear(): bool
 ```
 
-File location: `src/IblockTools.php:236`
+File location: `src/IblockTools.php:237`
 
 ### getElementMeta()
 
@@ -71,7 +71,7 @@ File location: `src/IblockTools.php:236`
 public static function IblockTools::getElementMeta(int $iblockId, int $elementId): array
 ```
 
-File location: `src/IblockTools.php:482`
+File location: `src/IblockTools.php:549`
 
 ### getEnumIdByXmlId()
 
@@ -89,7 +89,7 @@ File location: `src/IblockTools.php:482`
 public static function IblockTools::getEnumIdByXmlId(int $iblockId, ?string $xml, string $propertyCode): ?int
 ```
 
-File location: `src/IblockTools.php:437`
+File location: `src/IblockTools.php:504`
 
 ### getEnumValueById()
 
@@ -106,7 +106,7 @@ File location: `src/IblockTools.php:437`
 public static function IblockTools::getEnumValueById(int $iblockId, ?int $id, string $propertyCode): ?string
 ```
 
-File location: `src/IblockTools.php:402`
+File location: `src/IblockTools.php:469`
 
 ### getEnumValueByXmlId()
 
@@ -124,7 +124,7 @@ File location: `src/IblockTools.php:402`
 public static function IblockTools::getEnumValueByXmlId(int $iblockId, ?string $xml, string $propertyCode): ?string
 ```
 
-File location: `src/IblockTools.php:423`
+File location: `src/IblockTools.php:490`
 
 ### getEnumXmlIdById()
 
@@ -141,7 +141,7 @@ File location: `src/IblockTools.php:423`
 public static function IblockTools::getEnumXmlIdById(int $iblockId, ?int $id, string $propertyCode): ?string
 ```
 
-File location: `src/IblockTools.php:463`
+File location: `src/IblockTools.php:530`
 
 ### getEnums()
 
@@ -157,7 +157,7 @@ File location: `src/IblockTools.php:463`
 public static function IblockTools::getEnums(?int $iblockId = null): array
 ```
 
-File location: `src/IblockTools.php:351`
+File location: `src/IblockTools.php:418`
 
 ### getIblockIdByCode()
 
@@ -172,7 +172,7 @@ File location: `src/IblockTools.php:351`
 public static function IblockTools::getIblockIdByCode(string $code): ?int
 ```
 
-File location: `src/IblockTools.php:29`
+File location: `src/IblockTools.php:30`
 
 ### getProperties()
 
@@ -187,7 +187,7 @@ File location: `src/IblockTools.php:29`
 public static function IblockTools::getProperties(int $iblockId): array
 ```
 
-File location: `src/IblockTools.php:291`
+File location: `src/IblockTools.php:358`
 
 ### getPropertyCodeById()
 
@@ -203,7 +203,7 @@ File location: `src/IblockTools.php:291`
 public static function IblockTools::getPropertyCodeById(int $iblockId, int $id): ?string
 ```
 
-File location: `src/IblockTools.php:321`
+File location: `src/IblockTools.php:388`
 
 ### getPropertyIdByCode()
 
@@ -219,7 +219,7 @@ File location: `src/IblockTools.php:321`
 public static function IblockTools::getPropertyIdByCode(int $iblockId, string $code): ?int
 ```
 
-File location: `src/IblockTools.php:338`
+File location: `src/IblockTools.php:405`
 
 ### getSectionMeta()
 
@@ -235,7 +235,24 @@ File location: `src/IblockTools.php:338`
 public static function IblockTools::getSectionMeta(int $iblockId, int $sectionId): array
 ```
 
-File location: `src/IblockTools.php:493`
+File location: `src/IblockTools.php:560`
+
+### getSectionWithParents()
+
+Возвращает информацию о разделе инфоблока и его родителях
+
+| Param         | Type    | Description                      |
+| ------------- | ------- | -------------------------------- |
+| `$iblockId`   | _int_   | ID инфоблока                     |
+| `$sectionId`  | _int_   | ID целевого раздела              |
+| `$parameters` | _array_ | дополнительные параметры запроса |
+| **Return**    | _array_ |                                  |
+
+```php
+public static function IblockTools::getSectionWithParents(int $iblockId, int $sectionId, array $parameters = []): array
+```
+
+File location: `src/IblockTools.php:334`
 
 ### getSectionsTree()
 
@@ -251,7 +268,7 @@ File location: `src/IblockTools.php:493`
 public static function IblockTools::getSectionsTree(int $iblockId, array $parameters = []): array
 ```
 
-File location: `src/IblockTools.php:250`
+File location: `src/IblockTools.php:308`
 
 ---
 

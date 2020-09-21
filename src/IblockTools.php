@@ -7,7 +7,7 @@ use Bitrix\Iblock\InheritedProperty\ElementValues;
 use Bitrix\Iblock\InheritedProperty\SectionValues;
 use Bitrix\Iblock\SectionTable;
 use Bitrix\Main;
-use Bitrix\Main\ORM\Objectify\EntityObject;
+use Bitrix\Main\ORM\Query\Filter\ConditionTree;
 use CIblock;
 use CIBlockProperty;
 use CIBlockPropertyEnum;
@@ -241,6 +241,63 @@ abstract class IblockTools
         return true;
     }
 
+    private static function getSections(int $iblockId, array $parameters = []): array
+    {
+        Common::loadModules(['iblock']);
+
+        $cacheParams = [
+            'CACHE_ID' => substr(md5(__METHOD__), 0, 10),
+            'CACHE_TAG' => 'iblock_id_' . $iblockId,
+            'CACHE_PATH' => DIRECTORY_SEPARATOR . str_replace(['/', '\\'], '_', __METHOD__),
+        ];
+
+        return Cache::cacheResult($cacheParams, function (int $iblockId, array $parameters = []) {
+            $parameters = ArrayTools::merge([
+                'select' => [
+                    'ID',
+                    'NAME',
+                    'DEPTH_LEVEL',
+                    'IBLOCK_SECTION_ID',
+                ],
+                'order' => [
+                    'LEFT_MARGIN' => 'ASC',
+                ],
+            ], $parameters);
+
+            $filter = $parameters['filter'] ?? new ConditionTree();
+
+            if ($filter instanceof ConditionTree) {
+                $oldFilter = $filter;
+                $filter = (new ConditionTree())
+                    ->where('IBLOCK_ID', $iblockId)
+                    ->where('ACTIVE', 'Y');
+
+                if ($oldFilter->hasConditions()) {
+                    $filter->where($oldFilter);
+                }
+            } else {
+                // I should trigger notice that array filter may cause an unexpected behavior
+                $filter['IBLOCK_ID'] = $iblockId;
+                $filter['ACTIVE'] = $filter['ACTIVE'] ?? 'Y';
+            }
+
+            $parameters['filter'] = $filter;
+
+            $allSections = SectionTable::getList($parameters)->fetchAll();
+
+            $result = [];
+
+            foreach ($allSections as $section) {
+                $section['ID'] = (int)$section['ID'];
+                $section['IBLOCK_SECTION_ID'] = $section['IBLOCK_SECTION_ID'] ? (int)$section['IBLOCK_SECTION_ID'] : null;
+                $section['DEPTH_LEVEL'] = (int)$section['DEPTH_LEVEL'];
+                $result[$section['ID']] = $section;
+            }
+
+            return $result;
+        }, [$iblockId, $parameters]);
+    }
+
     /**
      * Возвращает список разделов инфоблока, выравненные по вложенности точками
      * @param int $iblockId ID инфоблока
@@ -249,38 +306,47 @@ abstract class IblockTools
      */
     public static function getSectionsTree(int $iblockId, array $parameters = []): array
     {
-        Common::loadModules(['iblock']);
+        $sections = self::getSections($iblockId, $parameters);
 
-        $parameters = ArrayTools::merge([
-            'filter' => [
-                'IBLOCK_ID' => $iblockId,
-                'ACTIVE' => 'Y',
-            ],
-            'select' => ['ID', 'NAME', 'DEPTH_LEVEL'],
-            'order' => ['LEFT_MARGIN' => 'ASC'],
-        ], $parameters);
+        $ret = [];
 
-        $cacheParams = [
-            'CACHE_ID' => substr(md5(serialize([__METHOD__, $iblockId, $parameters])), 0, 10),
-            'CACHE_TAG' => 'iblock_id_' . $iblockId,
-            'CACHE_PATH' => implode(DIRECTORY_SEPARATOR, ['', __METHOD__]),
-        ];
+        foreach ($sections as $section) {
+            $name = $section['NAME'];
 
-        return Cache::cacheResult($cacheParams, static function ($parameters) {
-            $sections = SectionTable::getList($parameters)->fetchCollection();
-
-            $ret = [];
-            /** @var EntityObject $section */
-            foreach ($sections as $section) {
-                $name = $section->get('NAME');
-                if ($section->get('DEPTH_LEVEL') > 1) {
-                    $name = sprintf(' %s%s', str_repeat('. ', $section->get('DEPTH_LEVEL')), $name);
-                }
-                $ret[$section->getId()] = $name;
+            if ($section['DEPTH_LEVEL'] > 1) {
+                $name = sprintf(' %s%s', str_repeat('. ', $section['DEPTH_LEVEL']), $name);
             }
 
-            return $ret;
-        }, [$parameters]);
+            $ret[$section['ID']] = $name;
+        }
+
+        return $ret;
+    }
+
+    /**
+     * Возвращает информацию о разделе инфоблока и его родителях
+     * @param int $iblockId ID инфоблока
+     * @param int $sectionId ID целевого раздела
+     * @param array $parameters дополнительные параметры запроса
+     * @return array
+     */
+    public static function getSectionWithParents(int $iblockId, int $sectionId, array $parameters = []): array
+    {
+        $sections = self::getSections($iblockId, $parameters);
+
+        $result = [];
+
+        if (isset($sections[$sectionId])) {
+            $section = $sections[$sectionId];
+
+            if (isset($section['IBLOCK_SECTION_ID'])) {
+                $result = self::getSectionWithParents($iblockId, $section['IBLOCK_SECTION_ID']);
+            }
+
+            $result[] = $section;
+        }
+
+        return $result;
     }
 
     /**
