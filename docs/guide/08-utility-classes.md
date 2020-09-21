@@ -196,7 +196,7 @@ $aMenuLinksExt[] = [
 
 ### `getSectionsTree()`
 
-Возвращает список разделов инфоблока, выравненные по вложенности точками.
+Возвращает список разделов инфоблока, выравненные по вложенности точками и проиндексированные по ID.
 
 ```php
 use spaceonfire\BitrixTools\IblockTools;
@@ -205,14 +205,46 @@ use Webmozart\Assert\Assert;
 $sectionsTree = IblockTools::getSectionsTree(IblockTools::getIblockIdByCode('my-iblock'));
 
 Assert::eq($sectionsTree, [
-    'Root',
-    ' . Level 1',
-    ' . . Level 2',
-    ' . . . Level 3',
-    ' . Level 1.a',
-    ' . Level 1.b',
-    ' . . Level 2.a',
+    1 => 'Root',
+    2 => ' . Level 1',
+    5 => ' . . Level 2',
+    6 => ' . . . Level 3',
+    3 => ' . Level 1.a',
+    4 => ' . Level 1.b',
+    7 => ' . . Level 2.a',
     // ...
+]);
+```
+
+### `getSectionWithParents()`
+
+Возвращает информацию о разделе инфоблока и его родителях
+
+```php
+use spaceonfire\BitrixTools\IblockTools;
+use Webmozart\Assert\Assert;
+
+$sections = IblockTools::getSectionsTree(IblockTools::getIblockIdByCode('my-iblock'), 42);
+
+Assert::eq($sections, [
+    [
+        'ID' => 1,
+        'NAME' => 'Root',
+        'IBLOCK_SECTION_ID' => null,
+        'DEPTH_LEVEL' => 0,
+    ],
+    [
+        'ID' => 2,
+        'NAME' => 'Level 1',
+        'IBLOCK_SECTION_ID' => 1,
+        'DEPTH_LEVEL' => 1,
+    ],
+    [
+        'ID' => 42,
+        'NAME' => 'Level 2',
+        'IBLOCK_SECTION_ID' => 2,
+        'DEPTH_LEVEL' => 2,
+    ],
 ]);
 ```
 
@@ -422,7 +454,7 @@ Assert::eq($result, [
 
 Для работы с ошибками HTTP используется библиотека [`narrowspark/http-status`][link-narrowspark-http-status]
 (например, в [компонентах][link-docs-components]). Данный утилитарный класс дополняет `Narrowspark\HttpStatus\HttpStatus`
-методом `catchError()`.
+методами:
 
 ### `catchError()`
 
@@ -435,6 +467,20 @@ use spaceonfire\BitrixTools\HttpStatusTools;
 
 HttpStatusTools::catchError(new NotFoundException('error')); // 404
 HttpStatusTools::catchError(new RuntimeException('error')); // 500
+```
+
+### `hasHttpError()`
+
+Проверяет, был ли установлен статус ошибки HTTP.
+
+```php
+use Narrowspark\HttpStatus\Exception\NotFoundException;
+use spaceonfire\BitrixTools\HttpStatusTools;
+use Webmozart\Assert\Assert;
+
+Assert::false(HttpStatusTools::hasHttpError());
+HttpStatusTools::catchError(new NotFoundException('error')); // 404
+Assert::true(HttpStatusTools::hasHttpError());
 ```
 
 [link-narrowspark-http-status]: https://github.com/narrowspark/http-status
