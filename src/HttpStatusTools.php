@@ -29,4 +29,25 @@ abstract class HttpStatusTools extends HttpStatus
         // Set status
         CHTTP::SetStatus($statusCode . ' ' . static::getReasonPhrase($statusCode));
     }
+
+    /**
+     * Проверяет, был ли установлен статус ошибки HTTP
+     * @return bool
+     */
+    public static function hasHttpError(): bool
+    {
+        $lastStatus = trim(CHTTP::GetLastStatus());
+
+        if ($lastStatus === '') {
+            return false;
+        }
+
+        try {
+            $code = (int)explode(' ', $lastStatus, 1)[0];
+            $code = static::filterStatusCode($code);
+            return $code >= 400;
+        } catch (Throwable $e) {
+            return false;
+        }
+    }
 }
