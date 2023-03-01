@@ -39,11 +39,13 @@ abstract class BaseHighLoadBlockDataManager extends DataManager
      */
     public static function getRealId(): ?int
     {
-        if (($hlId = static::getHLId()) > 0) {
+        $hlId = \filter_var(static::getHLId(), \FILTER_VALIDATE_INT, \FILTER_NULL_ON_FAILURE) ?? 0;
+
+        if ($hlId > 0) {
             return (int)$hlId;
         }
 
-        return (int)HighloadBlockCacheMap::getId($hlId);
+        return (int)HighloadBlockCacheMap::getId(static::getHLId());
     }
 
     /**
