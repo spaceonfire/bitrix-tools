@@ -11,7 +11,7 @@
     }
   ],
   "require": {
-    "php": "^7.2",
+    "php": "^7.2|^8.0",
     "ext-json": "*",
     "ext-dom": "*",
     "narrowspark/http-status": "^4.1",
